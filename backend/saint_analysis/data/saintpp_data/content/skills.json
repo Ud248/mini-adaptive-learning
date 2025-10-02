@@ -1,0 +1,150 @@
+[
+  {
+    "skill_id": "S1",
+    "name": "Trên - Dưới. Phải - Trái. Trước - Sau. Ở giữa "
+  },
+  {
+    "skill_id": "S2",
+    "name": "Hình vuông - Hình tròn. Hình tam giác - Hình chữ nhật"
+  },
+  {
+    "skill_id": "S3",
+    "name": "Các số 1, 2, 3"
+  },
+  {
+    "skill_id": "S4",
+    "name": "Các số 4, 5, 6"
+  },
+  {
+    "skill_id": "S5",
+    "name": "Các số 7, 8, 9"
+  },
+  {
+    "skill_id": "S6",
+    "name": "Số 0"
+  },
+  {
+    "skill_id": "S7",
+    "name": "Số 10"
+  },
+  {
+    "skill_id": "S8",
+    "name": "Nhiều hơn – Ít hơn – Bằng nhau"
+  },
+  {
+    "skill_id": "S9",
+    "name": "Lớn hơn, dấu >. Bé hơn, dấu <. Bằng nhau, dấu ="
+  },
+  {
+    "skill_id": "S10",
+    "name": "Làm quen với Phép cộng – Dấu cộng"
+  },
+  {
+    "skill_id": "S11",
+    "name": "Phép cộng trong phạm vi 6"
+  },
+  {
+    "skill_id": "S12",
+    "name": "Phép cộng trong phạm vi 10"
+  },
+  {
+    "skill_id": "S13",
+    "name": "Khối hộp chữ nhật – Khối lập phương"
+  },
+  {
+    "skill_id": "S14",
+    "name": "Làm quen với Phép trừ – Dấu trừ"
+  },
+  {
+    "skill_id": "S15",
+    "name": "Phép trừ trong phạm vi 6"
+  },
+  {
+    "skill_id": "S16",
+    "name": "Phép trừ trong phạm vi 10"
+  },
+  {
+    "skill_id": "S17",
+    "name": "Các số 11, 12, 13, 14, 15, 16"
+  },
+  {
+    "skill_id": "S18",
+    "name": "Các số 17, 18, 19, 20"
+  },
+  {
+    "skill_id": "S19",
+    "name": "Các số 10, 20, 30, 40, 50, 60, 70, 80, 90"
+  },
+  {
+    "skill_id": "S20",
+    "name": "Các số có hai chữ số (từ 21 đến 40)"
+  },
+  {
+    "skill_id": "S21",
+    "name": "Các số có hai chữ số (từ 41 đến 70)"
+  },
+  {
+    "skill_id": "S22",
+    "name": "Các số có hai chữ số (từ 71 đến 99)"
+  },
+  {
+    "skill_id": "S23",
+    "name": "Các số đến 100"
+  },
+  {
+    "skill_id": "S24",
+    "name": "Chục và đơn vị"
+  },
+  {
+    "skill_id": "S25",
+    "name": "So sánh các số trong phạm vi 100"
+  },
+  {
+    "skill_id": "S26",
+    "name": "Dài hơn – Ngắn hơn"
+  },
+  {
+    "skill_id": "S27",
+    "name": "Đo độ dài"
+  },
+  {
+    "skill_id": "S28",
+    "name": "Xăng-ti-mét"
+  },
+  {
+    "skill_id": "S29",
+    "name": "Phép cộng dạng 14 + 3"
+  },
+  {
+    "skill_id": "S30",
+    "name": "Phép trừ dạng 17 – 2"
+  },
+  {
+    "skill_id": "S31",
+    "name": "Cộng, trừ các số tròn chục"
+  },
+  {
+    "skill_id": "S32",
+    "name": "Phép cộng dạng 25 + 14"
+  },
+  {
+    "skill_id": "S33",
+    "name": "Phép cộng dạng 25 + 4, 25 + 40"
+  },
+  {
+    "skill_id": "S34",
+    "name": "Phép trừ dạng 39 – 15"
+  },
+  {
+    "skill_id": "S35",
+    "name": "Phép trừ dạng 27 – 4, 63 – 40"
+  },
+  {
+    "skill_id": "S36",
+    "name": "Các ngày trong tuần lễ"
+  },
+  {
+    "skill_id": "S37",
+    "name": "Đồng hồ – Thời gian"
+  }
+]

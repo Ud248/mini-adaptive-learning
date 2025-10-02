@@ -1,0 +1,102 @@
+[
+  {
+    "skill_id": "S1",
+    "name": "Các số 0, 1, 2, 3, 4, 5"
+  },
+  {
+    "skill_id": "S2",
+    "name": "Các số 6, 7, 8, 9, 10"
+  },
+  {
+    "skill_id": "S3",
+    "name": "Nhiều hơn, ít hơn, bằng nhau"
+  },
+  {
+    "skill_id": "S4",
+    "name": "So sánh số"
+  },
+  {
+    "skill_id": "S5",
+    "name": "Mấy và mấy"
+  },
+  {
+    "skill_id": "S6",
+    "name": "Hình vuông, hình tròn, hình tam giác, hình chữ nhật"
+  },
+  {
+    "skill_id": "S7",
+    "name": "Thực hành lắp ghép, xếp hình"
+  },
+  {
+    "skill_id": "S8",
+    "name": "Phép cộng trong phạm vi 10"
+  },
+  {
+    "skill_id": "S9",
+    "name": "Phép trừ trong phạm vi 10"
+  },
+  {
+    "skill_id": "S10",
+    "name": "Bảng cộng, bảng trừ trong phạm vi 10"
+  },
+  {
+    "skill_id": "S11",
+    "name": "Khối lập phương, khối hộp chữ nhật"
+  },
+  {
+    "skill_id": "S12",
+    "name": "Vị trí, định hướng trong không gian"
+  },
+  {
+    "skill_id": "S13",
+    "name": "Số có hai chữ số"
+  },
+  {
+    "skill_id": "S14",
+    "name": "So sánh số có hai chữ số"
+  },
+  {
+    "skill_id": "S15",
+    "name": "Bảng các số từ 1 đến 100"
+  },
+  {
+    "skill_id": "S16",
+    "name": "Dài hơn, ngắn hơn"
+  },
+  {
+    "skill_id": "S17",
+    "name": "Đơn vị đo độ dài"
+  },
+  {
+    "skill_id": "S18",
+    "name": "Thực hành ước lượng và đo độ dài"
+  },
+  {
+    "skill_id": "S19",
+    "name": "Phép cộng số có hai chữ số với số có một chữ số"
+  },
+  {
+    "skill_id": "S20",
+    "name": "Phép cộng số có hai chữ số với số có hai chữ số"
+  },
+  {
+    "skill_id": "S21",
+    "name": "Phép trừ số có hai chữ số cho số có một chữ số"
+  },
+  {
+    "skill_id": "S22",
+    "name": "Phép trừ số có hai chữ số cho số có hai chữ số"
+  },
+  {
+    "skill_id": "S23",
+    "name": "Xem giờ đúng trên đồng hồ"
+  },
+  {
+    "skill_id": "S24",
+    "name": "Các ngày trong tuần"
+  },
+  {
+    "skill_id": "S25",
+    "name": "Thực hành xem lịch và giờ"
+  }
+]
