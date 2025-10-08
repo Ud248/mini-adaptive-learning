@@ -1,55 +1,32 @@
 import os
 from dotenv import load_dotenv
-from pymilvus import Collection
+
+from pymilvus import Collection, utility, connections
 load_dotenv('.env')
-import milvus_api
 
-def send_profile_to_milvus(profile: dict):
+def _ensure_connected():
+    """Đảm bảo kết nối Milvus đã được thiết lập."""
+    host = os.getenv("MILVUS_HOST", os.getenv("MILVUS_URL", "localhost"))
+    port = os.getenv("MILVUS_PORT", "19530")
     try:
-        profile_model = milvus_api.StudentProfile(
-            student_id=profile["student_id"],
-            low_accuracy_skills=profile.get("low_accuracy_skills", []),
-            slow_response_skills=profile.get("slow_response_skills", []),
-            snapshot=profile.get("snapshot", False)
-        )
-        milvus_api.insert_profile(profile_model)
-        print(f"✅ Đã gửi hồ sơ học sinh {profile.get('student_id')} đến Milvus API")
+        if ":" in host and host.count(":") == 1:
+            host_part, port_part = host.split(":")
+            if port_part.isdigit():
+                host, port = host_part, port_part
+        connections.connect(alias="default", host=host, port=port)
     except Exception as e:
-        print(f"❌ Lỗi khi gửi hồ sơ học sinh {profile.get('student_id')}: {e}")
+        print(f"[milvus_client.db] Kết nối Milvus lỗi ({host}:{port}): {e}")
 
-def get_student_profile(student_id: str):
-    try:
-        from pymilvus import Collection, utility
-        if "profile_student" not in utility.list_collections():
-            return None
-        collection = Collection("profile_student")
-        collection.load()
-        expr = f'student_id == "{student_id}"'
-        results = collection.query(
-            expr=expr,
-            output_fields=["student_id", "low_accuracy_skills", "slow_response_skills", "embedding_vector"]
-        )
-        if not results:
-            return None
-        r = results[0]
-        return {
-            "student_id": r["student_id"],
-            "low_accuracy_skills": r["low_accuracy_skills"].split(".") if r["low_accuracy_skills"] else [],
-            "slow_response_skills": r["slow_response_skills"].split(".") if r["slow_response_skills"] else [],
-            "embedding_vector": r["embedding_vector"]
-        }
-    except Exception as e:
-        print(f"Error getting student profile: {e}")
-        return None
 
-def get_student_progress_snapshot(student_id: str):
+
+def get_student_progress_snapshot(student_email: str):
     try:
-        from pymilvus import Collection, utility
+        _ensure_connected()
         if "snapshot_student" not in utility.list_collections():
             return []
         collection = Collection("snapshot_student")
         collection.load()
-        expr = f'student_id == "{student_id}"'
+        expr = f'student_id == "{student_email}"'
         results = collection.query(
             expr=expr,
             output_fields=["id", "timestamp", "low_accuracy_skills", "slow_response_skills", "embedding_vector"]
@@ -71,7 +48,7 @@ def get_student_progress_snapshot(student_id: str):
 
 def get_or_create_skill_progress_collection() -> Collection:
     try:
-        from pymilvus import Collection, utility
+        _ensure_connected()
         collection_name = "skill_progress_collection"
         if collection_name not in utility.list_collections():
             print(f"Collection {collection_name} not found")

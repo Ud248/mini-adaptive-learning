@@ -10,14 +10,14 @@ load_dotenv()
 
 def update_student_profile(log: dict):
     """Simple version - chỉ lưu log và trả về profile cơ bản"""
-    student_id = log["student_id"]
+    student_email = log["student_email"]
     skill_id = log.get("skill_id", "S01")
     correct = log.get("correct", False)
     response_time = log.get("response_time", 5.0)
     
     # Tạo profile đơn giản
     profile = {
-        "student_id": student_id,
+        "student_email": student_email,
         "skills": [
             {
                 "skill_id": skill_id,
@@ -38,7 +38,10 @@ def update_student_profile_batch(logs: list[dict]):
     if not logs:
         return {"error": "No logs provided"}
     
-    student_id = logs[0]["student_id"]
+    student_email = logs[0]["student_email"]
+    
+    # Lấy username từ log đầu tiên (có thể có hoặc không)
+    username = logs[0].get("username", "")
     
     # Tạo profile tổng hợp từ tất cả logs
     all_skills = {}
@@ -78,7 +81,8 @@ def update_student_profile_batch(logs: list[dict]):
             slow_response.append(skill_id)
     
     return {
-        "student_id": student_id,
+        "student_email": student_email,
+        "username": username,
         "timestamp": datetime.now().isoformat(),
         "skills": skills_detail,
         "low_accuracy_skills": low_accuracy,

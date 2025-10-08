@@ -6,7 +6,7 @@ Seed tài khoản học sinh mẫu với mật khẩu đã băm
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from passlib.context import CryptContext
@@ -15,9 +15,13 @@ from passlib.context import CryptContext
 load_dotenv()
 
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "quiz_system")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "mini_adaptive_learning")
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    """Hash password using bcrypt"""
+    return password_context.hash(password)
 
 def connect_mongodb():
     try:
@@ -46,13 +50,13 @@ def transform_users(raw_users):
         username = u.get("username", "").strip()
         role = (u.get("role") or "student").strip()
         full_name = u.get("full_name") or ""
-        plain_password = u.get("password") or "Student@123"
+        plain_password = u.get("password") or "123456"
 
         if not email and not username:
             print("⚠️  Skip user with no email/username")
             continue
 
-        password_hash = password_context.hash(plain_password)
+        password_hash = hash_password(plain_password)
 
         docs.append({
             "email": email,
@@ -60,8 +64,8 @@ def transform_users(raw_users):
             "role": role,
             "full_name": full_name,
             "password_hash": password_hash,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
             "status": "active"
         })
     return docs

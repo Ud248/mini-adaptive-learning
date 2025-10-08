@@ -34,15 +34,6 @@ def create_collections():
     
     # Collections configuration
     collections_config = {
-        "profile_student": {
-            "fields": [
-                ("student_id", DataType.VARCHAR, True, 100),
-                ("low_accuracy_skills", DataType.VARCHAR, False, 500),
-                ("slow_response_skills", DataType.VARCHAR, False, 500),
-                ("embedding_vector", DataType.FLOAT_VECTOR, False, 128)
-            ],
-            "description": "Hồ sơ học sinh chính"
-        },
         "snapshot_student": {
             "fields": [
                 ("id", DataType.INT64, True, None),
@@ -66,15 +57,31 @@ def create_collections():
             ],
             "description": "Xu hướng tiến bộ kỹ năng"
         },
+        # Bài tập SGK vectors collection
         "baitap_collection": {
             "fields": [
-                ("id", DataType.INT64, True, None),
-                ("baitap_id", DataType.VARCHAR, False, 100),
-                ("skill_id", DataType.VARCHAR, False, 100),
-                ("question_text", DataType.VARCHAR, False, 2000),
-                ("answer", DataType.VARCHAR, False, 500)
+                {"name": "id", "dtype": DataType.VARCHAR, "is_primary": True, "max_length": 100},
+                {"name": "question", "dtype": DataType.VARCHAR, "max_length": 65535},
+                {"name": "answer", "dtype": DataType.VARCHAR, "max_length": 65535},
+                {"name": "lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "subject", "dtype": DataType.VARCHAR, "max_length": 512},
+                {"name": "source", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "embedding", "dtype": DataType.FLOAT_VECTOR, "dim": 768}
             ],
-            "description": "Danh mục bài tập/câu hỏi"
+            "description": "Bài tập SGK vectors (text + embedding 768D)",
+            "enable_dynamic_field": False
+        },
+        # SGV collection theo yêu cầu (dùng VARCHAR id để đồng bộ với Mongo vector_id)
+        "sgv_collection": {
+            "fields": [
+                {"name": "id", "dtype": DataType.VARCHAR, "is_primary": True, "max_length": 200},
+                {"name": "lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "content", "dtype": DataType.VARCHAR, "max_length": 65535},
+                {"name": "source", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "embedding", "dtype": DataType.FLOAT_VECTOR, "dim": 768}
+            ],
+            "description": "SGV content with topic and embeddings",
+            "enable_dynamic_field": True
         }
     }
     
@@ -111,28 +118,39 @@ def create_collections():
             
             continue
         
-        # Tạo fields
+        # Tạo fields (hỗ trợ cấu hình theo tuple hoặc dict)
         fields = []
-        for field_name, dtype, is_primary, max_length in config["fields"]:
-            if dtype == DataType.FLOAT_VECTOR:
-                # Vector field cần dim parameter
-                field = FieldSchema(
-                    name=field_name,
-                    dtype=dtype,
-                    dim=max_length  # max_length chứa dimension cho vector
-                )
+        for field_conf in config["fields"]:
+            # Cấu hình dạng dict linh hoạt hơn
+            if isinstance(field_conf, dict):
+                name = field_conf.get("name")
+                dtype = field_conf.get("dtype")
+                is_primary = field_conf.get("is_primary", False)
+                auto_id = field_conf.get("auto_id", False)
+                max_length = field_conf.get("max_length")
+                dim = field_conf.get("dim")
+
+                if dtype == DataType.FLOAT_VECTOR:
+                    field = FieldSchema(name=name, dtype=dtype, dim=dim or 0)
+                else:
+                    # FieldSchema chấp nhận auto_id chỉ khi là primary key INT64
+                    if auto_id:
+                        field = FieldSchema(name=name, dtype=dtype, is_primary=is_primary, auto_id=True, max_length=max_length)
+                    else:
+                        field = FieldSchema(name=name, dtype=dtype, is_primary=is_primary, max_length=max_length)
             else:
-                # Regular field
-                field = FieldSchema(
-                    name=field_name,
-                    dtype=dtype,
-                    is_primary=is_primary,
-                    max_length=max_length if max_length else None
-                )
+                # Back-compat: tuple (name, dtype, is_primary, max_length)
+                field_name, dtype, is_primary, max_length = field_conf
+                if dtype == DataType.FLOAT_VECTOR:
+                    field = FieldSchema(name=field_name, dtype=dtype, dim=max_length)
+                else:
+                    field = FieldSchema(name=field_name, dtype=dtype, is_primary=is_primary, max_length=max_length if max_length else None)
+
             fields.append(field)
         
         # Tạo schema và collection
-        schema = CollectionSchema(fields=fields, description=config["description"])
+        enable_dynamic_field = config.get("enable_dynamic_field", False)
+        schema = CollectionSchema(fields=fields, description=config["description"], enable_dynamic_field=enable_dynamic_field)
         collection = Collection(collection_name, schema)
         
         # Tạo index cho vector fields

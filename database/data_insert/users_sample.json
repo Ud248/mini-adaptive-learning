@@ -1,16 +1,16 @@
 [
     {
-        "email": "student1@example.com",
+        "email": "student1@gmail.com",
         "username": "student1",
-        "password": "Student@123",
+        "password": "123456",
         "role": "student",
-        "full_name": "Student One"
+        "full_name": "Phan Thiên Ân"
     },
     {
-        "email": "student2@example.com",
+        "email": "student2@gmail.com",
         "username": "student2",
-        "password": "Student@123",
+        "password": "123456",
         "role": "student",
-        "full_name": "Student Two"
+        "full_name": "Trần Hùng Dũng"
     }
 ]

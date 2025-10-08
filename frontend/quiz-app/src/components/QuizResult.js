@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, Button, Progress, message, Spin, List, Tag, Statistic, Row, Col } from 'antd';
+import { Card, Button, message, Spin, List, Statistic, Row, Col } from 'antd';
 import {
     TrophyOutlined,
     ReloadOutlined,
@@ -9,7 +9,6 @@ import {
     CloseCircleOutlined,
     ClockCircleOutlined
 } from '@ant-design/icons';
-import axios from 'axios';
 
 const QuizResult = () => {
     const { quizId } = useParams();
@@ -20,7 +19,7 @@ const QuizResult = () => {
 
     useEffect(() => {
         loadResult();
-    }, [quizId]);
+    }, [quizId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const loadResult = async () => {
         try {
@@ -307,6 +306,7 @@ const QuizResult = () => {
                     </div>
                 </Card>
             )}
+
 
 
         </div>

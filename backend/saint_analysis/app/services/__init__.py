@@ -1,1 +1,1 @@
-from app.database.milvus_client import send_profile_to_milvus, get_student_profile, get_student_progress_snapshot
+# Removed circular import - import directly in files that need it

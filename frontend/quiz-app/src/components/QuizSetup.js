@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Select, Button, Card, message } from 'antd';
+import { Form, Select, Button, Card } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { useToast } from '../contexts/ToastContext';
 
 const { Option } = Select;
 
 const QuizSetup = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
+    const { showSuccess, showError } = useToast();
     const [loading, setLoading] = useState(false);
     const [subjects, setSubjects] = useState([]);
     const [grades, setGrades] = useState([]);
 
     useEffect(() => {
         loadInitialData();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const loadInitialData = async () => {
         try {
@@ -28,7 +30,7 @@ const QuizSetup = () => {
             setGrades(gradesRes.data.grades);
         } catch (error) {
             console.error('Lỗi tải dữ liệu:', error);
-            message.error('Không thể tải dữ liệu khởi tạo từ API. Sử dụng dữ liệu mặc định...');
+            showError('Không thể tải dữ liệu khởi tạo từ API. Sử dụng dữ liệu mặc định...');
 
             // Fallback về dữ liệu mặc định
             setSubjects(["Toán", "Tiếng Việt", "Khoa học", "Lịch sử", "Địa lý"]);
@@ -47,12 +49,12 @@ const QuizSetup = () => {
             });
 
             if (response.data.quiz_id) {
-                message.success('Tạo bài kiểm tra thành công!');
+                showSuccess('Tạo bài kiểm tra thành công!');
                 navigate(`/quiz/${response.data.quiz_id}`);
             }
         } catch (error) {
             console.error('Lỗi tạo quiz:', error);
-            message.error('Không thể tạo bài kiểm tra từ API. Vui lòng thử lại.');
+            showError('Không thể tạo bài kiểm tra từ API. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }

@@ -8,7 +8,7 @@ import os
 import uvicorn
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 
@@ -19,8 +19,8 @@ load_dotenv()
 
 # MongoDB config
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-MONGO_DB_NAME = os.getenv("DATABASE_NAME", "quiz_system")
-MONGO_COLLECTION = os.getenv("QUESTIONS_COLLECTION", "questions")
+MONGO_DB_NAME = os.getenv("DATABASE_NAME", "mini_adaptive_learning")
+MONGO_COLLECTION = os.getenv("QUESTIONS_COLLECTION", "placement_questions")
 
 # Auth config
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-me")
@@ -50,9 +50,10 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int
 
+
 def create_access_token(subject: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     to_encode = subject.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
@@ -498,6 +499,7 @@ async def submit_quiz_simple(data: dict):
         
     except Exception as e:
         return {"error": "Processing error"}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)

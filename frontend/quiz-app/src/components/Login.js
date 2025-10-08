@@ -3,6 +3,7 @@ import { Card, Form, Input, Button, Typography, message } from 'antd';
 import { LockOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 const { Title, Text } = Typography;
 
@@ -10,15 +11,16 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { showSuccess, showError } = useToast();
 
     const onFinish = async (values) => {
         setLoading(true);
         try {
             await login(values.identifier, values.password);
-            message.success('Đăng nhập thành công');
+            showSuccess('Đăng nhập thành công');
             navigate('/');
         } catch (e) {
-            message.error('Sai tài khoản hoặc mật khẩu');
+            showError('Sai tài khoản hoặc mật khẩu');
         } finally {
             setLoading(false);
         }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Radio, Image, Progress, message, Spin, Modal } from 'antd';
+import { Card, Button, Radio, Image, Progress, Spin, Modal } from 'antd';
+import { useToast } from '../contexts/ToastContext';
 import {
     LeftOutlined,
     RightOutlined,
@@ -9,21 +10,40 @@ import {
     QuestionCircleOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
+import { useAuth } from '../auth/AuthContext';
+
+// Giải mã JWT đơn giản để lấy payload (không xác thực chữ ký)
+function decodeJwtPayload(token) {
+    try {
+        if (!token || typeof token !== 'string') return null;
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        const json = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(json);
+    } catch (e) {
+        return null;
+    }
+}
 
 const QuizTaking = () => {
     const { quizId } = useParams();
     const navigate = useNavigate();
+    const { user, token } = useAuth();
+    const { showSuccess, showError } = useToast();
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [timeLeft, setTimeLeft] = useState(1800); // 30 phút
-    const [startTime, setStartTime] = useState(Date.now()); // Thời gian bắt đầu
+    const [startTime] = useState(Date.now()); // Thời gian bắt đầu bài
+    const [questionStartTime, setQuestionStartTime] = useState(null); // thời điểm bắt đầu câu hiện tại
+    const [perQuestionTime, setPerQuestionTime] = useState({}); // { [questionId]: seconds }
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         loadQuiz();
-    }, [quizId]);
+    }, [quizId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -37,7 +57,7 @@ const QuizTaking = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const loadQuiz = async () => {
         try {
@@ -51,13 +71,15 @@ const QuizTaking = () => {
             if (response.data && response.data.questions) {
                 // Sử dụng options từ API (từ questions_grade1.json)
                 setQuestions(response.data.questions);
-                message.success(`Đã tải ${response.data.questions.length} câu hỏi từ API`);
+                // Bắt đầu tính thời gian cho câu đầu tiên
+                setQuestionStartTime(Date.now());
+                showSuccess(`Đã tải ${response.data.questions.length} câu hỏi từ API`);
             } else {
                 throw new Error('Không có dữ liệu từ API');
             }
         } catch (error) {
             console.error('Lỗi tải quiz:', error);
-            message.error('Không thể tải bài kiểm tra từ API. Đang sử dụng dữ liệu mẫu...');
+            showError('Không thể tải bài kiểm tra từ API. Đang sử dụng dữ liệu mẫu...');
 
             // Fallback về dữ liệu mẫu nếu API không hoạt động
             const mockQuestions = Array.from({ length: 30 }, (_, i) => ({
@@ -79,6 +101,8 @@ const QuizTaking = () => {
             }));
 
             setQuestions(mockQuestions);
+            // Bắt đầu tính thời gian cho câu đầu tiên (mock)
+            setQuestionStartTime(Date.now());
         } finally {
             setLoading(false);
         }
@@ -95,17 +119,51 @@ const QuizTaking = () => {
             ...prev,
             [questionId]: answer
         }));
+        // Nếu người dùng chọn đáp án khi đang ở câu này, ghi nhận thời gian đã xem đến hiện tại (không chuyển câu)
+        if (questionStartTime) {
+            const now = Date.now();
+            const deltaSec = Math.max(0, (now - questionStartTime) / 1000);
+            setPerQuestionTime(prev => ({
+                ...prev,
+                [questionId]: Number(((prev[questionId] || 0) + deltaSec).toFixed(2))
+            }));
+            setQuestionStartTime(now); // reset mốc để cộng dồn lần xem tiếp theo (nếu còn)
+        }
     };
 
     const handleNext = () => {
         if (currentQuestionIndex < questions.length - 1) {
+            // Cộng dồn thời gian cho câu hiện tại trước khi chuyển
+            const currentQ = questions[currentQuestionIndex];
+            if (currentQ && questionStartTime) {
+                const now = Date.now();
+                const deltaSec = Math.max(0, (now - questionStartTime) / 1000);
+                setPerQuestionTime(prev => ({
+                    ...prev,
+                    [currentQ.id]: Number(((prev[currentQ.id] || 0) + deltaSec).toFixed(2))
+                }));
+            }
             setCurrentQuestionIndex(prev => prev + 1);
+            // Bắt đầu tính thời gian cho câu mới
+            setQuestionStartTime(Date.now());
         }
     };
 
     const handlePrevious = () => {
         if (currentQuestionIndex > 0) {
+            // Cộng dồn thời gian cho câu hiện tại trước khi chuyển
+            const currentQ = questions[currentQuestionIndex];
+            if (currentQ && questionStartTime) {
+                const now = Date.now();
+                const deltaSec = Math.max(0, (now - questionStartTime) / 1000);
+                setPerQuestionTime(prev => ({
+                    ...prev,
+                    [currentQ.id]: Number(((prev[currentQ.id] || 0) + deltaSec).toFixed(2))
+                }));
+            }
             setCurrentQuestionIndex(prev => prev - 1);
+            // Bắt đầu tính thời gian cho câu mới
+            setQuestionStartTime(Date.now());
         }
     };
 
@@ -121,6 +179,18 @@ const QuizTaking = () => {
                     // Tính thời gian thực tế đã làm bài
                     const endTime = Date.now();
                     const actualTimeSpent = Math.floor((endTime - startTime) / 1000);
+                    // Cộng dồn nốt thời gian của câu đang xem trước khi nộp
+                    const currentQ = questions[currentQuestionIndex];
+                    if (currentQ && questionStartTime) {
+                        const now = Date.now();
+                        const deltaSec = Math.max(0, (now - questionStartTime) / 1000);
+                        setPerQuestionTime(prev => ({
+                            ...prev,
+                            [currentQ.id]: Number(((prev[currentQ.id] || 0) + deltaSec).toFixed(2))
+                        }));
+                        // Cập nhật lại mốc để tránh cộng lặp, nhưng sẽ nộp ngay sau đó
+                        setQuestionStartTime(now);
+                    }
 
                     // Chuyển đổi answers từ index thành string
                     const formattedAnswers = {};
@@ -134,10 +204,7 @@ const QuizTaking = () => {
                         }
                     });
 
-                    console.log('📤 Gửi submission:', {
-                        quiz_id: quizId,
-                        answers: formattedAnswers
-                    });
+                    // Gửi submission đến API
 
                     const response = await axios.post('http://localhost:8001/quiz/submit-simple', {
                         quiz_id: quizId,
@@ -145,6 +212,42 @@ const QuizTaking = () => {
                     });
 
                     if (response.data) {
+                        // Tạo payload gửi SAINT /interaction
+                        try {
+                            const saintUrl = (window.env && window.env.SAINT_API_URL) ? window.env.SAINT_API_URL : 'http://localhost:8000';
+                            const jwtPayload = decodeJwtPayload(token || (typeof localStorage !== 'undefined' ? localStorage.getItem('access_token') : '')) || {};
+                            const studentId = user?.email || user?.username || jwtPayload.email || jwtPayload.username || jwtPayload.sub || 'unknown_student';
+                            const nowIso = new Date().toISOString();
+                            // Dựng logs dựa trên câu hỏi đã trả lời
+                            const logs = questions.map((q) => {
+                                const qid = q.id;
+                                const answerIndex = answers[qid];
+                                let chosenAnswer = '';
+                                if (answerIndex !== undefined && answerIndex !== null) {
+                                    chosenAnswer = (q.options && q.options[answerIndex] !== undefined)
+                                        ? q.options[answerIndex]
+                                        : String(answerIndex);
+                                }
+                                const correct = chosenAnswer ? (chosenAnswer === q.answer) : false;
+                                const skillId = (q?.skill) || (q?.chapter) || (q?.lesson) || 'S01';
+                                const responseTime = Number((perQuestionTime[qid] || 0).toFixed(2));
+                                return {
+                                    student_email: String(studentId), // studentId thực chất là email từ JWT
+                                    timestamp: nowIso,
+                                    question_text: q?.question || '',
+                                    answer: chosenAnswer,
+                                    skill_id: String(skillId),
+                                    correct: Boolean(correct),
+                                    response_time: Number(responseTime)
+                                };
+                            });
+                            if (logs.length > 0) {
+                                await axios.post(`${saintUrl}/interaction`, logs);
+                            }
+                        } catch (e) {
+                            // Không chặn flow nếu gọi SAINT thất bại
+                            console.warn('Gửi SAINT /interaction thất bại:', e);
+                        }
                         // Tạo kết quả chi tiết với thông tin thời gian thực
                         const detailedResult = {
                             ...response.data,
@@ -155,7 +258,7 @@ const QuizTaking = () => {
                             formatted_answers: formattedAnswers
                         };
 
-                        message.success('Nộp bài thành công!');
+                        showSuccess('Nộp bài thành công!');
                         navigate(`/result/${quizId}`, {
                             state: {
                                 result: detailedResult,
@@ -166,7 +269,7 @@ const QuizTaking = () => {
                     }
                 } catch (error) {
                     console.error('Lỗi nộp bài:', error);
-                    message.error('Không thể nộp bài. Vui lòng thử lại.');
+                    showError('Không thể nộp bài. Vui lòng thử lại.');
                 } finally {
                     setSubmitting(false);
                 }
@@ -294,12 +397,36 @@ const QuizTaking = () => {
 
                 <div className="answer-section">
                     <Radio.Group
+                        style={{ width: '100%' }}
                         value={answers[currentQuestion.id]}
                         onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
                     >
-                        <div className="answer-options">
+                        <div
+                            className="answer-options"
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr',
+                                gap: 16,
+                                width: '100%'
+                            }}
+                        >
                             {currentQuestion.options.map((option, index) => (
-                                <div key={index} className="answer-option">
+                                <div
+                                    key={index}
+                                    className="answer-option"
+                                    onClick={() => handleAnswerChange(currentQuestion.id, index)}
+                                    style={{
+                                        border: '1px solid #d9d9d9',
+                                        borderRadius: 8,
+                                        padding: 16,
+                                        minHeight: 80,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        cursor: 'pointer',
+                                        background: answers[currentQuestion.id] === index ? '#e6f7ff' : '#fff',
+                                        transition: 'background 0.2s ease'
+                                    }}
+                                >
                                     <Radio value={index}>
                                         <span style={{ marginLeft: 8 }}>{option}</span>
                                     </Radio>

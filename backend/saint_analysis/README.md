@@ -14,9 +14,9 @@ backend/saint_analysis/
 ├── data/                           # dữ liệu ví dụ + script tạo data
 ├── output/                         # model weights & ánh xạ id
 ├── demo_gradio.py                  # demo suy luận local
-├── milvus_api.py                   # API nội bộ thao tác Milvus
-├── main.py                         # entrypoint FastAPI (uvicorn main:app)
-├── setup_milvus.py                 # script tạo collections/index
+├── milvus_api.py                   # (tuỳ chọn) API nội bộ thao tác Milvus
+├── main.py                         # entrypoint FastAPI (module backend.saint_analysis.main:app)
+├── setup_milvus.py                 # (đã chuyển sang database/milvus/setup_milvus.py)
 ├── requirements.txt                # dependencies cho module này
 └── README.md
 ```
@@ -34,16 +34,18 @@ docker-compose up -d
 ```
 
 - Phương pháp 2: Chạy trực tiếp (local)
-```bash
-cd backend/saint_analysis
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Tài liệu OpenAPI: `http://localhost:8000/docs`
+  - Cách khuyến nghị (chạy từ project root để import module ổn định):
+    ```bash
+    pip install -r backend/saint_analysis/requirements.txt
+    uvicorn backend.saint_analysis.main:app --host 0.0.0.0 --port 8000 --reload
+    ```
+  - Nếu bạn đang ở thư mục `backend/saint_analysis` vẫn có thể chạy:
+    ```bash
+    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ```
 
 ### 3) Cấu hình môi trường `.env`
-Tạo file `.env` tại `backend/saint_analysis` (cùng cấp `milvus_api.py`). Ví dụ:
+Tạo file `.env` tại `backend/saint_analysis`. Ví dụ:
 ```env
 # Đường dẫn dữ liệu và model
 DATA_DIR=./data
@@ -55,9 +57,10 @@ MODEL_PATH=./output/saint_epoch3_auc1.0000.pt
 EMBED_DIM=128
 DEVICE=cpu
 
-# Milvus
-MILVUS_URL=http://localhost:19530
-MILVUS_TOKEN=
+# Milvus (dùng SDK pymilvus)
+# KHÔNG dùng dạng có scheme như http://localhost:19530
+MILVUS_HOST=localhost
+MILVUS_PORT=19530
 
 # Tên collection
 PROFILE_COLLECTION=profile_student
@@ -181,12 +184,14 @@ Kết nối mặc định: host `localhost`, port `19530`, database `default`.
 - Collection `skill_progress_collection`
   - Trường: `id` (PK, INT64), `student_id` (VARCHAR(100)), `skill_id` (VARCHAR(50)), `timestamp` (VARCHAR(50)), `accuracy` (FLOAT), `avg_time` (FLOAT), `progress_vector` (FLOAT_VECTOR 64D)
 
-Tạo tự động bằng script:
+Tạo tự động bằng script (đã chuẩn hoá tại `database/milvus/setup_milvus.py`):
 ```bash
-cd backend/saint_analysis
-python setup_milvus.py
+python database/milvus/setup_milvus.py
 ```
-Script tự tạo collections nếu chưa tồn tại, đồng thời tạo index IVF_FLAT cho các vector fields với metric L2.
+Script sẽ:
+- Kết nối Milvus theo `MILVUS_HOST`/`MILVUS_PORT`
+- Tạo các collections nếu chưa tồn tại
+- Tạo index IVF_FLAT cho các vector fields với metric L2
 
 ### 6) Test API nhanh
 
@@ -232,13 +237,21 @@ curl -X GET "http://localhost:8000/generate_exercise?student_id=student_001"
 ### 9) Troubleshooting
 
 - Kết nối Milvus: đảm bảo etcd → MinIO → Milvus khởi động theo thứ tự, port 19530 mở.
-- Chạy `python setup_milvus.py` nếu collections thiếu hoặc lỗi index/vector dims.
+- Chạy `python database/milvus/setup_milvus.py` nếu collections thiếu hoặc lỗi index/vector dims.
 - Kiểm tra đủ files trong `output/` (q2id.pkl, s2id.pkl, trọng số mô hình).
 - Xem logs Docker: `docker-compose logs saint_api`, `docker-compose logs milvus-standalone`.
+- Lỗi ConnectionConfigException của pymilvus: đặt biến môi trường dạng không có scheme:
+  - `MILVUS_HOST=localhost`
+  - `MILVUS_PORT=19530`
+  - Tránh đặt `MILVUS_URL=http://localhost:19530`. Nếu dùng `MILVUS_URL`, dùng dạng `localhost:19530`.
 
 ### 10) Ghi chú triển khai
 
-- Dev: `uvicorn main:app --reload`
-- Prod: `uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4`
+- Dev (từ project root): `uvicorn backend.saint_analysis.main:app --reload`
+- Prod: `uvicorn backend.saint_analysis.main:app --host 0.0.0.0 --port 8000 --workers 4`
+
+Ghi chú hiệu năng:
+- Ứng dụng kết nối Milvus một lần ở giai đoạn startup, giảm lỗi “Not connected/URI”.
+- Các collection được load khi cần; tránh gọi `load()` lặp lại cho mỗi request.
 
 

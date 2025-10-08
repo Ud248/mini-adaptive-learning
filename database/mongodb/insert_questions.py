@@ -15,7 +15,7 @@ load_dotenv()
 
 # MongoDB connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "quiz_system")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "mini_adaptive_learning")
 
 def connect_mongodb():
     """Kết nối đến MongoDB"""
@@ -81,7 +81,7 @@ def transform_question_data(questions):
 def insert_questions(db, questions):
     """Insert câu hỏi vào MongoDB"""
     try:
-        collection = db["questions"]
+        collection = db["placement_questions"]
         
         # Clear existing data (optional)
         # collection.delete_many({})
@@ -150,7 +150,7 @@ def verify_insertion(db):
     """Kiểm tra dữ liệu đã insert"""
     print(f"\n🔍 Verifying data insertion...")
     
-    collections = ["questions", "skills", "subjects"]
+    collections = ["placement_questions", "skills", "subjects"]
     
     for collection_name in collections:
         collection = db[collection_name]

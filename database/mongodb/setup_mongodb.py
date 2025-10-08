@@ -13,7 +13,7 @@ load_dotenv()
 
 # MongoDB connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "quiz_system")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "mini_adaptive_learning")
 
 def connect_mongodb():
     """Kết nối đến MongoDB"""
@@ -33,7 +33,7 @@ def create_database_and_collections(client):
     
     # Collections cần tạo
     collections_config = {
-        "questions": {
+        "placement_questions": {
             "description": "Câu hỏi quiz",
             "indexes": [
                 [("question_id", ASCENDING), {"unique": True}],
@@ -41,6 +41,27 @@ def create_database_and_collections(client):
                 [("skill", ASCENDING), ("difficulty", ASCENDING)],
                 [("grade", ASCENDING), ("subject", ASCENDING)],
                 [("created_at", DESCENDING)]
+            ]
+        },
+        "teacher_books": {
+            "description": "Sách giáo viên - mỗi document là một bài học",
+            "indexes": [
+                [("grade", ASCENDING)],
+                [("subject", ASCENDING)],
+                [("lesson", ASCENDING)],
+                [("metadata.tags", ASCENDING)],
+                [("vector_id", ASCENDING)]
+            ]
+        },
+        "textbook_exercises": {
+            "description": "Bài tập SGK đã chuẩn hoá (mỗi document là một bài tập)",
+            "indexes": [
+                [("_id", ASCENDING), {"unique": True}],
+                [("lesson", ASCENDING)],
+                [("subject", ASCENDING)],
+                [("chapter", ASCENDING)],
+                [("metadata.grade", ASCENDING), ("subject", ASCENDING)],
+                [("vector_id", ASCENDING), {"unique": True}]
             ]
         },
         "users": {
@@ -66,12 +87,13 @@ def create_database_and_collections(client):
                 [("grade", ASCENDING)]
             ]
         },
-        "quiz_sessions": {
-            "description": "Phiên làm bài quiz",
+        "profile_student": {
+            "description": "Hồ sơ học sinh từ SAINT analysis",
             "indexes": [
-                [("quiz_id", ASCENDING), {"unique": True}],
-                [("student_id", ASCENDING), ("created_at", DESCENDING)],
-                [("grade", ASCENDING), ("subject", ASCENDING)]
+                [("student_email", ASCENDING), {"unique": True}],
+                [("username", ASCENDING), {"unique": True}],
+                [("created_at", DESCENDING)],
+                [("updated_at", DESCENDING)]
             ]
         }
     }
