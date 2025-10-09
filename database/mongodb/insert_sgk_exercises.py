@@ -23,8 +23,8 @@ MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 DB_NAME = "mini_adaptive_learning"
 COLLECTION_NAME = "textbook_exercises"
 
-DEFAULT_JSON_1 = os.path.join("database", "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-1.json")
-DEFAULT_JSON_2 = os.path.join("database", "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-2.json")
+DEFAULT_JSON_1 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-1.json")
+DEFAULT_JSON_2 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-2.json")
 
 
 def load_json_file(path: str) -> List[Dict[str, Any]]:

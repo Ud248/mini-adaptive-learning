@@ -61,11 +61,11 @@ const QuizTaking = () => {
 
     const loadQuiz = async () => {
         try {
-            // Gọi API để lấy quiz data thực tế
+            // Gọi API để lấy quiz data thực tế (40 câu)
             const response = await axios.post('http://localhost:8001/quiz/generate', {
                 grade: 1,
                 subject: 'Toán',
-                num_questions: 30
+                num_questions: 40
             });
 
             if (response.data && response.data.questions) {
@@ -82,7 +82,7 @@ const QuizTaking = () => {
             showError('Không thể tải bài kiểm tra từ API. Đang sử dụng dữ liệu mẫu...');
 
             // Fallback về dữ liệu mẫu nếu API không hoạt động
-            const mockQuestions = Array.from({ length: 30 }, (_, i) => ({
+            const mockQuestions = Array.from({ length: 40 }, (_, i) => ({
                 id: `q_${i + 1}`,
                 lesson: `Bài học ${i + 1}`,
                 grade: 1,
@@ -175,10 +175,14 @@ const QuizTaking = () => {
             cancelText: 'Hủy',
             onOk: async () => {
                 setSubmitting(true);
+                const submitStartTime = Date.now();
                 try {
                     // Tính thời gian thực tế đã làm bài
                     const endTime = Date.now();
                     const actualTimeSpent = Math.floor((endTime - startTime) / 1000);
+
+                    // Hiển thị thông báo đang xử lý
+                    showSuccess('Đang xử lý bài nộp...');
                     // Cộng dồn nốt thời gian của câu đang xem trước khi nộp
                     const currentQ = questions[currentQuestionIndex];
                     if (currentQ && questionStartTime) {
@@ -205,60 +209,83 @@ const QuizTaking = () => {
                     });
 
                     // Gửi submission đến API
-
                     const response = await axios.post('http://localhost:8001/quiz/submit-simple', {
                         quiz_id: quizId,
                         answers: formattedAnswers
+                    }, {
+                        timeout: 10000 // 10 giây timeout
                     });
 
-                    if (response.data) {
-                        // Tạo payload gửi SAINT /interaction
-                        try {
-                            const saintUrl = (window.env && window.env.SAINT_API_URL) ? window.env.SAINT_API_URL : 'http://localhost:8000';
-                            const jwtPayload = decodeJwtPayload(token || (typeof localStorage !== 'undefined' ? localStorage.getItem('access_token') : '')) || {};
-                            const studentId = user?.email || user?.username || jwtPayload.email || jwtPayload.username || jwtPayload.sub || 'unknown_student';
-                            const nowIso = new Date().toISOString();
-                            // Dựng logs dựa trên câu hỏi đã trả lời
-                            const logs = questions.map((q) => {
-                                const qid = q.id;
-                                const answerIndex = answers[qid];
-                                let chosenAnswer = '';
-                                if (answerIndex !== undefined && answerIndex !== null) {
-                                    chosenAnswer = (q.options && q.options[answerIndex] !== undefined)
-                                        ? q.options[answerIndex]
-                                        : String(answerIndex);
+                    if (response && response.data) {
+                        // Gửi SAINT data bất đồng bộ (không chặn UI) - không chờ kết quả
+                        Promise.resolve().then(async () => {
+                            try {
+                                const saintUrl = (window.env && window.env.SAINT_API_URL) ? window.env.SAINT_API_URL : 'http://localhost:8000';
+                                const jwtPayload = decodeJwtPayload(token || (typeof localStorage !== 'undefined' ? localStorage.getItem('access_token') : '')) || {};
+                                const studentId = user?.email || user?.username || jwtPayload.email || jwtPayload.username || jwtPayload.sub || 'unknown_student';
+                                const nowIso = new Date().toISOString();
+
+                                // Option 1: Gửi tất cả câu (bao gồm câu trống)
+                                const logs = questions.map((q) => {
+                                    const qid = q.id;
+                                    const answerIndex = answers[qid];
+                                    const isAnswered = answerIndex !== undefined && answerIndex !== null;
+
+                                    let chosenAnswer = '';
+                                    if (isAnswered) {
+                                        chosenAnswer = (q.options && q.options[answerIndex] !== undefined)
+                                            ? q.options[answerIndex]
+                                            : String(answerIndex);
+                                    }
+
+                                    const correct = isAnswered ? (chosenAnswer === q.answer) : false;
+                                    const skillId = (q?.skill) || (q?.chapter) || (q?.lesson) || 'S01';
+                                    const responseTime = isAnswered ? Number((perQuestionTime[qid] || 0).toFixed(2)) : 0;
+
+                                    return {
+                                        student_email: String(studentId),
+                                        timestamp: nowIso,
+                                        question_text: q?.question || '',
+                                        answer: chosenAnswer,
+                                        skill_id: String(skillId),
+                                        correct: Boolean(correct),
+                                        response_time: Number(responseTime),
+                                        is_answered: Boolean(isAnswered)  // Flag để SAINT biết câu trống
+                                    };
+                                });
+
+                                if (logs.length > 0) {
+                                    // Gửi SAINT data qua API backend (nhanh hơn)
+                                    try {
+                                        await axios.post('http://localhost:8001/quiz/submit-saint-data', {
+                                            logs: logs
+                                        }, { timeout: 2000 });
+                                    } catch (apiError) {
+                                        // Fallback: gửi trực tiếp đến SAINT
+                                        await Promise.race([
+                                            axios.post(`${saintUrl}/interaction`, logs, { timeout: 2000 }),
+                                            new Promise((_, reject) =>
+                                                setTimeout(() => reject(new Error('SAINT timeout')), 2000)
+                                            )
+                                        ]);
+                                    }
                                 }
-                                const correct = chosenAnswer ? (chosenAnswer === q.answer) : false;
-                                const skillId = (q?.skill) || (q?.chapter) || (q?.lesson) || 'S01';
-                                const responseTime = Number((perQuestionTime[qid] || 0).toFixed(2));
-                                return {
-                                    student_email: String(studentId), // studentId thực chất là email từ JWT
-                                    timestamp: nowIso,
-                                    question_text: q?.question || '',
-                                    answer: chosenAnswer,
-                                    skill_id: String(skillId),
-                                    correct: Boolean(correct),
-                                    response_time: Number(responseTime)
-                                };
-                            });
-                            if (logs.length > 0) {
-                                await axios.post(`${saintUrl}/interaction`, logs);
+                            } catch (e) {
+                                console.warn('Gửi SAINT /interaction thất bại (không ảnh hưởng UI):', e);
                             }
-                        } catch (e) {
-                            // Không chặn flow nếu gọi SAINT thất bại
-                            console.warn('Gửi SAINT /interaction thất bại:', e);
-                        }
+                        }).catch(err => console.warn('SAINT background task error:', err));
                         // Tạo kết quả chi tiết với thông tin thời gian thực
                         const detailedResult = {
                             ...response.data,
                             actual_time_spent: actualTimeSpent,
-                            total_questions: 30, // Luôn là 30 câu
+                            total_questions: 40, // Luôn là 40 câu
                             questions: questions,
                             user_answers: answers,
                             formatted_answers: formattedAnswers
                         };
 
-                        showSuccess('Nộp bài thành công!');
+                        const processingTime = Date.now() - submitStartTime;
+                        showSuccess(`Nộp bài thành công! (${processingTime}ms)`);
                         navigate(`/result/${quizId}`, {
                             state: {
                                 result: detailedResult,

@@ -5,6 +5,8 @@ import viVN from 'antd/locale/vi_VN';
 import QuizSetup from './components/QuizSetup';
 import QuizTaking from './components/QuizTaking';
 import QuizResult from './components/QuizResult';
+import StudentWeakSkills from './components/StudentWeakSkills';
+import AvatarMenu from './components/AvatarMenu';
 import Login from './components/Login';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { ToastProvider, useToast } from './contexts/ToastContext';
@@ -19,6 +21,7 @@ const PrivateRoute = ({ children }) => {
     }
     return children;
 };
+
 
 const HeaderBar = () => {
     const { token, user, logout } = useAuth();
@@ -37,10 +40,7 @@ const HeaderBar = () => {
                 <Link to="/" className="app-logo">Adaptive Learning</Link>
             </div>
             <div className="app-header-right">
-                <span className="user-email">{user?.email}</span>
-                <Button type="primary" onClick={handleLogout} className="logout-btn" size="middle">
-                    Đăng xuất
-                </Button>
+                <AvatarMenu user={user} onLogout={handleLogout} />
             </div>
         </div>
     );
@@ -57,6 +57,7 @@ const AppContent = () => {
                 <Route path="/" element={<PrivateRoute><QuizSetup /></PrivateRoute>} />
                 <Route path="/quiz/:quizId" element={<PrivateRoute><QuizTaking /></PrivateRoute>} />
                 <Route path="/result/:quizId" element={<PrivateRoute><QuizResult /></PrivateRoute>} />
+                <Route path="/student-weak-skills" element={<PrivateRoute><StudentWeakSkills /></PrivateRoute>} />
             </Routes>
             <ToastContainer toasts={toasts} removeToast={removeToast} />
             <BackToTop />

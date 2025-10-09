@@ -51,31 +51,63 @@ def update_student_profile_batch(logs: list[dict]):
     for log in logs:
         skill_id = log.get("skill_id", "S01")
         correct = log.get("correct", False)
-        response_time = log.get("response_time", 5.0)
+        response_time = log.get("response_time", 0.0)
+        is_answered = log.get("is_answered", True)  # Mặc định True để tương thích ngược
         
         if skill_id not in all_skills:
-            all_skills[skill_id] = {"correct": 0, "total": 0, "times": []}
+            all_skills[skill_id] = {"correct": 0, "total": 0, "times": [], "answered": 0, "skipped": 0}
         
         all_skills[skill_id]["total"] += 1
-        all_skills[skill_id]["times"].append(response_time)
-        if correct:
-            all_skills[skill_id]["correct"] += 1
+        
+        if is_answered:
+            # Câu đã trả lời
+            all_skills[skill_id]["answered"] += 1
+            all_skills[skill_id]["times"].append(response_time)
+            if correct:
+                all_skills[skill_id]["correct"] += 1
+        else:
+            # Câu trống = skill yếu
+            all_skills[skill_id]["skipped"] += 1
+            all_skills[skill_id]["times"].append(0)  # Thời gian = 0 cho câu trống
+            # Câu trống không được tính là correct
     
-    # Tính toán kết quả
+    # Tính toán kết quả với logic mới
     skills_detail = []
     for skill_id, stats in all_skills.items():
-        accuracy = stats["correct"] / stats["total"] if stats["total"] > 0 else 0
-        avg_time = sum(stats["times"]) / len(stats["times"])
+        total_questions = stats["total"]
+        answered_questions = stats["answered"]
+        skipped_questions = stats["skipped"]
+        correct_answers = stats["correct"]
+        
+        # Accuracy = Số câu đúng / Tổng số câu (bao gồm câu trống)
+        accuracy = correct_answers / total_questions if total_questions > 0 else 0
+        
+        # Thời gian trung bình chỉ tính câu đã trả lời
+        answered_times = [t for t in stats["times"] if t > 0]
+        avg_time = sum(answered_times) / len(answered_times) if answered_times else 0
+        
+        # Xác định trạng thái
+        if skipped_questions > 0:
+            status = "struggling"  # Có câu trống = struggling
+        elif accuracy > 0.8:
+            status = "mastered"
+        elif accuracy > 0.5:
+            status = "in_progress"
+        else:
+            status = "struggling"
         
         skills_detail.append({
             "skill_id": skill_id,
             "skill_name": f"Skill {skill_id}",
             "accuracy": round(accuracy, 2),
             "avg_time": round(avg_time, 2),
-            "status": "mastered" if accuracy > 0.8 else "in_progress" if accuracy > 0.5 else "struggling"
+            "answered": answered_questions,
+            "skipped": skipped_questions,
+            "status": status
         })
         
-        if accuracy < 0.7:
+        # Xác định skill yếu
+        if accuracy < 0.7 or skipped_questions > 0:
             low_accuracy.append(skill_id)
         if avg_time > 10:
             slow_response.append(skill_id)

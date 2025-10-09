@@ -30,10 +30,21 @@ def save_student_profile(profile: dict) -> bool:
         client = get_mongo_client()
         db = client[DATABASE_NAME]
         collection = db["profile_student"]
+        users_collection = db["users"]
         
         # Chuẩn bị dữ liệu
         student_email = profile.get("student_email")
         username = profile.get("username", "")
+        
+        # Nếu chưa có username, tìm từ users collection
+        if not username and student_email:
+            user_doc = users_collection.find_one({"email": student_email})
+            if user_doc:
+                username = user_doc.get("username", "")
+                print(f"🔍 Tìm thấy username từ email {student_email}: {username}")
+            else:
+                print(f"⚠️ Không tìm thấy user với email {student_email}")
+        
         low_accuracy_skills = profile.get("low_accuracy_skills", [])
         slow_response_skills = profile.get("slow_response_skills", [])
         skills = profile.get("skills", [])
@@ -60,6 +71,7 @@ def save_student_profile(profile: dict) -> bool:
                 {"$set": profile_doc}
             )
             print(f"✅ Updated student profile (overwritten): {student_email}")
+            print(f"   - Username: {username}")
             print(f"   - Low accuracy skills: {low_accuracy_skills}")
             print(f"   - Slow response skills: {slow_response_skills}")
             print(f"   - Total skills tracked: {len(skills)}")
@@ -68,6 +80,10 @@ def save_student_profile(profile: dict) -> bool:
             profile_doc["created_at"] = datetime.now(timezone.utc)
             result = collection.insert_one(profile_doc)
             print(f"✅ Created new student profile: {student_email}")
+            print(f"   - Username: {username}")
+            print(f"   - Low accuracy skills: {low_accuracy_skills}")
+            print(f"   - Slow response skills: {slow_response_skills}")
+            print(f"   - Total skills tracked: {len(skills)}")
         
         return True
         

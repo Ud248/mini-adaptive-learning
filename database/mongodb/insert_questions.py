@@ -168,7 +168,7 @@ def main():
     print("=" * 50)
     
     # File path
-    json_file = "../data_insert/grade1_math_questions_complete.json"
+    json_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "grade1_math_questions_complete.json")
     
     if not os.path.exists(json_file):
         print(f"❌ File not found: {json_file}")

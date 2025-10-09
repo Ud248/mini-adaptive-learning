@@ -117,7 +117,7 @@ const QuizSetup = () => {
                         border: '1px solid #d9d9d9'
                     }}>
                         <p style={{ margin: 0, color: '#1890ff', fontWeight: '500' }}>
-                            📚 Hệ thống sẽ lấy ngẫu nhiên 30 câu hỏi từ tất cả các chương của môn Toán lớp 1
+                            📚 Hệ thống sẽ lấy ngẫu nhiên 40 câu hỏi từ tất cả các chương của môn Toán lớp 1
                         </p>
                     </div>
 

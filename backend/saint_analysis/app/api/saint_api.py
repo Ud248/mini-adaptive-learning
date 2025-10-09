@@ -5,8 +5,8 @@ import traceback
 from app.model.simple_updater import update_student_profile, update_student_profile_batch
 from app.services.progress_tracker import get_student_progress
 from app.database.mongodb_client import get_student_profile_by_email, save_student_profile
-from app.database.milvus_client import get_student_progress_snapshot
-from app.database.milvus_client import get_or_create_skill_progress_collection
+# from app.database.milvus_client import get_student_progress_snapshot
+# from app.database.milvus_client import get_or_create_skill_progress_collection
 
 app = FastAPI(title="SAINT++ API")
 
@@ -100,42 +100,21 @@ def generate_exercise(student_email: str = Query(..., description="Email học s
     }
 @app.get("/progress_snapshot/{student_email}")
 def get_progress_snapshot(student_email: str):
-    snapshots = get_student_progress_snapshot(student_email)
-    if not snapshots:
-        raise HTTPException(status_code=404, detail="Không tìm thấy snapshot nào.")
+    # Tạm thời disable Milvus functionality
     return {
         "student_email": student_email,
-        "snapshots": snapshots
+        "snapshots": [],
+        "message": "Milvus functionality temporarily disabled"
     }
 @app.get("/skill_trend")
 def get_skill_trend(
     student_email: str = Query(..., description="Email học sinh"),
     skill_id: str = Query(..., description="ID kỹ năng")
 ):
-    try:
-        collection = get_or_create_skill_progress_collection()
-        expr = f'student_id == "{student_email}" and skill_id == "{skill_id}"'
-        results = collection.query(
-            expr=expr,
-            output_fields=["timestamp", "accuracy", "avg_time"]
-        )
-
-        # ✅ Ép kiểu float và xử lý timestamp
-        progress = []
-        for r in results:
-            progress.append({
-                "timestamp": r["timestamp"],
-                "accuracy": float(r["accuracy"]),
-                "avg_time": float(r["avg_time"])
-            })
-
-        progress.sort(key=lambda x: x["timestamp"])
-
-        return {
-            "student_email": student_email,
-            "skill_id": skill_id,
-            "progress": progress
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Lỗi truy vấn Milvus: {e}")
+    # Tạm thời disable Milvus functionality
+    return {
+        "student_email": student_email,
+        "skill_id": skill_id,
+        "progress": [],
+        "message": "Milvus functionality temporarily disabled"
+    }

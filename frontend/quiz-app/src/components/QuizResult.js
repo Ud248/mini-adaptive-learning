@@ -7,7 +7,8 @@ import {
     HomeOutlined,
     CheckCircleOutlined,
     CloseCircleOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    BookOutlined
 } from '@ant-design/icons';
 
 const QuizResult = () => {
@@ -28,7 +29,7 @@ const QuizResult = () => {
                 const resultData = location.state.result;
 
                 // Tính toán thống kê chi tiết
-                const totalQuestions = 30; // Luôn là 30 câu
+                const totalQuestions = 40; // Luôn là 40 câu
 
                 // Tạo detailed_results từ dữ liệu thực và tính đúng/sai
                 const detailedResults = [];
@@ -89,14 +90,14 @@ const QuizResult = () => {
             // Nếu không có dữ liệu từ state, tạo dữ liệu mẫu
             const mockResult = {
                 quiz_id: quizId,
-                total_questions: 30,
-                correct_answers: 25,
-                wrong_answers: 3,
-                answered_questions: 28,
+                total_questions: 40,
+                correct_answers: 32,
+                wrong_answers: 6,
+                answered_questions: 38,
                 unanswered_questions: 2,
-                score: 83.33,
-                actual_time_spent: 1200,
-                detailed_results: Array.from({ length: 30 }, (_, i) => ({
+                score: 80.0,
+                actual_time_spent: 1440,
+                detailed_results: Array.from({ length: 40 }, (_, i) => ({
                     question_id: `q_${i + 1}`,
                     question: `Câu hỏi ${i + 1}`,
                     user_answer: i < 25 ? 'Đáp án A' : i < 28 ? 'Đáp án B' : 'Chưa trả lời',
@@ -107,10 +108,10 @@ const QuizResult = () => {
                 saint_analysis_data: {
                     student_id: 'demo_student',
                     quiz_id: quizId,
-                    total_questions: 30,
-                    correct_answers: 25,
-                    score: 83.33,
-                    time_spent: 1200,
+                    total_questions: 40,
+                    correct_answers: 32,
+                    score: 80.0,
+                    time_spent: 1440,
                     difficulty_level: 'medium',
                     subject: 'Toán',
                     grade: 1
@@ -233,6 +234,25 @@ const QuizResult = () => {
                         onClick={() => navigate('/')}
                     >
                         Làm bài kiểm tra mới
+                    </Button>
+
+                    <Button
+                        type="default"
+                        size="large"
+                        icon={<BookOutlined />}
+                        onClick={() => navigate('/student-weak-skills', {
+                            state: {
+                                analysisData: result.saint_analysis_data || {
+                                    score: result.score,
+                                    total_questions: result.total_questions,
+                                    correct_answers: result.correct_answers,
+                                    quiz_id: result.quiz_id
+                                }
+                            }
+                        })}
+                        style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', color: 'white' }}
+                    >
+                        Xem kỹ năng yếu
                     </Button>
 
                     <Button

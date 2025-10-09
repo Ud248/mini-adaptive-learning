@@ -425,3 +425,115 @@
         font-size: 11px;
     }
 }
+
+/* Weak Skills Styles */
+.weak-skills-header {
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #ff4d4f, #ff7a45);
+    color: white;
+}
+
+.weak-skills-header .ant-card-body {
+    color: white;
+}
+
+.weak-skills-header h2 {
+    color: white !important;
+}
+
+.weak-skills-header .ant-statistic-title {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.weak-skills-header .ant-statistic-content {
+    color: white !important;
+}
+
+.weak-skills-list {
+    margin-bottom: 24px;
+}
+
+.skill-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e8e8e8;
+}
+
+.skill-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.skill-card .ant-card-body {
+    padding: 16px;
+}
+
+@media (max-width: 768px) {
+    .skill-card .ant-row {
+        flex-direction: column;
+    }
+
+    .skill-card .ant-col {
+        margin-bottom: 12px;
+    }
+}
+
+/* Avatar Menu Styles */
+.app-header-right .ant-btn {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.app-header-right .ant-btn:hover {
+    background: rgba(24, 144, 255, 0.1);
+    border-radius: 6px;
+}
+
+/* Student Profile Header */
+.student-profile-header {
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #1890ff, #40a9ff);
+    color: white;
+}
+
+.student-profile-header .ant-card-body {
+    color: white;
+}
+
+.student-profile-header h2 {
+    color: white !important;
+}
+
+.student-profile-header .ant-statistic-title {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.student-profile-header .ant-statistic-content {
+    color: white !important;
+}
+
+/* Avatar Menu Dropdown */
+.ant-dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ant-dropdown-menu-item {
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ant-dropdown-menu-item:hover {
+    background-color: #f5f5f5;
+}
+
+.ant-dropdown-menu-item-danger {
+    color: #ff4d4f;
+}
+
+.ant-dropdown-menu-item-danger:hover {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+}

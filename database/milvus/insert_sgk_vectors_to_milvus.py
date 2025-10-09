@@ -6,7 +6,7 @@ Rules (matching MongoDB normalization):
 - Remove `difficulty`.
 - Convert string "null" answer to None.
 - Add metadata (not stored in Milvus, only used if needed).
-- Build vector embedding from text fields using database/embeddings/local_embedder.py
+- Build vector embedding from text fields using absolute path to database/embeddings/local_embedder.py
   Text used for embedding: question + " | " + lesson + " | " + subject + " | " + source
 - id (primary key): "vector_<index>"
 
@@ -41,8 +41,8 @@ from database.embeddings.local_embedder import LocalEmbedding, EMBEDDING_DIMENSI
 MILVUS_ALIAS = "default"
 COLLECTION_NAME = "baitap_collection"
 
-DEFAULT_JSON_1 = os.path.join("database", "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-1.json")
-DEFAULT_JSON_2 = os.path.join("database", "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-2.json")
+DEFAULT_JSON_1 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-1.json")
+DEFAULT_JSON_2 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-2.json")
 
 
 def load_json_file(path: str) -> List[Dict[str, Any]]:

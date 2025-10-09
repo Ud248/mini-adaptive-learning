@@ -2,7 +2,7 @@
 """
 Insert SGV JSON into Milvus `sgv_collection`.
 
-Reads `database/data_insert/sgv_ketnoitrithuc.json`, builds content and
+Reads SGV JSON file from absolute path, builds content and
 source strings, generates 768-dim embeddings using local Vietnamese
 sentence-transformer, and inserts into Milvus collection `sgv_collection`.
 """

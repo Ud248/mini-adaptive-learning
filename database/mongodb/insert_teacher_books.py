@@ -21,7 +21,7 @@ Usage:
 
 Environment variables (optional overrides):
   MONGODB_URI: connection string (default: mongodb://localhost:27017)
-  SGV_JSON_PATH: path to json (default: database/data_insert/sgv_ketnoitrithuc.json)
+  SGV_JSON_PATH: path to json (default: absolute path to database/data_insert/sgv_ketnoitrithuc.json)
   SGV_GRADE: grade number (default: 1)
   SGV_SUBJECT: subject name (default: "Toán")
   SGV_YEAR: publication year (default: 2024)
@@ -130,7 +130,7 @@ def to_lesson_doc(
 
 def main() -> None:
     # Load config from environment or use defaults
-    json_path = os.getenv("SGV_JSON_PATH", os.path.join("database", "data_insert", "sgv_ketnoitrithuc.json"))
+    json_path = os.getenv("SGV_JSON_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgv_ketnoitrithuc.json"))
     try:
         grade = int(os.getenv("SGV_GRADE", "1"))
     except Exception:
