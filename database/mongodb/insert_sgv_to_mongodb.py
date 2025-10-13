@@ -1,54 +1,53 @@
 #!/usr/bin/env python3
 """
-Create MongoDB collection `teacher_books` and insert SGV data.
+Insert SGV to MongoDB - Script nhập dữ liệu SGV vào MongoDB
+=========================================================
 
-Schema (per document = one lesson):
-{
-  _id: string|ObjectId,
-  grade: int,
-  subject: string,
-  lesson: string,
-  parts: [ { topic: string, content: string|[string] } ],
-  info: { page: int, source: string },
-  metadata: { curriculum: string, book_type: "SGV", year: int, tags: [string] },
-  created_at: datetime,
-  updated_at: datetime
-}
+File này chịu trách nhiệm nhập dữ liệu Sách Giáo Viên (SGV) vào MongoDB collection.
+Đọc file JSON SGV, xử lý nội dung và lưu vào teacher_books collection.
 
-Usage:
-  # From project root (no arguments needed)
-  python database/mongodb/insert_teacher_books.py
+Chức năng chính:
+- Đọc file JSON SGV từ đường dẫn được chỉ định
+- Xử lý và chuẩn hóa nội dung văn bản
+- Nhập dữ liệu vào collection teacher_books trong MongoDB
 
-Environment variables (optional overrides):
-  MONGODB_URI: connection string (default: mongodb://localhost:27017)
-  SGV_JSON_PATH: path to json (default: absolute path to database/data_insert/sgv_ketnoitrithuc.json)
-  SGV_GRADE: grade number (default: 1)
-  SGV_SUBJECT: subject name (default: "Toán")
-  SGV_YEAR: publication year (default: 2024)
-  SGV_CURRICULUM: curriculum name (default: "Kết nối tri thức")
+Sử dụng: python database/mongodb/insert_sgv_to_mongodb.py
 """
 
 import json
 import os
+import sys
 from datetime import datetime
 from typing import Any, Dict, List
+from tqdm import tqdm
 
-from pymongo import MongoClient
-from bson import ObjectId
+# Add project root to path
+_CURRENT_DIR = os.path.dirname(__file__)
+_PROJECT_ROOT = os.path.abspath(os.path.join(_CURRENT_DIR, '..', '..'))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
+# Import from mongodb_client
+from database.mongodb.mongodb_client import (
+    connect, insert, create_index, get_collection_info
+)
 
-DEFAULT_DB_NAME = "mini_adaptive_learning"
 DEFAULT_COLLECTION = "teacher_books"
 
 
-def get_mongo_client() -> MongoClient:
-    uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-    return MongoClient(uri)
+def get_mongo_client():
+    """Kết nối MongoDB sử dụng mongodb_client"""
+    return connect()
 
 
-def ensure_indexes(collection) -> None:
-    """No-op: Indexes are created in setup_mongodb.py"""
-    return None
+def ensure_indexes(collection_name: str) -> None:
+    """Tạo indexes cho collection"""
+    create_index(collection_name, "grade")
+    create_index(collection_name, "subject")
+    create_index(collection_name, "lesson")
+    create_index(collection_name, "metadata.curriculum")
+    create_index(collection_name, "metadata.book_type")
+    create_index(collection_name, "metadata.year")
 
 
 def load_json(json_path: str) -> List[Dict[str, Any]]:
@@ -142,24 +141,21 @@ def main() -> None:
         year = 2024
     curriculum = os.getenv("SGV_CURRICULUM", "Kết nối tri thức")
 
-    client = get_mongo_client()
-    db = client[DEFAULT_DB_NAME]
-    col = db[DEFAULT_COLLECTION]
-
-    ensure_indexes(col)
+    db = get_mongo_client()
+    ensure_indexes(DEFAULT_COLLECTION)
 
     data = load_json(json_path)
     docs = []
-    for i, item in enumerate(data):
+    for i, item in enumerate(tqdm(data, desc="Processing SGV items", unit="item")):
         docs.append(to_lesson_doc(item, grade=grade, subject=subject, curriculum=curriculum, year=year, seq_index=i))
 
-    # Insert many
+    # Insert many với progress bar
     if not docs:
         print("No documents to insert.")
         return
 
-    result = col.insert_many(docs)
-    print(f"Inserted {len(result.inserted_ids)} documents into {DEFAULT_DB_NAME}.{DEFAULT_COLLECTION}")
+    result = insert(DEFAULT_COLLECTION, docs, many=True)
+    print(f"✅ Inserted {len(result)} documents into {DEFAULT_COLLECTION}")
 
 
 if __name__ == "__main__":

@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 """
-Insert SGV JSON into Milvus `sgv_collection`.
+Insert SGV to Milvus - Script nhập dữ liệu SGV vào Milvus
+=========================================================
 
-Reads SGV JSON file from absolute path, builds content and
-source strings, generates 768-dim embeddings using local Vietnamese
-sentence-transformer, and inserts into Milvus collection `sgv_collection`.
+File này chịu trách nhiệm nhập dữ liệu Sách Giáo Viên (SGV) vào Milvus collection.
+Đọc file JSON SGV, xử lý nội dung, tạo embeddings và lưu vào sgv_collection.
+
+Chức năng chính:
+- Đọc file JSON SGV từ đường dẫn được chỉ định
+- Xử lý và làm sạch nội dung văn bản (sửa lỗi OCR, chuẩn hóa)
+- Tạo embeddings 768 chiều bằng Vietnamese sentence-transformer
+- Nhập dữ liệu vào collection sgv_collection trong Milvus
+
+Sử dụng: python database/milvus/insert_sgv_to_milvus.py
 """
 
 import json
@@ -13,8 +21,7 @@ import sys
 import re
 import traceback
 from typing import List, Dict, Any
-
-from pymilvus import connections, utility, Collection
+from tqdm import tqdm
 
 # Ensure project root is on sys.path when running as a script
 _CURRENT_DIR = os.path.dirname(__file__)
@@ -24,6 +31,7 @@ if _PROJECT_ROOT not in sys.path:
 
 # Local modules (absolute import from project root)
 from database.embeddings.local_embedder import LocalEmbedding, EMBEDDING_DIMENSION
+from database.milvus.milvus_client import connect, get_collection, insert
 
 
 MILVUS_ALIAS = "default"
@@ -101,7 +109,7 @@ def build_entities_from_item(item: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def connect_milvus() -> None:
-    connections.connect(alias=MILVUS_ALIAS, host=os.getenv("MILVUS_HOST", "localhost"), port=os.getenv("MILVUS_PORT", "19530"))
+    connect()
 
 
 def insert_entities_json(json_path: str = DEFAULT_JSON_PATH) -> None:
@@ -112,8 +120,10 @@ def insert_entities_json(json_path: str = DEFAULT_JSON_PATH) -> None:
     # Connect
     connect_milvus()
 
-    # Check collection
-    if not utility.has_collection(COLLECTION_NAME):
+    # Check collection exists by trying to get it
+    try:
+        get_collection(COLLECTION_NAME)
+    except RuntimeError as e:
         raise RuntimeError(f"Collection '{COLLECTION_NAME}' does not exist. Run setup_milvus.py first.")
 
     # Load JSON
@@ -127,38 +137,35 @@ def insert_entities_json(json_path: str = DEFAULT_JSON_PATH) -> None:
     print(f"📦 Loaded {len(data)} items")
 
     # Build entities and texts for embedding
-    rows: List[Dict[str, Any]] = [build_entities_from_item(item) for item in data]
+    print("🔄 Building entities from items...")
+    rows: List[Dict[str, Any]] = [build_entities_from_item(item) for item in tqdm(data, desc="Processing items")]
 
     # Generate embeddings
+    print("🧠 Generating embeddings...")
     embedder = LocalEmbedding(verbose=True)
-    texts = [row["embed_text"] for row in rows]
+    texts = [row["embed_text"] for row in tqdm(rows, desc="Preparing texts")]
     embeddings = embedder.embed_texts(texts)
-
-    # Prepare column-wise insert (order must match schema: id, lesson, content, source, embedding)
-    # Use sequential vector IDs matching list order: vector_0, vector_1, ...
-    ids = [f"vector_{i}" for i in range(len(rows))]
-    lessons = ["" if row.get("lesson") is None else str(row.get("lesson")) for row in rows]
-    contents = ["" if row.get("content") is None else str(row.get("content")) for row in rows]
-    sources = ["" if row.get("source") is None else str(row.get("source")) for row in rows]
 
     if not embeddings or any(len(vec) != EMBEDDING_DIMENSION for vec in embeddings):
         raise ValueError("Embedding generation failed or wrong dimension")
 
-    # Insert
-    collection = Collection(COLLECTION_NAME)
-    entities = [
-        ids,            # id (VARCHAR PK)
-        lessons,        # lesson (VARCHAR)
-        contents,       # content (VARCHAR)
-        sources,        # source (VARCHAR)
-        embeddings,     # embedding (FLOAT_VECTOR[768])
-    ]
+    # Prepare row-wise data for insert function
+    print("📝 Preparing data for insertion...")
+    insert_data = []
+    for i, (row, embedding) in enumerate(tqdm(zip(rows, embeddings), desc="Preparing data", total=len(rows))):
+        insert_data.append({
+            "id": f"vector_{i}",
+            "lesson": "" if row.get("lesson") is None else str(row.get("lesson")),
+            "content": "" if row.get("content") is None else str(row.get("content")),
+            "source": "" if row.get("source") is None else str(row.get("source")),
+            "embedding": embedding
+        })
 
-    # Match schema order (id is auto_id, so schema fields should be [id, lesson, content, source, embedding])
-    insert_result = collection.insert(entities)
-    collection.flush()
+    # Insert using new milvus_client function
+    print("💾 Inserting data into Milvus...")
+    insert_result = insert(COLLECTION_NAME, insert_data)
 
-    print(f"✅ Inserted {len(lessons)} rows. LSN: {insert_result.insert_count}")
+    print(f"✅ Inserted {len(insert_data)} rows. Primary keys: {len(insert_result)}")
 
 
 def main():
@@ -172,5 +179,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

@@ -1,33 +1,25 @@
 #!/usr/bin/env python3
 """
-Normalize SGK JSON and insert vectors into Milvus collection `sgk_exercises_vectors`.
+Insert SGK to Milvus - Script nhập dữ liệu SGK vào Milvus
+=========================================================
 
-Rules (matching MongoDB normalization):
-- Remove `difficulty`.
-- Convert string "null" answer to None.
-- Add metadata (not stored in Milvus, only used if needed).
-- Build vector embedding from text fields using absolute path to database/embeddings/local_embedder.py
-  Text used for embedding: question + " | " + lesson + " | " + subject + " | " + source
-- id (primary key): "vector_<index>"
+File này chịu trách nhiệm nhập dữ liệu Sách Giáo Khoa (SGK) vào Milvus collection.
+Đọc file JSON SGK, chuẩn hóa dữ liệu, tạo embeddings và lưu vào baitap_collection.
 
-Milvus schema expectations for `sgk_exercises_vectors`:
-  - id: VARCHAR (PK) or a separate INT64 PK with id as VARCHAR field (we store id as VARCHAR here)
-  - question: VARCHAR
-  - answer: VARCHAR
-  - lesson: VARCHAR
-  - subject: VARCHAR
-  - source: VARCHAR
-  - embedding: FLOAT_VECTOR dim=768
+Chức năng chính:
+- Đọc file JSON SGK từ đường dẫn được chỉ định (2 file: tập 1 và tập 2)
+- Chuẩn hóa dữ liệu theo quy tắc (loại bỏ difficulty, xử lý null values)
+- Tạo embeddings 768 chiều từ nội dung bài tập
+- Nhập dữ liệu vào collection baitap_collection trong Milvus
 
-Note: Ensure collection exists with the above schema before running, or extend this script to create it.
+Sử dụng: python database/milvus/insert_sgk_to_milvus.py
 """
 
 import json
 import os
 import sys
 from typing import Any, Dict, List, Optional
-
-from pymilvus import connections, utility, Collection
+from tqdm import tqdm
 
 # Ensure project root in path
 _CURRENT_DIR = os.path.dirname(__file__)
@@ -36,6 +28,7 @@ if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
 from database.embeddings.local_embedder import LocalEmbedding, EMBEDDING_DIMENSION
+from database.milvus.milvus_client import connect, get_collection, insert
 
 
 MILVUS_ALIAS = "default"
@@ -78,7 +71,7 @@ def build_text_for_embedding(doc: Dict[str, Any]) -> str:
 
 
 def connect_milvus() -> None:
-    connections.connect(alias=MILVUS_ALIAS, host=os.getenv("MILVUS_HOST", "localhost"), port=os.getenv("MILVUS_PORT", "19530"))
+    connect()
 
 
 def main() -> None:
@@ -98,57 +91,44 @@ def main() -> None:
         return
 
     # Normalize
-    docs = [normalize_item(it) for it in items]
+    print("🔄 Normalizing data...")
+    docs = [normalize_item(it) for it in tqdm(items, desc="Normalizing items")]
 
     # Connect Milvus
+    print("🔗 Connecting to Milvus...")
     connect_milvus()
-    if not utility.has_collection(COLLECTION_NAME):
+    
+    # Check collection exists by trying to get it
+    try:
+        get_collection(COLLECTION_NAME)
+    except RuntimeError as e:
         raise RuntimeError(f"Collection '{COLLECTION_NAME}' does not exist. Please create it first.")
 
     # Prepare embeddings
+    print("🧠 Generating embeddings...")
     embedder = LocalEmbedding(verbose=True)
-    texts = [build_text_for_embedding(doc) for doc in docs]
+    texts = [build_text_for_embedding(doc) for doc in tqdm(docs, desc="Building texts")]
     embeddings = embedder.embed_texts(texts)
 
-    # Build columns for insert; schema expected order: id, question, answer, lesson, subject, source, embedding
-    ids: List[str] = []
-    questions: List[Optional[str]] = []
-    answers: List[Optional[str]] = []
-    lessons: List[Optional[str]] = []
-    subjects: List[Optional[str]] = []
-    sources: List[Optional[str]] = []
-    vectors: List[List[float]] = []
-
-    for i, doc in enumerate(docs):
-        ids.append(f"vector_{i}")
-        # Milvus VARCHAR fields must be strings; coerce None -> ""
-        q = doc.get("question")
-        a = doc.get("answer")
-        lsn = doc.get("lesson")
-        subj = doc.get("subject")
-        src = doc.get("source")
-        questions.append("" if q is None else str(q))
-        answers.append("" if a is None else str(a))
-        lessons.append("" if lsn is None else str(lsn))
-        subjects.append("" if subj is None else str(subj))
-        sources.append("" if src is None else str(src))
+    # Prepare row-wise data for insert function
+    print("📝 Preparing data for insertion...")
+    insert_data = []
+    for i, doc in enumerate(tqdm(docs, desc="Preparing data")):
         vec = embeddings[i] if i < len(embeddings) else [0.0] * EMBEDDING_DIMENSION
-        vectors.append(vec)
+        insert_data.append({
+            "id": f"vector_{i}",
+            "question": "" if doc.get("question") is None else str(doc.get("question")),
+            "answer": "" if doc.get("answer") is None else str(doc.get("answer")),
+            "lesson": "" if doc.get("lesson") is None else str(doc.get("lesson")),
+            "subject": "" if doc.get("subject") is None else str(doc.get("subject")),
+            "source": "" if doc.get("source") is None else str(doc.get("source")),
+            "embedding": vec
+        })
 
-    collection = Collection(COLLECTION_NAME)
-    entities = [
-        ids,
-        questions,
-        answers,
-        lessons,
-        subjects,
-        sources,
-        vectors,
-    ]
-
-    res = collection.insert(entities)
-    collection.flush()
-    print(f"✅ Inserted {len(ids)} vectors into {COLLECTION_NAME}")
+    # Insert using new milvus_client function
+    print("💾 Inserting data into Milvus...")
+    insert_result = insert(COLLECTION_NAME, insert_data)
+    print(f"✅ Inserted {len(insert_data)} vectors into {COLLECTION_NAME}. Primary keys: {len(insert_result)}")
 
 
 if __name__ == "__main__":

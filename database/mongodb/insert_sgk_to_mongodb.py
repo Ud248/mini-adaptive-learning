@@ -1,26 +1,36 @@
 #!/usr/bin/env python3
 """
-Normalize SGK JSON and insert into MongoDB collection `textbook_exercises`.
+Insert SGK to MongoDB - Script nhập dữ liệu SGK vào MongoDB
+=========================================================
 
-Rules:
-- Remove field `difficulty`.
-- If `answer` is string "null", convert to None.
-- Keep remaining fields as-is.
-- Add `metadata` block: { curriculum: "Kết nối tri thức", grade: 1, book_type: "SGK" }.
-- Add `embedding_id`: "vector_<index>".
-- _id: "ex_<index>".
+File này chịu trách nhiệm nhập dữ liệu Sách Giáo Khoa (SGK) vào MongoDB collection.
+Chuẩn hóa dữ liệu bài tập và lưu vào textbook_exercises collection.
 
-Inputs: two JSON files (default paths below). Run from project root.
+Chức năng chính:
+- Đọc file JSON SGK từ đường dẫn được chỉ định (2 file: tập 1 và tập 2)
+- Chuẩn hóa dữ liệu theo quy tắc (loại bỏ difficulty, xử lý null values)
+- Nhập dữ liệu vào collection textbook_exercises trong MongoDB
+
+Sử dụng: python database/mongodb/insert_sgk_to_mongodb.py
 """
 
 import json
 import os
+import sys
 from typing import Any, Dict, List
-from pymongo import MongoClient
+from tqdm import tqdm
 
+# Add project root to path
+_CURRENT_DIR = os.path.dirname(__file__)
+_PROJECT_ROOT = os.path.abspath(os.path.join(_CURRENT_DIR, '..', '..'))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-DB_NAME = "mini_adaptive_learning"
+# Import from mongodb_client
+from database.mongodb.mongodb_client import (
+    connect, insert, create_index, get_collection_info, find_one, update
+)
+
 COLLECTION_NAME = "textbook_exercises"
 
 DEFAULT_JSON_1 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-1.json")
@@ -77,10 +87,8 @@ def main() -> None:
         else:
             print(f"⚠️  File not found, skip: {path}")
 
-    print(f"📦 Loaded {len(items)} SGK items")
-
     normalized: List[Dict[str, Any]] = []
-    for it in items:
+    for it in tqdm(items, desc="Normalizing SGK items", unit="item"):
         try:
             normalized.append(normalize_item(it))
         except Exception as e:
@@ -94,19 +102,35 @@ def main() -> None:
     for i, doc in enumerate(normalized):
         doc["vector_id"] = f"vector_{i}"
 
-    client = MongoClient(MONGODB_URI)
-    db = client[DB_NAME]
-    col = db[COLLECTION_NAME]
+    # Kết nối MongoDB
+    db = connect()
+    
+    # Tạo indexes (silent) - bỏ qua lỗi conflict
+    try:
+        create_index(COLLECTION_NAME, "metadata.curriculum")
+        create_index(COLLECTION_NAME, "metadata.grade")
+        create_index(COLLECTION_NAME, "metadata.book_type")
+        # Bỏ qua vector_id vì có thể đã tồn tại với unique constraint khác
+    except Exception:
+        pass  # Index có thể đã tồn tại
 
-    # Upsert by _id to avoid duplicates on re-run
+    # Upsert by _id to avoid duplicates on re-run với progress bar
     inserted = 0
-    for doc in normalized:
-        _id = doc.pop("_id")
-        res = col.update_one({"_id": _id}, {"$set": doc}, upsert=True)
-        if res.upserted_id is not None:
+    updated = 0
+    for doc in tqdm(normalized, desc="Upserting SGK documents", unit="doc"):
+        _id = doc["_id"]  # Không pop _id, giữ lại để tìm kiếm
+        # Sử dụng mongodb_client để upsert
+        existing = find_one(COLLECTION_NAME, {"_id": _id})
+        if existing:
+            # Update existing document
+            update(COLLECTION_NAME, {"_id": _id}, {"$set": doc})
+            updated += 1
+        else:
+            # Insert new document
+            insert(COLLECTION_NAME, doc)
             inserted += 1
 
-    print(f"✅ Upserted {len(normalized)} docs ({inserted} new) into {DB_NAME}.{COLLECTION_NAME}")
+    print(f"[SUCCESS] Processed {len(normalized)} docs: {inserted} new, {updated} updated")
 
 
 if __name__ == "__main__":

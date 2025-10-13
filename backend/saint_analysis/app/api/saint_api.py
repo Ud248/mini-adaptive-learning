@@ -31,6 +31,7 @@ class InteractionLog(BaseModel):
     skill_id: str
     correct: bool
     response_time: float
+    is_answered: bool | None = None
 
 class InteractionLogs(BaseModel):
     log: list[InteractionLog]
@@ -49,8 +50,27 @@ def analyze_student(query: StudentQuery):
 def log_interaction(logs: list[InteractionLog]):
     # Ghi log làm bài → cập nhật hồ sơ học sinh với toàn bộ log mới (batch)
     try:
-        log_dicts = [log.dict() for log in logs]
+        # Ensure backward compatibility: if is_answered is missing, infer from answer
+        log_dicts = []
+        for log in logs:
+            d = log.dict()
+            if d.get("is_answered") is None:
+                # Consider empty string or None as not answered
+                ans = d.get("answer")
+                d["is_answered"] = bool(ans) and str(ans).strip() != ""
+            log_dicts.append(d)
         profile = update_student_profile_batch(log_dicts)
+
+        # Debug: summarize answered/skipped per skill before saving
+        try:
+            skills = profile.get("skills", [])
+            print("[SAINT] Profile summary before save → skills:")
+            for s in skills:
+                print(
+                    f"  - skill_id={s.get('skill_id')} answered={s.get('answered')} skipped={s.get('skipped')} accuracy={s.get('accuracy')} avg_time={s.get('avg_time')} status={s.get('status')}"
+                )
+        except Exception:
+            pass
         
         # Lưu profile vào MongoDB
         save_student_profile(profile)

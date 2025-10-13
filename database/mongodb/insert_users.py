@@ -1,22 +1,38 @@
 #!/usr/bin/env python3
 """
-MongoDB Users Insert Script
-Seed tài khoản học sinh mẫu với mật khẩu đã băm
+MongoDB Users Insert Script - Script nhập dữ liệu users vào MongoDB
+================================================================
+
+File này chịu trách nhiệm nhập dữ liệu users vào MongoDB collection.
+Tạo tài khoản học sinh mẫu với mật khẩu đã băm và thông tin cơ bản.
+
+Chức năng chính:
+- Tạo tài khoản học sinh mẫu với mật khẩu đã hash
+- Nhập dữ liệu vào collection users trong MongoDB
+- Tạo indexes cho collection users
+
+Sử dụng: python database/mongodb/insert_users.py
 """
 
 import json
 import os
+import sys
 from datetime import datetime, timezone
-from pymongo import MongoClient
-from dotenv import load_dotenv
 import hashlib
 import secrets
+from tqdm import tqdm
 
-# Load env
-load_dotenv()
+# Add project root to path
+_CURRENT_DIR = os.path.dirname(__file__)
+_PROJECT_ROOT = os.path.abspath(os.path.join(_CURRENT_DIR, '..', '..'))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "mini_adaptive_learning")
+# Import from mongodb_client
+from database.mongodb.mongodb_client import (
+    connect, get_collection, insert, create_index, 
+    get_collection_info, list_collections, find_one
+)
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256 with salt (compatible with API)"""
@@ -25,11 +41,10 @@ def hash_password(password: str) -> str:
     return f"{salt}:{password_hash}"
 
 def connect_mongodb():
+    """Kết nối đến MongoDB sử dụng mongodb_client"""
     try:
-        client = MongoClient(MONGO_URL)
-        client.admin.command('ping')
-        print(f"[OK] Connected to MongoDB at {MONGO_URL}")
-        return client
+        db = connect()
+        return db
     except Exception as e:
         print(f"[ERROR] Error connecting to MongoDB: {e}")
         return None
@@ -82,19 +97,30 @@ def transform_users(raw_users):
         })
     return docs
 
-def upsert_users(db, users_docs):
-    col = db["users"]
-    inserted, updated = 0, 0
-    for doc in users_docs:
-        key = {"email": doc["email"]} if doc.get("email") else {"username": doc["username"]}
-        existing = col.find_one(key)
-        if existing:
-            col.update_one({"_id": existing["_id"]}, {"$set": doc})
-            updated += 1
-        else:
-            col.insert_one(doc)
-            inserted += 1
-    print(f"[OK] Users upserted. inserted={inserted}, updated={updated}")
+def upsert_users(users_docs):
+    """Upsert users sử dụng mongodb_client"""
+    try:
+        # Tạo indexes
+        create_index("users", "email", unique=True, background=True)
+        create_index("users", "username", unique=True, background=True)
+        create_index("users", "role")
+        create_index("users", "status")
+        # Upsert users với progress bar
+        inserted, updated = 0, 0
+        for doc in tqdm(users_docs, desc="Upserting users", unit="user"):
+            key = {"email": doc["email"]} if doc.get("email") else {"username": doc["username"]}
+            existing = find_one("users", key)
+            if existing:
+                update("users", {"_id": existing["_id"]}, {"$set": doc})
+                updated += 1
+            else:
+                insert("users", doc)
+                inserted += 1
+        print(f"[OK] Users upserted. inserted={inserted}, updated={updated}")
+        
+    except Exception as e:
+        print(f"[ERROR] Error upserting users: {e}")
+        return False
 
 def main():
     print("MongoDB Users Insert Script")
@@ -105,27 +131,24 @@ def main():
         print(f"[ERROR] File not found: {json_file}")
         return
 
-    client = connect_mongodb()
-    if not client:
+    db = connect_mongodb()
+    if db is None:
         return
 
     try:
-        db = client[DATABASE_NAME]
         raw_users = load_users_from_json(json_file)
         users_docs = transform_users(raw_users)
         if not users_docs:
             print("[WARNING] No users to insert")
             return
-        upsert_users(db, users_docs)
-        sample = db["users"].find_one({}, {"email": 1, "role": 1})
+        upsert_users(users_docs)
+        sample = find_one("users", {}, {"email": 1, "role": 1})
         print(f"[INFO] Sample user: {sample}")
         print("[SUCCESS] Done!")
     except Exception as e:
         print(f"[ERROR] Failed: {e}")
         import traceback
         traceback.print_exc()
-    finally:
-        client.close()
 
 if __name__ == "__main__":
     main()

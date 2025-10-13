@@ -42,19 +42,14 @@ const QuizSetup = () => {
     const handleSubmit = async (values) => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:8001/quiz/generate', {
-                grade: values.grade,
-                subject: values.subject,
-                num_questions: 30  // Mặc định 30 câu hỏi
-            });
-
-            if (response.data.quiz_id) {
-                showSuccess('Tạo bài kiểm tra thành công!');
-                navigate(`/quiz/${response.data.quiz_id}`);
-            }
+            // Tránh gọi API generate ở đây để không bị gọi 2 lần.
+            // Điều hướng sang trang làm bài, trang đó sẽ tự gọi generate một lần.
+            showSuccess('Bắt đầu bài kiểm tra!');
+            const tempId = `temp_${Date.now()}`;
+            navigate(`/quiz/${tempId}`);
         } catch (error) {
-            console.error('Lỗi tạo quiz:', error);
-            showError('Không thể tạo bài kiểm tra từ API. Vui lòng thử lại.');
+            console.error('Lỗi điều hướng quiz:', error);
+            showError('Không thể bắt đầu bài kiểm tra. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }
@@ -117,7 +112,7 @@ const QuizSetup = () => {
                         border: '1px solid #d9d9d9'
                     }}>
                         <p style={{ margin: 0, color: '#1890ff', fontWeight: '500' }}>
-                            📚 Hệ thống sẽ lấy ngẫu nhiên 40 câu hỏi từ tất cả các chương của môn Toán lớp 1
+                            📚 Hệ thống sẽ lấy tất cả kỹ năng của môn đã chọn và mỗi kỹ năng 2 câu.
                         </p>
                     </div>
 

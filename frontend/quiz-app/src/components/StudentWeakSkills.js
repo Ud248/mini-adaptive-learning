@@ -9,7 +9,6 @@ import {
     Row,
     Col,
     Statistic,
-    Progress,
     message,
     Spin,
     Empty,
@@ -60,58 +59,17 @@ const StudentWeakSkills = () => {
 
                     setProfileData(profileData);
 
-                    // Chuyển đổi weak skills từ API sang format hiển thị
-                    // Hiển thị TẤT CẢ skills yếu (không filter)
-                    const weakSkillsData = result.weak_skills.map(skill => {
-                        // Tạo dữ liệu thực tế dựa trên profile
-                        const isLowAccuracy = skill.is_low_accuracy;
-                        const isSlowResponse = skill.is_slow_response;
-
-                        // Tính accuracy dựa trên loại yếu
-                        let accuracy;
-                        if (isLowAccuracy && isSlowResponse) {
-                            accuracy = Math.floor(Math.random() * 30) + 20; // 20-50%
-                        } else if (isLowAccuracy) {
-                            accuracy = Math.floor(Math.random() * 40) + 20; // 20-60%
-                        } else if (isSlowResponse) {
-                            accuracy = Math.floor(Math.random() * 30) + 50; // 50-80%
-                        } else {
-                            accuracy = Math.floor(Math.random() * 20) + 60; // 60-80%
-                        }
-
-                        // Tính response time dựa trên loại yếu
-                        let avgResponseTime;
-                        if (isSlowResponse) {
-                            avgResponseTime = Math.floor(Math.random() * 10) + 15; // 15-25s
-                        } else {
-                            avgResponseTime = Math.floor(Math.random() * 8) + 5; // 5-13s
-                        }
-
-                        // Xác định status
-                        let status;
-                        if (accuracy < 40) {
-                            status = 'very_weak';
-                        } else if (accuracy < 60) {
-                            status = 'weak';
-                        } else {
-                            status = 'needs_improvement';
-                        }
-
-                        return {
+                    // Chỉ dùng status và tên kỹ năng; không hiển thị mastered
+                    const weakSkillsData = (result.weak_skills || [])
+                        .filter(skill => String(skill.status || '').toLowerCase() !== 'mastered')
+                        .map(skill => ({
                             skill_id: skill.skill_id,
                             skill_name: skill.skill_name,
-                            accuracy: accuracy,
-                            avg_response_time: avgResponseTime,
-                            difficulty_level: skill.difficulty_level,
-                            total_questions: Math.floor(Math.random() * 5) + 3,
-                            correct_answers: Math.floor(accuracy / 100 * 8) + 1, // Tính dựa trên accuracy
+                            status: String(skill.status || 'unknown'),
                             subject: skill.subject,
                             grade: skill.grade,
-                            status: status,
-                            is_low_accuracy: isLowAccuracy,
-                            is_slow_response: isSlowResponse
-                        };
-                    });
+                            difficulty_level: skill.difficulty_level
+                        }));
 
                     setWeakSkills(weakSkillsData);
                 } else {
@@ -147,21 +105,19 @@ const StudentWeakSkills = () => {
     }, [user, loadStudentProfile]);
 
     const getSkillStatusColor = (status) => {
-        switch (status) {
-            case 'very_weak': return '#ff4d4f';
-            case 'weak': return '#ff7a45';
-            case 'needs_improvement': return '#faad14';
-            default: return '#8c8c8c';
-        }
+        const s = String(status || '').toLowerCase();
+        if (s === 'mastered') return '#52c41a'; // xanh
+        if (s === 'in_progress') return '#fa8c16'; // cam
+        if (s === 'struggling') return '#ff4d4f'; // đỏ
+        return '#8c8c8c';
     };
 
     const getSkillStatusText = (status) => {
-        switch (status) {
-            case 'very_weak': return 'Rất yếu';
-            case 'weak': return 'Yếu';
-            case 'needs_improvement': return 'Cần cải thiện';
-            default: return 'Không xác định';
-        }
+        const s = String(status || '').toLowerCase();
+        if (s === 'mastered') return 'Thành thạo';
+        if (s === 'in_progress') return 'Đang học';
+        if (s === 'struggling') return 'Gặp khó khăn';
+        return 'Không xác định';
     };
 
 
@@ -250,57 +206,20 @@ const StudentWeakSkills = () => {
                                         className="skill-card"
                                     >
                                         <Row gutter={16} align="middle">
-                                            <Col xs={24} lg={12}>
+                                            <Col xs={24}>
                                                 <div style={{ textAlign: 'left', paddingLeft: '12px' }}>
-                                                    <h4 style={{ margin: '0 0 8px 0', color: '#1890ff', textAlign: 'left' }}>
-                                                        {skill.skill_name}
-                                                    </h4>
-                                                    <div style={{ marginBottom: 8, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                        <Tag
-                                                            color={getSkillStatusColor(skill.status)}
-                                                            style={{ minWidth: '80px', textAlign: 'center' }}
-                                                        >
-                                                            {getSkillStatusText(skill.status)}
-                                                        </Tag>
-                                                        <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                                                            {skill.subject} - Lớp {skill.grade}
-                                                        </span>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                                        <h4 style={{ margin: 0, color: '#1890ff' }}>{skill.skill_name}</h4>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                                            <Tag color={getSkillStatusColor(skill.status)} style={{ minWidth: 100, textAlign: 'center' }}>
+                                                                {getSkillStatusText(skill.status)}
+                                                            </Tag>
+                                                            <span style={{ fontSize: 12, color: '#8c8c8c' }}>{skill.subject} - Lớp {skill.grade}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </Col>
 
-                                            <Col xs={24} lg={8}>
-                                                <Row gutter={8}>
-                                                    <Col span={12}>
-                                                        <div style={{ textAlign: 'center' }}>
-                                                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: getSkillStatusColor(skill.status) }}>
-                                                                {skill.accuracy}%
-                                                            </div>
-                                                            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Độ chính xác</div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col span={12}>
-                                                        <div style={{ textAlign: 'center' }}>
-                                                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#13c2c2' }}>
-                                                                {skill.avg_response_time}s
-                                                            </div>
-                                                            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Thời gian TB</div>
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-
-                                            <Col xs={24} lg={4}>
-                                                <div style={{ textAlign: 'center' }}>
-                                                    <Progress
-                                                        type="circle"
-                                                        size={60}
-                                                        percent={skill.accuracy}
-                                                        strokeColor={getSkillStatusColor(skill.status)}
-                                                        format={() => `${skill.correct_answers}/${skill.total_questions}`}
-                                                    />
-                                                </div>
-                                            </Col>
                                         </Row>
 
                                         <div style={{ marginTop: 16, textAlign: 'right' }}>

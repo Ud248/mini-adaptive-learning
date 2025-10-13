@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Button, Radio, Image, Progress, Spin, Modal } from 'antd';
 import { useToast } from '../contexts/ToastContext';
@@ -41,8 +41,16 @@ const QuizTaking = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
+    // Guard chống StrictMode: chỉ load 1 lần cho mỗi quizId
+    const loadedQuizByIdRef = useRef({});
     useEffect(() => {
+        if (loadedQuizByIdRef.current[quizId]) {
+            return;
+        }
+        loadedQuizByIdRef.current[quizId] = true;
         loadQuiz();
+        // cleanup không reset cờ để tránh gọi lại trong StrictMode
+        // khi quizId đổi, effect mới sẽ chạy và set cờ cho id mới
     }, [quizId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
@@ -61,11 +69,10 @@ const QuizTaking = () => {
 
     const loadQuiz = async () => {
         try {
-            // Gọi API để lấy quiz data thực tế (40 câu)
+            // Gọi API để lấy quiz data: 2 câu mỗi skill (không cố định tổng số câu)
             const response = await axios.post('http://localhost:8001/quiz/generate', {
                 grade: 1,
-                subject: 'Toán',
-                num_questions: 40
+                subject: 'Toán'
             });
 
             if (response.data && response.data.questions) {
@@ -73,7 +80,7 @@ const QuizTaking = () => {
                 setQuestions(response.data.questions);
                 // Bắt đầu tính thời gian cho câu đầu tiên
                 setQuestionStartTime(Date.now());
-                showSuccess(`Đã tải ${response.data.questions.length} câu hỏi từ API`);
+                showSuccess(`Đã tải ${response.data.questions.length} câu hỏi từ API (2 câu/skill)`);
             } else {
                 throw new Error('Không có dữ liệu từ API');
             }
@@ -82,7 +89,7 @@ const QuizTaking = () => {
             showError('Không thể tải bài kiểm tra từ API. Đang sử dụng dữ liệu mẫu...');
 
             // Fallback về dữ liệu mẫu nếu API không hoạt động
-            const mockQuestions = Array.from({ length: 40 }, (_, i) => ({
+            const mockQuestions = Array.from({ length: 20 * 2 }, (_, i) => ({
                 id: `q_${i + 1}`,
                 lesson: `Bài học ${i + 1}`,
                 grade: 1,
@@ -278,7 +285,7 @@ const QuizTaking = () => {
                         const detailedResult = {
                             ...response.data,
                             actual_time_spent: actualTimeSpent,
-                            total_questions: 40, // Luôn là 40 câu
+                            total_questions: questions.length, // Tổng số câu động theo dữ liệu
                             questions: questions,
                             user_answers: answers,
                             formatted_answers: formattedAnswers

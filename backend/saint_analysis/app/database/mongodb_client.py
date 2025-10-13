@@ -75,6 +75,13 @@ def save_student_profile(profile: dict) -> bool:
             print(f"   - Low accuracy skills: {low_accuracy_skills}")
             print(f"   - Slow response skills: {slow_response_skills}")
             print(f"   - Total skills tracked: {len(skills)}")
+            try:
+                for s in skills:
+                    print(
+                        f"   • skill_id={s.get('skill_id')} answered={s.get('answered')} skipped={s.get('skipped')} accuracy={s.get('accuracy')} avg_time={s.get('avg_time')} status={s.get('status')}"
+                    )
+            except Exception:
+                pass
         else:
             # Insert new profile
             profile_doc["created_at"] = datetime.now(timezone.utc)
@@ -84,6 +91,13 @@ def save_student_profile(profile: dict) -> bool:
             print(f"   - Low accuracy skills: {low_accuracy_skills}")
             print(f"   - Slow response skills: {slow_response_skills}")
             print(f"   - Total skills tracked: {len(skills)}")
+            try:
+                for s in skills:
+                    print(
+                        f"   • skill_id={s.get('skill_id')} answered={s.get('answered')} skipped={s.get('skipped')} accuracy={s.get('accuracy')} avg_time={s.get('avg_time')} status={s.get('status')}"
+                    )
+            except Exception:
+                pass
         
         return True
         

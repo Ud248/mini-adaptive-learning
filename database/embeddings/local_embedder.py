@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 import time
 from typing import List, Optional, Union, Dict, Any
+from tqdm import tqdm
 
 # Default configuration
 DEFAULT_MODEL = 'dangvantuan/vietnamese-document-embedding'
@@ -87,12 +88,13 @@ class LocalEmbedding:
             self._load_model()
         return self._model
     
-    def embed_texts(self, texts: List[str]) -> List[List[float]]:
+    def embed_texts(self, texts: List[str], show_progress: bool = True) -> List[List[float]]:
         """
         Core embedding function - embed list of texts into vectors
         
         Args:
             texts: List of text strings to embed
+            show_progress: Show progress bar during embedding
             
         Returns:
             List of embedding vectors (each vector is List[float])
@@ -107,7 +109,7 @@ class LocalEmbedding:
         valid_texts = []
         original_indices = []
         
-        for i, text in enumerate(texts):
+        for i, text in enumerate(tqdm(texts, desc="Filtering texts", disable=not show_progress)):
             if text and text.strip():
                 valid_texts.append(text.strip())
                 original_indices.append(i)
@@ -117,11 +119,11 @@ class LocalEmbedding:
         
         try:
             with self._lock:
-                embeddings = self._generate_embeddings(valid_texts)
+                embeddings = self._generate_embeddings(valid_texts, show_progress=show_progress)
                 
                 # Map back to original positions
                 result = [[0.0] * EMBEDDING_DIMENSION] * len(texts)
-                for i, embedding in enumerate(embeddings):
+                for i, embedding in enumerate(tqdm(embeddings, desc="Mapping embeddings", disable=not show_progress)):
                     original_index = original_indices[i]
                     result[original_index] = embedding
                 
@@ -132,7 +134,7 @@ class LocalEmbedding:
                 print(f"❌ Embedding failed: {e}")
             raise ValueError(f"Failed to generate embeddings: {e}")
     
-    def _generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+    def _generate_embeddings(self, texts: List[str], show_progress: bool = True) -> List[List[float]]:
         """Generate embeddings with memory management and retry logic"""
         try:
             # Clear CUDA cache
@@ -145,13 +147,13 @@ class LocalEmbedding:
                 convert_to_tensor=False,
                 normalize_embeddings=True,
                 batch_size=self.batch_size,
-                show_progress_bar=False,
+                show_progress_bar=show_progress,
                 device=self.device
             )
             
             # Convert to list format
             result = []
-            for embedding in embeddings:
+            for embedding in tqdm(embeddings, desc="Converting embeddings", disable=not show_progress):
                 if isinstance(embedding, np.ndarray):
                     result.append(embedding.tolist())
                 else:
@@ -166,14 +168,14 @@ class LocalEmbedding:
         except torch.cuda.OutOfMemoryError:
             if self.verbose:
                 print(f"🔥 CUDA OOM - retrying with smaller batch")
-            return self._retry_with_smaller_batch(texts)
+            return self._retry_with_smaller_batch(texts, show_progress=show_progress)
         
         except Exception as e:
             if self.device.startswith('cuda'):
                 torch.cuda.empty_cache()
             raise e
     
-    def _retry_with_smaller_batch(self, texts: List[str]) -> List[List[float]]:
+    def _retry_with_smaller_batch(self, texts: List[str], show_progress: bool = True) -> List[List[float]]:
         """Retry embedding with reduced batch size on OOM"""
         try:
             torch.cuda.empty_cache()
@@ -186,12 +188,12 @@ class LocalEmbedding:
                 convert_to_tensor=False,
                 normalize_embeddings=True,
                 batch_size=smaller_batch,
-                show_progress_bar=False,
+                show_progress_bar=show_progress,
                 device=self.device
             )
             
             result = []
-            for embedding in embeddings:
+            for embedding in tqdm(embeddings, desc="Converting embeddings (retry)", disable=not show_progress):
                 if isinstance(embedding, np.ndarray):
                     result.append(embedding.tolist())
                 else:
@@ -226,7 +228,7 @@ class LocalEmbedding:
         
         if len(texts) <= self.batch_size:
             # Small dataset, use regular embedding
-            return self.embed_texts(texts)
+            return self.embed_texts(texts, show_progress=show_progress)
         
         if show_progress:
             print(f"🚀 Embedding {len(texts)} texts in parallel...")
@@ -243,33 +245,37 @@ class LocalEmbedding:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # Submit embedding tasks
             future_to_chunk = {
-                executor.submit(self.embed_texts, chunk): i 
+                executor.submit(self.embed_texts, chunk, show_progress=False): i 
                 for i, chunk in enumerate(text_chunks)
             }
             
             # Collect results in order
             chunk_results = [None] * len(text_chunks)
             
-            for future in as_completed(future_to_chunk):
-                chunk_idx = future_to_chunk[future]
-                try:
-                    embeddings = future.result()
-                    chunk_results[chunk_idx] = embeddings
-                    successful_batches += 1
-                    
-                    if show_progress:
-                        print(f"✅ Chunk {chunk_idx + 1}/{len(text_chunks)} completed")
+            # Progress bar for parallel processing
+            with tqdm(total=len(text_chunks), desc="Processing chunks", disable=not show_progress) as pbar:
+                for future in as_completed(future_to_chunk):
+                    chunk_idx = future_to_chunk[future]
+                    try:
+                        embeddings = future.result()
+                        chunk_results[chunk_idx] = embeddings
+                        successful_batches += 1
                         
-                except Exception as e:
-                    if show_progress:
-                        print(f"❌ Chunk {chunk_idx + 1} failed: {e}")
+                        if show_progress:
+                            pbar.set_postfix({"Success": f"{successful_batches}/{len(text_chunks)}"})
+                            
+                    except Exception as e:
+                        if show_progress:
+                            print(f"❌ Chunk {chunk_idx + 1} failed: {e}")
+                        
+                        # Create zero embeddings for failed chunk
+                        chunk_size = len(text_chunks[chunk_idx])
+                        chunk_results[chunk_idx] = [[0.0] * EMBEDDING_DIMENSION] * chunk_size
                     
-                    # Create zero embeddings for failed chunk
-                    chunk_size = len(text_chunks[chunk_idx])
-                    chunk_results[chunk_idx] = [[0.0] * EMBEDDING_DIMENSION] * chunk_size
+                    pbar.update(1)
             
             # Flatten results
-            for chunk_embeddings in chunk_results:
+            for chunk_embeddings in tqdm(chunk_results, desc="Flattening results", disable=not show_progress):
                 if chunk_embeddings:
                     all_embeddings.extend(chunk_embeddings)
         
@@ -279,12 +285,13 @@ class LocalEmbedding:
         
         return all_embeddings
     
-    def embed_single_text(self, text: str) -> Optional[List[float]]:
+    def embed_single_text(self, text: str, show_progress: bool = False) -> Optional[List[float]]:
         """
         Embed single text string
         
         Args:
             text: Text to embed
+            show_progress: Show progress bar (usually False for single text)
             
         Returns:
             Embedding vector or None if text is empty
@@ -292,20 +299,21 @@ class LocalEmbedding:
         if not text or not text.strip():
             return None
         
-        result = self.embed_texts([text])
+        result = self.embed_texts([text], show_progress=show_progress)
         return result[0] if result else None
     
     def get_embedding_dimension(self) -> int:
         """Get the dimension of embeddings produced by this model"""
         return EMBEDDING_DIMENSION
     
-    def embed_chunks_for_database(self, chunks: List[Dict[str, Any]], text_field: str = 'content') -> List[Dict[str, Any]]:
+    def embed_chunks_for_database(self, chunks: List[Dict[str, Any]], text_field: str = 'content', show_progress: bool = True) -> List[Dict[str, Any]]:
         """
         Specialized method for embedding chunks before database insertion
         
         Args:
             chunks: List of chunk dictionaries
             text_field: Field name containing text to embed
+            show_progress: Show progress bar during embedding
             
         Returns:
             List of chunks with added 'embedding' field
@@ -320,7 +328,7 @@ class LocalEmbedding:
         texts = []
         valid_chunks = []
         
-        for chunk in chunks:
+        for chunk in tqdm(chunks, desc="Extracting texts", disable=not show_progress):
             text = chunk.get(text_field, '')
             if text and text.strip():
                 texts.append(text.strip())
@@ -334,15 +342,15 @@ class LocalEmbedding:
         # Generate embeddings
         try:
             if len(texts) > 50:  # Use parallel for large datasets
-                embeddings = self.embed_texts_parallel(texts, show_progress=self.verbose)
+                embeddings = self.embed_texts_parallel(texts, show_progress=show_progress)
             else:
-                embeddings = self.embed_texts(texts)
+                embeddings = self.embed_texts(texts, show_progress=show_progress)
             
             # Add embeddings to chunks
             result_chunks = []
             embedding_idx = 0
             
-            for chunk in chunks:
+            for chunk in tqdm(chunks, desc="Adding embeddings to chunks", disable=not show_progress):
                 chunk_copy = chunk.copy()
                 text = chunk.get(text_field, '')
                 
@@ -398,24 +406,24 @@ def create_embedder(model_name: str = DEFAULT_MODEL, batch_size: int = DEFAULT_B
     return LocalEmbedding(model_name=model_name, batch_size=batch_size, verbose=verbose)
 
 
-def embed_text_quick(text: str, embedder: Optional[LocalEmbedding] = None) -> Optional[List[float]]:
+def embed_text_quick(text: str, embedder: Optional[LocalEmbedding] = None, show_progress: bool = False) -> Optional[List[float]]:
     """Quick function to embed single text"""
     if embedder is None:
         embedder = create_embedder(verbose=False)
     
     try:
-        return embedder.embed_single_text(text)
+        return embedder.embed_single_text(text, show_progress=show_progress)
     finally:
         embedder.cleanup()
 
 
-def embed_texts_quick(texts: List[str], embedder: Optional[LocalEmbedding] = None) -> List[List[float]]:
+def embed_texts_quick(texts: List[str], embedder: Optional[LocalEmbedding] = None, show_progress: bool = True) -> List[List[float]]:
     """Quick function to embed multiple texts"""
     if embedder is None:
         embedder = create_embedder(verbose=False)
     
     try:
-        return embedder.embed_texts(texts)
+        return embedder.embed_texts(texts, show_progress=show_progress)
     finally:
         embedder.cleanup()
 

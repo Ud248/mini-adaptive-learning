@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, Header
+import sys
+import os
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -13,6 +15,13 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 import secrets
 from jose import jwt, JWTError
+try:
+    from database.mongodb.mongodb_client import aggregate as mongo_aggregate
+except ModuleNotFoundError:
+    # Add project root to sys.path so 'database' package is importable
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+    from database.mongodb.mongodb_client import aggregate as mongo_aggregate
+
 
 app = FastAPI(title="Quiz System API", version="1.0.0")
 
@@ -86,150 +95,20 @@ def get_user_by_identifier(identifier: str) -> Optional[Dict[str, Any]]:
 
 def decode_token(token: str) -> Optional[Dict[str, Any]]:
     try:
-        print(f"🔍 Backend - Decoding token: {token[:50]}...")
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        print(f"🔍 Backend - Decoded payload: {payload}")
         return payload
     except JWTError as e:
-        print(f"🔍 Backend - JWT Error: {e}")
         return None
 
 def get_current_user(authorization: Optional[str] = Header(None)) -> Optional[Dict[str, Any]]:
-    print(f"🔍 Backend - get_current_user called with authorization: {authorization[:50] if authorization else 'None'}...")
     if not authorization or not authorization.lower().startswith("bearer "):
-        print("🔍 Backend - No bearer token")
         raise HTTPException(status_code=401, detail="Not authenticated")
     token = authorization.split(" ", 1)[1]
     payload = decode_token(token)
     if not payload:
-        print("🔍 Backend - Invalid token payload")
         raise HTTPException(status_code=401, detail="Invalid token")
     user_data = {"user_id": payload.get("sub"), "email": payload.get("email"), "role": payload.get("role")}
-    print(f"🔍 Backend - Returning user data: {user_data}")
     return user_data
-
-def load_questions_from_mongo(grade: Optional[int], subject: Optional[str], num_questions: int) -> List[Dict[str, Any]]:
-    """Tải câu hỏi từ MongoDB collection 'placement_questions' với logic 40 câu: 20 skills x 2 câu mỗi skill."""
-    client = get_mongo_client()
-    db = client[MONGO_DB_NAME]
-    col = db[MONGO_COLLECTION]
-
-    match_stage: Dict[str, Any] = {}
-    if grade is not None:
-        match_stage["grade"] = grade
-    if subject:
-        match_stage["subject"] = subject
-
-    # Logic mới: 40 câu = 20 skills x 2 câu mỗi skill
-    if num_questions == 40:
-        return load_questions_40_with_skills(col, match_stage)
-    else:
-        # Logic cũ cho số câu khác
-        pipeline: List[Dict[str, Any]] = []
-        if match_stage:
-            pipeline.append({"$match": match_stage})
-        pipeline.append({"$sample": {"size": max(1, int(num_questions))}})
-
-        docs = list(col.aggregate(pipeline))
-
-        # Fallback nếu sample trả về ít hơn yêu cầu, lấy thêm bằng find (không random)
-        if len(docs) < num_questions:
-            cursor = col.find(match_stage).limit(num_questions)
-            extra = list(cursor)
-            # đảm bảo không trùng
-            existing_ids = set(str(d.get("_id")) for d in docs)
-            for d in extra:
-                if str(d.get("_id")) not in existing_ids:
-                    docs.append(d)
-                if len(docs) >= num_questions:
-                    break
-        return normalize_questions(docs)
-
-def load_questions_40_with_skills(col, match_stage: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Tạo 40 câu hỏi với 20 skills, mỗi skill 2 câu - Logic đơn giản."""
-    from datetime import datetime
-    
-    try:
-        # Bước 1: Lấy tất cả skills có sẵn
-        skills_pipeline = [{"$group": {"_id": "$skill", "count": {"$sum": 1}}}]
-        if match_stage:
-            skills_pipeline.insert(0, {"$match": match_stage})
-        
-        skills_data = list(col.aggregate(skills_pipeline))
-        available_skills = [s["_id"] for s in skills_data if s["_id"] and s["count"] >= 2]
-        
-        print(f"📊 Tìm thấy {len(available_skills)} skills có đủ câu hỏi")
-        
-        # Bước 2: Chọn 20 skills random
-        if len(available_skills) < 20:
-            print(f"⚠️ Chỉ có {len(available_skills)} skills có đủ câu hỏi, sẽ lấy tất cả")
-            selected_skills = available_skills
-        else:
-            # Chọn 20 skills ngẫu nhiên
-            selected_skills = random.sample(available_skills, 20)
-        
-        print(f"🎯 Đã chọn {len(selected_skills)} skills: {selected_skills[:5]}...")
-        
-        # Bước 3: Với từng skill, lấy đúng 2 câu
-        all_questions = []
-        
-        for skill in selected_skills:
-            try:
-                # Lấy 2 câu cho skill này
-                skill_match = match_stage.copy()
-                skill_match["skill"] = skill
-                
-                # Pipeline đơn giản: lấy 2 câu random từ skill
-                skill_pipeline = [
-                    {"$match": skill_match},
-                    {"$sample": {"size": 2}}  # Lấy 2 câu random
-                ]
-                
-                skill_questions = list(col.aggregate(skill_pipeline))
-                
-                # Nếu không đủ 2 câu, lấy tất cả có sẵn
-                if len(skill_questions) < 2:
-                    fallback_pipeline = [
-                        {"$match": skill_match},
-                        {"$limit": 2}
-                    ]
-                    skill_questions = list(col.aggregate(fallback_pipeline))
-                
-                # Đảm bảo chỉ lấy đúng 2 câu
-                skill_questions = skill_questions[:2]
-                all_questions.extend(skill_questions)
-                
-                print(f"  ✅ Skill {skill}: {len(skill_questions)} câu")
-                
-            except Exception as e:
-                print(f"  ❌ Lỗi với skill {skill}: {e}")
-                continue
-        
-        print(f"🎯 Tổng câu hỏi: {len(all_questions)}")
-        
-        # Bước 4: Cập nhật usage_count để hạn chế trùng lặp lần sau
-        if all_questions:
-            try:
-                col.update_many(
-                    {"_id": {"$in": [q["_id"] for q in all_questions]}},
-                    {
-                        "$inc": {"usage_count": 1},
-                        "$set": {"last_used": datetime.now()}
-                    }
-                )
-                print(f"📊 Đã cập nhật usage_count cho {len(all_questions)} câu")
-            except Exception as e:
-                print(f"⚠️ Lỗi cập nhật usage_count: {e}")
-        
-        # Bước 5: Chuẩn hóa dữ liệu
-        return normalize_questions(all_questions)
-        
-    except Exception as e:
-        print(f"❌ Lỗi trong load_questions_40_with_skills: {e}")
-        import traceback
-        traceback.print_exc()
-        # Fallback: trả về danh sách rỗng
-        return []
 
 def normalize_questions(docs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Chuẩn hóa câu hỏi từ MongoDB sang định dạng Quiz Question."""
@@ -295,7 +174,7 @@ class QuizRequest(BaseModel):
     grade: Optional[int] = 1  # Mặc định lớp 1
     subject: Optional[str] = "Toán"  # Mặc định môn Toán
     chapter: Optional[str] = None  # Không lọc theo chương
-    num_questions: int = 30
+    num_questions: Optional[int] = None  # Bỏ cố định số câu: mặc định 2 câu/skill
 
 class QuizResponse(BaseModel):
     quiz_id: str
@@ -373,14 +252,8 @@ def load_questions_from_json():
             }
             all_questions.append(formatted_question)
         
-        print(f"Da tai {len(all_questions)} cau hoi tu {json_file}")
         return all_questions
     except Exception as e:
-        print(f"Loi tai du lieu tu JSON: {e}")
-        print(f"Chi tiet loi: {type(e).__name__}: {str(e)}")
-        print("Dam bao file grade1_math_questions_complete.json ton tai")
-        import traceback
-        traceback.print_exc()
         return []
 
 def add_image_prefix(image_urls: List[str]) -> List[str]:
@@ -392,19 +265,15 @@ def add_image_prefix(image_urls: List[str]) -> List[str]:
         if not url:  # Bỏ qua URL rỗng
             continue
         elif url.startswith("@"):  # URL đã có format @
-            print(f"🖼️ URL đã có format @: {url}")
             processed_urls.append(url)
         elif url.startswith("http"):  # URL đã có protocol, thêm @
             new_url = f"@{url}"
-            print(f"🖼️ Thêm @ cho URL: {url} → {new_url}")
             processed_urls.append(new_url)
         elif url.startswith("/"):  # URL bắt đầu với /
             new_url = f"@{base_url}{url}"
-            print(f"🖼️ Thêm @ và tiền tố cho URL: {url} → {new_url}")
             processed_urls.append(new_url)
         else:  # URL không có /
             new_url = f"@{base_url}/{url}"
-            print(f"🖼️ Thêm @ và tiền tố cho URL: {url} → {new_url}")
             processed_urls.append(new_url)
     
     return processed_urls
@@ -427,42 +296,88 @@ async def get_weak_skills(student_email: str):
         if not profile:
             return {"error": "Không tìm thấy profile của học sinh"}
         
-        # Lấy thông tin skills từ profile
-        low_accuracy_skills = profile.get("low_accuracy_skills", [])
-        slow_response_skills = profile.get("slow_response_skills", [])
-        
-        # Lấy chi tiết skills từ collection skills
-        skills_col = db["skills"]
-        skills_detail = []
-        
-        # Lấy tất cả skills có trong profile
-        all_weak_skills = list(set(low_accuracy_skills + slow_response_skills))
-        
-        for skill_id in all_weak_skills:
-            skill_info = skills_col.find_one({"skill_id": skill_id})
-            if skill_info:
+        # Ưu tiên dùng mảng skills trong profile_student (skill_array) theo simple_updater
+        profile_skills = profile.get("skills", []) or profile.get("skill_array", [])
+
+        if profile_skills:
+            # Lọc: chỉ lấy skill KHÔNG phải mastered
+            weak_skill_items = [s for s in profile_skills if str(s.get("status", "")).lower() != "mastered"]
+
+            # Chuẩn hóa và bổ sung thông tin
+            skills_detail = []
+            skills_col = db["skills"]
+            for s in weak_skill_items:
+                skill_id = s.get("skill_id") or s.get("skill") or ""
+                accuracy = s.get("accuracy")
+                # accuracy trong profile có thể là [0,1] - convert sang percent ở frontend
+                avg_time = s.get("avg_time") or s.get("avg_response_time") or 0
+                status = s.get("status", "unknown")
+                answered = s.get("answered", None)
+                skipped = s.get("skipped", None)
+                total_questions = None
+                if isinstance(answered, (int, float)) or isinstance(skipped, (int, float)):
+                    total_questions = int((answered or 0) + (skipped or 0))
+
+                # Enrich từ bảng skills theo skill_id
+                skill_info = skills_col.find_one({"skill_id": skill_id}) or {}
+                resolved_skill_name = skill_info.get("skill_name") or s.get("skill_name") or f"Skill {skill_id}"
+                resolved_subject = skill_info.get("subject") or s.get("subject") or profile.get("subject", "Toán")
+                resolved_grade = skill_info.get("grade") or s.get("grade") or profile.get("grade", 1)
+                resolved_difficulty = skill_info.get("difficulty_level") or s.get("difficulty_level") or "medium"
+
                 skills_detail.append({
                     "skill_id": skill_id,
-                    "skill_name": skill_info.get("skill_name", f"Skill {skill_id}"),
-                    "subject": skill_info.get("subject", "Toán"),
-                    "grade": skill_info.get("grade", 1),
-                    "difficulty_level": skill_info.get("difficulty_level", "medium"),
-                    "is_low_accuracy": skill_id in low_accuracy_skills,
-                    "is_slow_response": skill_id in slow_response_skills
+                    "skill_name": resolved_skill_name,
+                    "subject": resolved_subject,
+                    "grade": resolved_grade,
+                    "difficulty_level": resolved_difficulty,
+                    "status": status,
+                    "accuracy": accuracy,
+                    "avg_time": avg_time,
+                    "answered": answered,
+                    "skipped": skipped,
+                    "total_questions": total_questions
                 })
-        
-        return {
-            "student_email": student_email,
-            "profile_data": {
-                "low_accuracy_skills": low_accuracy_skills,
-                "slow_response_skills": slow_response_skills,
-                "total_weak_skills": len(all_weak_skills)
-            },
-            "weak_skills": skills_detail
-        }
+
+            return {
+                "student_email": student_email,
+                "profile_data": {
+                    "total_weak_skills": len(skills_detail)
+                },
+                "weak_skills": skills_detail
+            }
+        else:
+            # Fallback: logic cũ dựa vào low_accuracy_skills và slow_response_skills
+            low_accuracy_skills = profile.get("low_accuracy_skills", [])
+            slow_response_skills = profile.get("slow_response_skills", [])
+
+            skills_col = db["skills"]
+            skills_detail = []
+            all_weak_skills = list(set(low_accuracy_skills + slow_response_skills))
+
+            for skill_id in all_weak_skills:
+                skill_info = skills_col.find_one({"skill_id": skill_id})
+                if skill_info:
+                    skills_detail.append({
+                        "skill_id": skill_id,
+                        "skill_name": skill_info.get("skill_name", f"Skill {skill_id}"),
+                        "subject": skill_info.get("subject", "Toán"),
+                        "grade": skill_info.get("grade", 1),
+                        "difficulty_level": skill_info.get("difficulty_level", "medium"),
+                        "status": "unknown"
+                    })
+
+            return {
+                "student_email": student_email,
+                "profile_data": {
+                    "low_accuracy_skills": low_accuracy_skills,
+                    "slow_response_skills": slow_response_skills,
+                    "total_weak_skills": len(all_weak_skills)
+                },
+                "weak_skills": skills_detail
+            }
         
     except Exception as e:
-        print(f"Lỗi lấy weak skills: {e}")
         return {"error": f"Lỗi lấy weak skills: {str(e)}"}
 
 @app.post("/auth/login", response_model=TokenResponse)
@@ -501,11 +416,49 @@ async def me(authorization: Optional[str] = None):
 
 @app.post("/quiz/generate", response_model=QuizResponse)
 async def generate_quiz(request: QuizRequest):
-    """Tạo bài kiểm tra với số câu hỏi ngẫu nhiên (ưu tiên MongoDB)."""
+    """Tạo bài kiểm tra: lấy tất cả skill (theo grade/subject) và mỗi skill 2 câu."""
     try:
-        # Thử lấy từ MongoDB
-        mongo_questions = load_questions_from_mongo(request.grade, request.subject, request.num_questions)
-        selected_questions = mongo_questions
+        # Luôn dùng chế độ per-skill: 2 câu mỗi skill, tổng phụ thuộc số skill sẵn có
+        # Sử dụng helper từ mongodb_client thay vì thao tác trực tiếp với pymongo
+
+        match_stage: Dict[str, Any] = {k: v for k, v in {"grade": request.grade, "subject": request.subject}.items() if v is not None}
+
+        # 1) Lấy danh sách skills từ collection 'skills' theo môn + lớp (dùng aggregate)
+        skills_query: Dict[str, Any] = {}
+        if request.subject:
+            skills_query["subject"] = request.subject
+        if request.grade is not None:
+            skills_query["grade"] = request.grade
+        skills_pipeline: List[Dict[str, Any]] = []
+        if skills_query:
+            skills_pipeline.append({"$match": skills_query})
+        skills_pipeline.append({"$project": {"skill_id": 1, "_id": 0}})
+        skills_docs = mongo_aggregate("skills", skills_pipeline)
+        available_skills = [s.get("skill_id") for s in skills_docs if s.get("skill_id")]
+
+        # 2) Với mỗi skill: cố gắng lấy 2 câu (random), thiếu thì lấy theo limit
+        all_questions_docs: List[Dict[str, Any]] = []
+        for skill in available_skills:
+            try:
+                per_skill_match = match_stage.copy()
+                # Map skill_id từ 'skills' sang field 'skill' trong placement_questions
+                per_skill_match["skill"] = skill
+                skill_pipeline = [
+                    {"$match": per_skill_match},
+                    {"$sample": {"size": 2}}
+                ]
+                docs = mongo_aggregate(MONGO_COLLECTION, skill_pipeline)
+                if len(docs) < 2:
+                    docs = mongo_aggregate(MONGO_COLLECTION, [
+                        {"$match": per_skill_match},
+                        {"$limit": 2}
+                    ])
+                all_questions_docs.extend(docs[:2])
+            except Exception:
+                continue
+
+        # 3) Chuẩn hóa dữ liệu
+        selected_questions = normalize_questions(all_questions_docs)
 
         # Fallback: nếu Mongo không có dữ liệu, thử từ JSON như cũ để dev không bị chặn
         if not selected_questions:
@@ -556,16 +509,12 @@ async def generate_quiz(request: QuizRequest):
         )
         
     except Exception as e:
-        print(f"Loi tao bai kiem tra: {e}")
-        import traceback
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Lỗi tạo bài kiểm tra: {str(e)}")
 
 @app.post("/quiz/submit", response_model=QuizResult)
 async def submit_quiz(submission: AnswerSubmission):
     """Nop bai va tinh diem"""
     try:
-        print(f"Nhan submission: quiz_id={submission.quiz_id}")
         
         # Simple calculation
         total_questions = len(submission.answers) if submission.answers else 5
@@ -591,13 +540,9 @@ async def submit_quiz(submission: AnswerSubmission):
             saint_analysis_data=None
         )
         
-        print(f"Tra ve ket qua: score={score}%")
         return result
         
     except Exception as e:
-        print(f"Loi xu ly submission: {e}")
-        import traceback
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Loi xu ly bai nop: {str(e)}")
 
 @app.get("/quiz/subjects")
@@ -624,22 +569,6 @@ async def get_chapters(subject: str):
     }
     return {"chapters": chapters.get(subject, [])}
 
-@app.post("/quiz/debug-submit")
-async def debug_submit(data: dict):
-    """Debug endpoint de kiem tra format du lieu"""
-    print(f"Debug submission data: {data}")
-    print(f"Type of data: {type(data)}")
-    print(f"Keys: {data.keys() if isinstance(data, dict) else 'Not a dict'}")
-    
-    if 'answers' in data:
-        print(f"Answers type: {type(data['answers'])}")
-        print(f"Answers content: {data['answers']}")
-    
-    return {
-        "message": "Debug data received",
-        "received_data": data,
-        "data_type": str(type(data))
-    }
 
 @app.post("/quiz/submit-simple")
 async def submit_quiz_simple(data: dict):
@@ -674,7 +603,6 @@ async def submit_quiz_simple(data: dict):
         }
         
     except Exception as e:
-        print(f"Error in submit-simple: {e}")
         return {
             "error": "Processing error",
             "quiz_id": data.get("quiz_id", "unknown")
@@ -688,7 +616,6 @@ async def submit_saint_data(data: dict):
         if not logs:
             return {"message": "No logs to process"}
         
-        print(f"Processing {len(logs)} SAINT logs")
         
         # Gửi đến SAINT API thực sự
         import aiohttp
@@ -701,21 +628,17 @@ async def submit_saint_data(data: dict):
                 ) as response:
                     if response.status == 200:
                         result = await response.json()
-                        print(f"✅ SAINT API processed successfully: {result.get('status')}")
                         return {
                             "message": "SAINT data processed successfully",
                             "logs_count": len(logs),
                             "saint_response": result
                         }
                     else:
-                        print(f"❌ SAINT API error: {response.status}")
                         return {"error": f"SAINT API returned {response.status}"}
             except Exception as e:
-                print(f"❌ Error calling SAINT API: {e}")
                 return {"error": f"SAINT API call failed: {str(e)}"}
         
     except Exception as e:
-        print(f"Error processing SAINT data: {e}")
         return {"error": "SAINT processing failed"}
 
 # User Profile Management
@@ -741,7 +664,6 @@ async def get_user_name(current_user: dict = Depends(get_current_user)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error getting user name: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 

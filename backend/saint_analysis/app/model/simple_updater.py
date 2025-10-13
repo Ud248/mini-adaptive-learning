@@ -21,7 +21,6 @@ def update_student_profile(log: dict):
         "skills": [
             {
                 "skill_id": skill_id,
-                "skill_name": f"Skill {skill_id}",
                 "accuracy": 0.8 if correct else 0.3,
                 "avg_time": response_time,
                 "status": "in_progress"
@@ -52,7 +51,8 @@ def update_student_profile_batch(logs: list[dict]):
         skill_id = log.get("skill_id", "S01")
         correct = log.get("correct", False)
         response_time = log.get("response_time", 0.0)
-        is_answered = log.get("is_answered", True)  # Mặc định True để tương thích ngược
+        # Default to False if missing to avoid mislabeling skipped questions as answered
+        is_answered = log.get("is_answered") if "is_answered" in log else False
         
         if skill_id not in all_skills:
             all_skills[skill_id] = {"correct": 0, "total": 0, "times": [], "answered": 0, "skipped": 0}
@@ -98,7 +98,6 @@ def update_student_profile_batch(logs: list[dict]):
         
         skills_detail.append({
             "skill_id": skill_id,
-            "skill_name": f"Skill {skill_id}",
             "accuracy": round(accuracy, 2),
             "avg_time": round(avg_time, 2),
             "answered": answered_questions,

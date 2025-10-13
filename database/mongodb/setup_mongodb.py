@@ -1,40 +1,51 @@
 #!/usr/bin/env python3
 """
-MongoDB Setup Script
-Tạo database, collections và indexes cho hệ thống quiz
+MongoDB Setup Script - Script thiết lập MongoDB cho hệ thống
+===========================================================
+
+File này chịu trách nhiệm thiết lập và cấu hình MongoDB database cho hệ thống
+adaptive learning. Tạo database, collections và indexes cần thiết.
+
+Chức năng chính:
+- Tạo database và các collections cần thiết
+- Cấu hình indexes cho từng collection
+- Kiểm tra và xác minh setup
+
+Sử dụng: python database/mongodb/setup_mongodb.py
 """
 
-from pymongo import MongoClient, ASCENDING, DESCENDING
 import os
-from dotenv import load_dotenv
+import sys
+from pymongo import ASCENDING, DESCENDING
 
-# Load environment variables
-load_dotenv()
+# Add project root to path
+_CURRENT_DIR = os.path.dirname(__file__)
+_PROJECT_ROOT = os.path.abspath(os.path.join(_CURRENT_DIR, '..', '..'))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
-# MongoDB connection
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "mini_adaptive_learning")
+# Import from mongodb_client
+from database.mongodb.mongodb_client import (
+    connect, create_index, get_collection_info, list_collections
+)
 
 def connect_mongodb():
-    """Kết nối đến MongoDB"""
+    """Kết nối đến MongoDB sử dụng mongodb_client"""
     try:
-        client = MongoClient(MONGO_URL)
-        # Test connection
-        client.admin.command('ping')
-        print(f"✅ Connected to MongoDB at {MONGO_URL}")
-        return client
+        db = connect()
+        return db
     except Exception as e:
         print(f"❌ Error connecting to MongoDB: {e}")
         return None
 
-def create_database_and_collections(client):
-    """Tạo database và collections"""
-    db = client[DATABASE_NAME]
+def create_database_and_collections():
+    """Tạo database và collections sử dụng mongodb_client"""
+    db = connect()
     
     # Collections cần tạo
     collections_config = {
         "placement_questions": {
-            "description": "Câu hỏi quiz",
+            "description": "Câu hỏi của bài kiểm tra đầu vào",
             "indexes": [
                 [("question_id", ASCENDING), {"unique": True}],
                 [("grade", ASCENDING), ("subject", ASCENDING), ("skill", ASCENDING)],
@@ -56,7 +67,6 @@ def create_database_and_collections(client):
         "textbook_exercises": {
             "description": "Bài tập SGK đã chuẩn hoá (mỗi document là một bài tập)",
             "indexes": [
-                [("_id", ASCENDING), {"unique": True}],
                 [("lesson", ASCENDING)],
                 [("subject", ASCENDING)],
                 [("chapter", ASCENDING)],
@@ -98,85 +108,78 @@ def create_database_and_collections(client):
         }
     }
     
-    print(f"\n📊 Creating collections in database '{DATABASE_NAME}'...")
+    print(f"\nCreating collections and indexes...")
     
     for collection_name, config in collections_config.items():
-        print(f"\n📁 Creating collection: {collection_name}")
+        print(f"\nSetting up collection: {collection_name}")
         print(f"   Description: {config['description']}")
         
-        # Tạo collection (nếu chưa tồn tại)
-        if collection_name not in db.list_collection_names():
-            db.create_collection(collection_name)
-            print(f"   ✅ Collection '{collection_name}' created")
-        else:
-            print(f"   ℹ️  Collection '{collection_name}' already exists")
-        
-        # Tạo indexes
-        collection = db[collection_name]
+        # Tạo indexes sử dụng mongodb_client
         for index_spec in config['indexes']:
             try:
-                if isinstance(index_spec[0], tuple):
-                    # Compound index
-                    index_fields = index_spec[0]
-                    index_options = index_spec[1] if len(index_spec) > 1 else {}
+                # Xác định xem phần tử cuối có phải là options không
+                if len(index_spec) > 0 and isinstance(index_spec[-1], dict):
+                    # Có options ở cuối
+                    index_fields_list = index_spec[:-1]
+                    index_options = index_spec[-1]
                 else:
-                    # Single field index
-                    index_fields = index_spec[0]
+                    # Không có options
+                    index_fields_list = index_spec
                     index_options = {}
                 
-                collection.create_index(index_fields, **index_options)
-                print(f"   ✅ Index created: {index_fields}")
+                # index_fields_list là list các tuples: [("field1", direction), ("field2", direction), ...]
+                # Cần chuyển thành format cho mongodb_client
+                index_spec_for_client = list(index_fields_list)
+                
+                # Sử dụng mongodb_client để tạo index
+                if index_options:
+                    create_index(collection_name, index_spec_for_client, 
+                               unique=index_options.get('unique', False),
+                               background=index_options.get('background', True))
+                else:
+                    create_index(collection_name, index_spec_for_client)
+                print(f"   Index created: {index_fields_list}")
             except Exception as e:
-                print(f"   ⚠️  Index warning: {e}")
+                print(f"   Index warning: {e}")
     
     return db
 
-def verify_setup(db):
-    """Kiểm tra setup"""
-    print(f"\n🔍 Verifying setup...")
+def verify_setup():
+    """Kiểm tra setup sử dụng mongodb_client"""
+    print(f"\nVerifying setup...")
     
-    collections = db.list_collection_names()
-    print(f"📋 Collections: {collections}")
+    collections = list_collections()
+    print(f"Collections: {collections}")
     
     for collection_name in collections:
-        collection = db[collection_name]
-        count = collection.count_documents({})
-        indexes = list(collection.list_indexes())
-        
-        print(f"\n📊 {collection_name}:")
-        print(f"   Documents: {count}")
-        print(f"   Indexes: {len(indexes)}")
-        for idx in indexes:
-            print(f"     - {idx['name']}: {idx['key']}")
+        try:
+            info = get_collection_info(collection_name)
+            print(f"\n{collection_name}:")
+            print(f"   Documents: {info['count']}")
+            print(f"   Indexes: {len(info['indexes'])}")
+            for idx in info['indexes']:
+                print(f"     - {idx['name']}: {idx['key']}")
+        except Exception as e:
+            print(f"   Could not get info for {collection_name}: {e}")
 
 def main():
     """Main function"""
-    print("🚀 MongoDB Setup for Quiz System")
+    print("MongoDB Setup for Quiz System")
     print("=" * 50)
-    
-    # Connect to MongoDB
-    client = connect_mongodb()
-    if not client:
-        return
     
     try:
         # Create database and collections
-        db = create_database_and_collections(client)
+        db = create_database_and_collections()
         
         # Verify setup
-        verify_setup(db)
+        verify_setup()
         
-        print(f"\n🎉 MongoDB setup completed successfully!")
-        print(f"📊 Database: {DATABASE_NAME}")
-        print(f"🔗 Connection: {MONGO_URL}")
+        print(f"\nMongoDB setup completed successfully!")
         
     except Exception as e:
-        print(f"❌ Setup failed: {e}")
+        print(f"Setup failed: {e}")
         import traceback
         traceback.print_exc()
-    
-    finally:
-        client.close()
 
 if __name__ == "__main__":
     main()
