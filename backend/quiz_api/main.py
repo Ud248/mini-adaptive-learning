@@ -6,14 +6,11 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import random
 import json
-import os
 import uvicorn
-import asyncio
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 import hashlib
-import secrets
 from jose import jwt, JWTError
 try:
     from database.mongodb.mongodb_client import aggregate as mongo_aggregate
@@ -37,13 +34,6 @@ MONGO_COLLECTION = os.getenv("QUESTIONS_COLLECTION", "placement_questions")
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-me")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
-
-# Password hashing configuration
-def hash_password(password: str) -> str:
-    """Hash password using SHA-256 with salt"""
-    salt = secrets.token_hex(16)
-    password_hash = hashlib.sha256((password + salt).encode('utf-8')).hexdigest()
-    return f"{salt}:{password_hash}"
 
 _mongo_client: MongoClient | None = None
 
@@ -197,11 +187,15 @@ class QuizResult(BaseModel):
 def load_questions_from_json():
     """Tải câu hỏi từ file grade1_math_questions_complete.json"""
     try:
-        # Thử tải từ thư mục gốc
-        json_file = '../../grade1_math_questions_complete.json'
+        # Ưu tiên đường dẫn mới trong database/data_insert
+        base_dir = os.path.dirname(__file__)
+        json_file = os.path.abspath(os.path.join(base_dir, '..', '..', 'database', 'data_insert', 'grade1_math_questions_complete.json'))
         if not os.path.exists(json_file):
-            # Nếu không có, thử từ thư mục hiện tại
-            json_file = 'grade1_math_questions_complete.json'
+            # Fallback: thư mục gốc project (cũ)
+            json_file = os.path.abspath(os.path.join(base_dir, '..', '..', 'grade1_math_questions_complete.json'))
+        if not os.path.exists(json_file):
+            # Fallback: thư mục hiện tại
+            json_file = os.path.abspath(os.path.join(base_dir, 'grade1_math_questions_complete.json'))
         
         with open(json_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -210,7 +204,6 @@ def load_questions_from_json():
         all_questions = []
         for question_data in data:
             # Tạo ID duy nhất cho câu hỏi
-            import hashlib
             question_text = question_data.get('question', '')
             question_hash = hashlib.md5(question_text.encode()).hexdigest()[:8]
             question_id = f"{question_data.get('skill', 'S1')}_{question_hash}"
@@ -226,12 +219,8 @@ def load_questions_from_json():
                 image_answer = [question_data['image_answer']]
             
             # Tạo options từ answers
-            options = []
-            correct_answer = ""
-            for answer in question_data.get('answer', []):
-                options.append(answer['text'])
-                if answer.get('correct'):
-                    correct_answer = answer['text']
+            options = [a['text'] for a in question_data.get('answer', [])]
+            correct_answer = next((a['text'] for a in question_data.get('answer', []) if a.get('correct')), "")
             
             # Tạo câu hỏi theo format mới
             formatted_question = {
@@ -260,22 +249,16 @@ def add_image_prefix(image_urls: List[str]) -> List[str]:
     """Thêm tiền tố SeaweedFS vào URL ảnh với format @http://..."""
     base_url = "http://125.212.229.11:8888"
     processed_urls = []
-    
     for url in image_urls:
-        if not url:  # Bỏ qua URL rỗng
+        if not url:
             continue
-        elif url.startswith("@"):  # URL đã có format @
+        if url.startswith("@"):
             processed_urls.append(url)
-        elif url.startswith("http"):  # URL đã có protocol, thêm @
-            new_url = f"@{url}"
-            processed_urls.append(new_url)
-        elif url.startswith("/"):  # URL bắt đầu với /
-            new_url = f"@{base_url}{url}"
-            processed_urls.append(new_url)
-        else:  # URL không có /
-            new_url = f"@{base_url}/{url}"
-            processed_urls.append(new_url)
-    
+            continue
+        if url.startswith("http"):
+            processed_urls.append(f"@{url}")
+            continue
+        processed_urls.append(f"@{base_url}{url if url.startswith('/') else '/' + url}")
     return processed_urls
 
 @app.get("/")
@@ -407,12 +390,7 @@ async def logout():
     # Với JWT stateless, logout do client xóa token; server trả 200
     return {"message": "Đăng xuất thành công"}
 
-@app.get("/me")
-async def me(authorization: Optional[str] = None):
-    user = get_current_user(authorization)
-    if not user:
-        raise HTTPException(status_code=401, detail="Chưa đăng nhập hoặc token không hợp lệ")
-    return user
+ 
 
 @app.post("/quiz/generate", response_model=QuizResponse)
 async def generate_quiz(request: QuizRequest):
@@ -545,68 +523,11 @@ async def submit_quiz(submission: AnswerSubmission):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Loi xu ly bai nop: {str(e)}")
 
-@app.get("/quiz/subjects")
-async def get_subjects():
-    """Lay danh sach mon hoc"""
-    return {
-        "subjects": ["Toan", "Tieng Viet", "Khoa hoc", "Lich su", "Dia ly"]
-    }
+## Removed: /quiz/subjects (metadata endpoint no longer used by frontend)
 
-@app.get("/quiz/grades")
-async def get_grades():
-    """Lay danh sach lop hoc"""
-    return {
-        "grades": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    }
+## Removed: /quiz/grades (metadata endpoint no longer used by frontend)
 
-@app.get("/quiz/chapters/{subject}")
-async def get_chapters(subject: str):
-    """Lay danh sach chuong theo mon hoc"""
-    chapters = {
-        "Toan": ["So hoc", "Hinh hoc", "Dai so", "Thong ke"],
-        "Tieng Viet": ["Tu vung", "Ngu phap", "Doc hieu", "Viet"],
-        "Khoa hoc": ["Vat ly", "Hoa hoc", "Sinh hoc", "Trai dat"]
-    }
-    return {"chapters": chapters.get(subject, [])}
-
-
-@app.post("/quiz/submit-simple")
-async def submit_quiz_simple(data: dict):
-    """Optimized submit endpoint with fast processing"""
-    try:
-        quiz_id = data.get("quiz_id", "unknown")
-        answers = data.get("answers", {})
-        
-        # Tối ưu: tính toán nhanh hơn
-        total_questions = len(answers)
-        if total_questions == 0:
-            return {
-                "quiz_id": quiz_id,
-                "total_questions": 0,
-                "correct_answers": 0,
-                "score": 0,
-                "message": "No answers submitted"
-            }
-        
-        # Giả lập kết quả nhanh (có thể thay bằng logic thực tế)
-        correct_answers = max(1, int(total_questions * 0.7))  # Giả sử 70% đúng
-        score = (correct_answers / total_questions) * 100
-        
-        # Trả về ngay lập tức
-        return {
-            "quiz_id": quiz_id,
-            "total_questions": total_questions,
-            "correct_answers": correct_answers,
-            "score": round(score, 1),
-            "message": "Success",
-            "processing_time": "< 100ms"  # Thông tin debug
-        }
-        
-    except Exception as e:
-        return {
-            "error": "Processing error",
-            "quiz_id": data.get("quiz_id", "unknown")
-        }
+## Removed: /quiz/chapters/{subject} (metadata endpoint no longer used by frontend)
 
 @app.post("/quiz/submit-saint-data")
 async def submit_saint_data(data: dict):

@@ -21,9 +21,6 @@ const AvatarMenu = ({ user, onLogout }) => {
     useEffect(() => {
         const getStudentName = async () => {
             try {
-                // Debug: Clear localStorage để test API
-                localStorage.removeItem('student_name');
-
                 // Thử lấy từ localStorage trước
                 const storedName = localStorage.getItem('student_name');
                 if (storedName) {

@@ -5,21 +5,15 @@ import {
     Card,
     Button,
     List,
-    Tag,
     Row,
     Col,
-    Statistic,
     message,
     Spin,
     Empty,
+    Badge,
+    Tooltip,
 } from 'antd';
-import {
-    BookOutlined,
-    TrophyOutlined,
-    ArrowLeftOutlined,
-    HomeOutlined,
-    BarChartOutlined
-} from '@ant-design/icons';
+import { BookOutlined, TrophyOutlined, ArrowLeftOutlined, HomeOutlined } from '@ant-design/icons';
 
 const StudentWeakSkills = () => {
     const navigate = useNavigate();
@@ -105,10 +99,11 @@ const StudentWeakSkills = () => {
     }, [user, loadStudentProfile]);
 
     const getSkillStatusColor = (status) => {
+        // Tăng tương phản cho ribbon để dễ đọc trên nền chữ trắng
         const s = String(status || '').toLowerCase();
-        if (s === 'mastered') return '#52c41a'; // xanh
-        if (s === 'in_progress') return '#fa8c16'; // cam
-        if (s === 'struggling') return '#ff4d4f'; // đỏ
+        if (s === 'mastered') return '#36c26e';      // xanh rõ hơn
+        if (s === 'in_progress') return '#f59e0b';   // vàng đậm
+        if (s === 'struggling') return '#ff4d4f';    // đỏ đậm (rõ nhất)
         return '#8c8c8c';
     };
 
@@ -124,7 +119,7 @@ const StudentWeakSkills = () => {
 
     const handlePracticeSkill = (skill) => {
         // TODO: Implement navigation to practice screen for specific skill
-        message.info(`Tính năng luyện tập skill "${skill.skill_name}" sẽ được phát triển sớm!`);
+        message.info(`Tính năng luyện tập kỹ năng "${skill.skill_name}" sẽ được phát triển sớm!`);
     };
 
     if (loading) {
@@ -166,29 +161,22 @@ const StudentWeakSkills = () => {
     return (
         <div className="quiz-container">
             {/* Header with Student Info */}
-            <Card className="student-profile-header">
-                <Row gutter={16}>
-                    <Col xs={24} sm={24}>
-                        <Statistic
-                            title="Kỹ năng yếu"
-                            value={weakSkills.length}
-                            suffix="kỹ năng"
-                            valueStyle={{ color: '#ff4d4f', fontSize: '24px' }}
-                        />
+            <Card className="weak-hero" bordered={false}>
+                <Row gutter={[16, 16]} align="middle" justify="center">
+                    <Col xs={24} style={{ textAlign: 'center' }}>
+                        <div>
+                            <div className="weak-hero-title">Kỹ năng cần cải thiện</div>
+                            <div style={{ marginTop: 8 }}>
+                                <span className="hero-total-pill">Tổng số kỹ năng cần cải thiện: {weakSkills.length} kỹ năng</span>
+                            </div>
+                            {/* Bỏ mô tả phụ theo yêu cầu */}
+                        </div>
                     </Col>
                 </Row>
             </Card>
 
             {/* Weak Skills Analysis */}
-            <Card
-                title={
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <BarChartOutlined style={{ marginRight: 8 }} />
-                        Phân tích kỹ năng cần cải thiện ({weakSkills.length})
-                    </div>
-                }
-                className="weak-skills-list"
-            >
+            <Card className="weak-skills-list" title={null} bordered={false}>
                 {weakSkills.length === 0 ? (
                     <Empty
                         description="Không có kỹ năng yếu nào được phát hiện"
@@ -196,42 +184,29 @@ const StudentWeakSkills = () => {
                     />
                 ) : (
                     <List
+                        grid={{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }}
                         dataSource={weakSkills}
-                        renderItem={(skill, index) => {
+                        renderItem={(skill) => {
                             return (
                                 <List.Item>
-                                    <Card
-                                        size="small"
-                                        style={{ width: '100%' }}
-                                        className="skill-card"
-                                    >
-                                        <Row gutter={16} align="middle">
-                                            <Col xs={24}>
-                                                <div style={{ textAlign: 'left', paddingLeft: '12px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                                                        <h4 style={{ margin: 0, color: '#1890ff' }}>{skill.skill_name}</h4>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                            <Tag color={getSkillStatusColor(skill.status)} style={{ minWidth: 100, textAlign: 'center' }}>
-                                                                {getSkillStatusText(skill.status)}
-                                                            </Tag>
-                                                            <span style={{ fontSize: 12, color: '#8c8c8c' }}>{skill.subject} - Lớp {skill.grade}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </Col>
-
-                                        </Row>
-
-                                        <div style={{ marginTop: 16, textAlign: 'right' }}>
-                                            <Button
-                                                type="primary"
-                                                icon={<BookOutlined />}
-                                                onClick={() => handlePracticeSkill(skill)}
-                                            >
-                                                Luyện tập kỹ năng này
-                                            </Button>
-                                        </div>
-                                    </Card>
+                                    <Badge.Ribbon text={getSkillStatusText(skill.status)} color={getSkillStatusColor(skill.status)} placement="end">
+                                        <Card className="skill-card" hoverable>
+                                            <div className="skill-card-header">
+                                                <Tooltip title={skill.skill_name} placement="topLeft">
+                                                    <div className="skill-title">{skill.skill_name}</div>
+                                                </Tooltip>
+                                            </div>
+                                            <div className="skill-meta">
+                                                <span className="skill-chip">{skill.subject}</span>
+                                                <span className="skill-chip">Lớp {skill.grade}</span>
+                                            </div>
+                                            <div className="skill-actions">
+                                                <Button type="primary" icon={<BookOutlined />} onClick={() => handlePracticeSkill(skill)}>
+                                                    Luyện tập
+                                                </Button>
+                                            </div>
+                                        </Card>
+                                    </Badge.Ribbon>
                                 </List.Item>
                             );
                         }}

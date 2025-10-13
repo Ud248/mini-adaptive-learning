@@ -34,7 +34,7 @@ const QuizTaking = () => {
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
-    const [timeLeft, setTimeLeft] = useState(1800); // 30 phút
+    const [timeLeft, setTimeLeft] = useState(0); // sẽ đặt theo số câu hỏi * 60s
     const [startTime] = useState(Date.now()); // Thời gian bắt đầu bài
     const [questionStartTime, setQuestionStartTime] = useState(null); // thời điểm bắt đầu câu hiện tại
     const [perQuestionTime, setPerQuestionTime] = useState({}); // { [questionId]: seconds }
@@ -54,6 +54,7 @@ const QuizTaking = () => {
     }, [quizId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
+        if (loading || timeLeft <= 0) return; // chỉ chạy khi đã có thời gian hợp lệ
         const timer = setInterval(() => {
             setTimeLeft(prev => {
                 if (prev <= 1) {
@@ -63,9 +64,8 @@ const QuizTaking = () => {
                 return prev - 1;
             });
         }, 1000);
-
         return () => clearInterval(timer);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [loading, timeLeft]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const loadQuiz = async () => {
         try {
@@ -78,9 +78,12 @@ const QuizTaking = () => {
             if (response.data && response.data.questions) {
                 // Sử dụng options từ API (từ questions_grade1.json)
                 setQuestions(response.data.questions);
+                // Đặt thời gian = số câu * 60 giây
+                const totalSeconds = Math.max(0, Number(response.data.questions.length || 0) * 60);
+                setTimeLeft(totalSeconds);
                 // Bắt đầu tính thời gian cho câu đầu tiên
                 setQuestionStartTime(Date.now());
-                showSuccess(`Đã tải ${response.data.questions.length} câu hỏi từ API (2 câu/skill)`);
+                showSuccess(`Tải thành công ${response.data.questions.length} câu hỏi`);
             } else {
                 throw new Error('Không có dữ liệu từ API');
             }
@@ -108,6 +111,9 @@ const QuizTaking = () => {
             }));
 
             setQuestions(mockQuestions);
+            // Đặt thời gian = số câu * 60 giây
+            const totalSeconds = Math.max(0, Number(mockQuestions.length || 0) * 60);
+            setTimeLeft(totalSeconds);
             // Bắt đầu tính thời gian cho câu đầu tiên (mock)
             setQuestionStartTime(Date.now());
         } finally {
@@ -216,7 +222,7 @@ const QuizTaking = () => {
                     });
 
                     // Gửi submission đến API
-                    const response = await axios.post('http://localhost:8001/quiz/submit-simple', {
+                    const response = await axios.post('http://localhost:8001/quiz/submit', {
                         quiz_id: quizId,
                         answers: formattedAnswers
                     }, {
@@ -292,7 +298,7 @@ const QuizTaking = () => {
                         };
 
                         const processingTime = Date.now() - submitStartTime;
-                        showSuccess(`Nộp bài thành công! (${processingTime}ms)`);
+                        showSuccess(`Nộp bài thành công`);
                         navigate(`/result/${quizId}`, {
                             state: {
                                 result: detailedResult,

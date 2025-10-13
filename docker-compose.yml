@@ -1,24 +1,4 @@
 services:
-  saint_api:
-    image: python:3.10-slim
-    container_name: saint_api
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    depends_on:
-      - milvus-standalone
-    volumes:
-      - ./backend/saint_analysis:/app
-      - saint_deps:/usr/local/lib/python3.10/site-packages
-    working_dir: /app
-    command: >
-      sh -c "if [ ! -f /usr/local/lib/python3.10/site-packages/.installed ]; then 
-               pip install -r requirements.txt && 
-               touch /usr/local/lib/python3.10/site-packages/.installed; 
-             fi && 
-             python -m uvicorn main:app --host 0.0.0.0 --port 8000"
-
   etcd:
     image: quay.io/coreos/etcd:v3.5.5
     container_name: milvus-etcd

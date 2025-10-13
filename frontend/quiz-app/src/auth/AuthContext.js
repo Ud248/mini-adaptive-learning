@@ -14,12 +14,20 @@ export const AuthProvider = ({ children }) => {
     });
     const [user, setUser] = useState(null);
 
-    const [loading, setLoading] = useState(false);
+    // loading state is not used by consumers; omitted for simplicity
 
     useEffect(() => {
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            fetchMe();
+            // Không gọi /me nữa; khởi tạo user từ localStorage nếu có
+            const email = (() => {
+                try { return localStorage.getItem('student_email') || ''; } catch (e) { return ''; }
+            })();
+            if (email) {
+                setUser({ email, role: 'student' });
+            } else {
+                setUser({ role: 'student' });
+            }
         } else {
             delete axios.defaults.headers.common['Authorization'];
             setUser(null);
@@ -27,21 +35,7 @@ export const AuthProvider = ({ children }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
-    const fetchMe = async () => {
-        try {
-            setLoading(true);
-            const res = await axios.get('http://localhost:8001/me');
-            setUser(res.data);
-            // Update email trong localStorage nếu có từ API response
-            if (res.data?.email) {
-                localStorage.setItem('student_email', res.data.email);
-            }
-        } catch (e) {
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // fetchMe đã bỏ vì không còn /me
 
     const login = async (identifier, password) => {
         const res = await axios.post('http://localhost:8001/auth/login', {
@@ -75,8 +69,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     const value = useMemo(() => {
-        return { token, user, loading, login, logout };
-    }, [token, user, loading]);
+        return { token, user, login, logout };
+    }, [token, user]);
 
     return (
         <AuthContext.Provider value={value}>

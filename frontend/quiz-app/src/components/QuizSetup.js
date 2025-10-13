@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Select, Button, Card } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 
 const { Option } = Select;
@@ -10,31 +9,18 @@ const { Option } = Select;
 const QuizSetup = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
-    const { showSuccess, showError } = useToast();
+    const { showSuccess, showError, showInfo } = useToast();
     const [loading, setLoading] = useState(false);
-    const [subjects, setSubjects] = useState([]);
-    const [grades, setGrades] = useState([]);
 
-    useEffect(() => {
-        loadInitialData();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // Mặc định hiển thị và khóa thay đổi (tính năng đang phát triển)
+    const defaultSubject = 'Toán';
+    const defaultGrade = 1;
+    const allSubjects = ['Toán', 'Tiếng Việt', 'Khoa học', 'Lịch sử', 'Địa lý'];
+    const allGrades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-    const loadInitialData = async () => {
-        try {
-            const [subjectsRes, gradesRes] = await Promise.all([
-                axios.get('http://localhost:8001/quiz/subjects'),
-                axios.get('http://localhost:8001/quiz/grades')
-            ]);
-
-            setSubjects(subjectsRes.data.subjects);
-            setGrades(gradesRes.data.grades);
-        } catch (error) {
-            console.error('Lỗi tải dữ liệu:', error);
-            showError('Không thể tải dữ liệu khởi tạo từ API. Sử dụng dữ liệu mặc định...');
-
-            // Fallback về dữ liệu mặc định
-            setSubjects(["Toán", "Tiếng Việt", "Khoa học", "Lịch sử", "Địa lý"]);
-            setGrades([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    const handleOpenDropdown = (open) => {
+        if (open) {
+            showInfo('Chức năng thay đổi Lớp/Môn đang phát triển');
         }
     };
 
@@ -42,7 +28,8 @@ const QuizSetup = () => {
     const handleSubmit = async (values) => {
         setLoading(true);
         try {
-            // Tránh gọi API generate ở đây để không bị gọi 2 lần.
+            // Dùng mặc định lớp 1, môn Toán; các lựa chọn khác đang phát triển
+
             // Điều hướng sang trang làm bài, trang đó sẽ tự gọi generate một lần.
             showSuccess('Bắt đầu bài kiểm tra!');
             const tempId = `temp_${Date.now()}`;
@@ -68,8 +55,8 @@ const QuizSetup = () => {
                     layout="vertical"
                     onFinish={handleSubmit}
                     initialValues={{
-                        grade: 1,
-                        subject: "Toán"
+                        grade: defaultGrade,
+                        subject: defaultSubject
                     }}
                 >
                     <Form.Item
@@ -77,9 +64,9 @@ const QuizSetup = () => {
                         name="grade"
                         rules={[{ required: true, message: 'Vui lòng chọn lớp học!' }]}
                     >
-                        <Select placeholder="Chọn lớp học" size="large" disabled>
-                            {grades.map(grade => (
-                                <Option key={grade} value={grade}>
+                        <Select placeholder="Chọn lớp học" size="large" onDropdownVisibleChange={handleOpenDropdown}>
+                            {allGrades.map(grade => (
+                                <Option key={grade} value={grade} disabled={grade !== defaultGrade}>
                                     Lớp {grade}
                                 </Option>
                             ))}
@@ -94,27 +81,16 @@ const QuizSetup = () => {
                         <Select
                             placeholder="Chọn môn học"
                             size="large"
-                            disabled
+                            onDropdownVisibleChange={handleOpenDropdown}
                         >
-                            {subjects.map(subject => (
-                                <Option key={subject} value={subject}>
+                            {allSubjects.map(subject => (
+                                <Option key={subject} value={subject} disabled={subject !== defaultSubject}>
                                     {subject}
                                 </Option>
                             ))}
                         </Select>
                     </Form.Item>
 
-                    <div style={{
-                        background: '#f0f8ff',
-                        padding: '16px',
-                        borderRadius: '8px',
-                        marginBottom: '16px',
-                        border: '1px solid #d9d9d9'
-                    }}>
-                        <p style={{ margin: 0, color: '#1890ff', fontWeight: '500' }}>
-                            📚 Hệ thống sẽ lấy tất cả kỹ năng của môn đã chọn và mỗi kỹ năng 2 câu.
-                        </p>
-                    </div>
 
                     <Form.Item>
                         <Button

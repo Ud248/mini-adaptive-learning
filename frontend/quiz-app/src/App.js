@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { ConfigProvider, Button } from 'antd';
+import { ConfigProvider } from 'antd';
 import viVN from 'antd/locale/vi_VN';
 import QuizSetup from './components/QuizSetup';
 import QuizTaking from './components/QuizTaking';

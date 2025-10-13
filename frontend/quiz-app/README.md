@@ -34,7 +34,9 @@ File `public/env.js` chứa cấu hình:
 ```javascript
 window.env = {
     PORT: 3001,
-    API_URL: 'http://localhost:8001'
+    API_URL: 'http://localhost:8001',
+    // Tuỳ chọn: SAINT Analysis service (nếu chạy)
+    SAINT_API_URL: 'http://localhost:8000'
 };
 ```
 
@@ -42,6 +44,7 @@ window.env = {
 - **API Base URL**: `http://localhost:8001`
 - **Proxy**: Được cấu hình trong `package.json`
 - **Authentication**: Yêu cầu đăng nhập bằng JWT (email/username + password)
+- **SAINT Analysis**: client có thể gửi logs đến `SAINT_API_URL` (tuỳ chọn) thông qua backend hoặc trực tiếp
 
 ## 📁 Cấu trúc thư mục
 
@@ -56,15 +59,26 @@ frontend/quiz-app/
 │   ├── index.js            # Entry point
 │   ├── index.css           # Global styles
 │   ├── auth/
-│   │   └── AuthContext.js  # Quản lý login/logout, lưu token, gọi /me
-│   └── components/
-│       ├── Login.js        # Trang đăng nhập
-│       ├── QuizSetup.js    # Thiết lập bài kiểm tra
-│       ├── QuizTaking.js   # Làm bài kiểm tra
-│       └── QuizResult.js   # Hiển thị kết quả
+│   │   └── AuthContext.js  # Quản lý login/logout, lưu token
+│   ├── contexts/
+│   │   └── ToastContext.js # Context hiển thị toast tuỳ biến
+│   └── components/         # UI components chính
+│       ├── AvatarMenu.js
+│       ├── BackToTop.js
+│       ├── BackToTop.css
+│       ├── Login.js
+│       ├── QuizSetup.js
+│       ├── QuizTaking.js
+│       ├── QuizResult.js
+│       ├── StudentWeakSkills.js
+│       ├── Toast.js
+│       ├── Toast.css
+│       └── ToastContainer.js
 ├── package.json            # Dependencies
 └── README.md              # Tài liệu này
 ```
+
+Ghi chú: các thư mục trống `src/api`, `src/hooks`, `src/theme` đã được xoá để gọn dự án.
 
 ## 🏃‍♂️ Chạy ứng dụng
 
@@ -90,7 +104,7 @@ npm run build
 - **Auth**:
   - `POST /auth/login` — đăng nhập
   - `POST /auth/logout` — đăng xuất
-  - `GET /me` — lấy user hiện tại
+  - (Đã bỏ) `GET /me`
 - **Quiz**:
   - `POST /quiz/generate` — tạo bài kiểm tra
   - `POST /quiz/submit` — nộp bài và chấm điểm
@@ -104,15 +118,14 @@ npm run build
 ## 🧩 Components chính
 
 ### 1. **QuizSetup** (`/`)
-- Thiết lập thông tin bài kiểm tra (lớp, môn, số câu)
-- Gọi API tạo quiz
+- Thiết lập thông tin bài kiểm tra (hiện tại cố định lớp 1, môn Toán; có fallback dữ liệu)
 - Chuyển hướng đến trang làm bài
 
 ### 2. **QuizTaking** (`/quiz/:quizId`)
 - Hiển thị câu hỏi và đáp án
 - Xử lý logic làm bài
 - Timer và navigation
-- Gọi API nộp bài
+- Gọi API nộp bài; có gửi logs phân tích (tuỳ chọn) tới SAINT qua backend
 
 ### 3. **QuizResult** (`/result/:quizId`)
 - Hiển thị kết quả chi tiết
@@ -144,7 +157,7 @@ npm test
 1. Mở `http://localhost:3001` → chuyển hướng tới `/login`
 2. Đăng nhập bằng tài khoản mẫu:
    - email: `student1@example.com` (hoặc username: `student1`)
-   - password: `Student@123`
+   - password: `123456`
 3. Sau khi đăng nhập thành công, hệ thống điều hướng về trang chính → bắt đầu quiz
 4. Dùng nút “Đăng xuất” trên thanh header để thoát tài khoản
 
@@ -185,6 +198,12 @@ API Response → QuizResult → Display results
 ```bash
 # Xóa node_modules và cài lại
 rm -rf node_modules package-lock.json
+npm install
+```
+
+Nếu dùng Windows PowerShell:
+```powershell
+Remove-Item -Recurse -Force node_modules, package-lock.json
 npm install
 ```
 
