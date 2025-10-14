@@ -25,4 +25,13 @@ class OllamaProvider(LLMProvider):
             return data["message"].get("content", "")
         return json.dumps(data)
 
+    def healthcheck(self) -> bool:
+        try:
+            url = f"{self.base_url}/api/tags"
+            resp = requests.get(url, timeout=min(3, self.timeout_s))
+            resp.raise_for_status()
+            return True
+        except Exception:
+            return False
+
 

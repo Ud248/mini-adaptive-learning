@@ -14,4 +14,11 @@ class LLMProvider(ABC):
     def generate(self, messages: List[Dict[str, str]], *, temperature: float, max_tokens: int) -> str:
         raise NotImplementedError
 
+    def healthcheck(self) -> bool:
+        """Lightweight readiness probe. Override in subclasses.
+
+        Returns True if the provider is considered available.
+        """
+        return True
+
 

@@ -9,6 +9,7 @@ llm:
     - name: gemini
       type: google_gemini
       model: gemini-2.0-flash-lite
+      api_key_env: GEMINI_API_KEY
       priority: 2
       timeout_s: 12
     - name: llama_ollama
@@ -28,5 +29,8 @@ rag:
   topk_sgv: 5
   topk_sgk: 20
   cache_ttl_s: 900
+
+images:
+  base_url: http://125.212.229.11:8888/
 
 

@@ -55,3 +55,14 @@ class GeminiProvider(LLMProvider):
             return ""
 
 
+    def healthcheck(self) -> bool:
+        try:
+            url = f"{self.base_url}/v1beta/models/{self.model}"
+            params = {"key": self.api_key}
+            resp = requests.get(url, params=params, timeout=min(3, self.timeout_s))
+            # Consider 200 OK responsive; some models may return 404 but endpoint still reachable
+            return resp.status_code in (200, 404)
+        except Exception:
+            return False
+
+
