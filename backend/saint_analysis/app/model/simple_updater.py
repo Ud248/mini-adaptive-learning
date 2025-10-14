@@ -89,9 +89,9 @@ def update_student_profile_batch(logs: list[dict]):
         # Xác định trạng thái
         if skipped_questions > 0:
             status = "struggling"  # Có câu trống = struggling
-        elif accuracy > 0.8:
+        elif accuracy >= 0.8:
             status = "mastered"
-        elif accuracy > 0.5:
+        elif accuracy >= 0.5:
             status = "in_progress"
         else:
             status = "struggling"

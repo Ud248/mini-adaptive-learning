@@ -184,29 +184,30 @@ const StudentWeakSkills = () => {
                     />
                 ) : (
                     <List
-                        grid={{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }}
+                        grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 2, xxl: 2 }}
                         dataSource={weakSkills}
                         renderItem={(skill) => {
                             return (
                                 <List.Item>
-                                    <Badge.Ribbon text={getSkillStatusText(skill.status)} color={getSkillStatusColor(skill.status)} placement="end">
-                                        <Card className="skill-card" hoverable>
-                                            <div className="skill-card-header">
-                                                <Tooltip title={skill.skill_name} placement="topLeft">
-                                                    <div className="skill-title">{skill.skill_name}</div>
-                                                </Tooltip>
-                                            </div>
-                                            <div className="skill-meta">
-                                                <span className="skill-chip">{skill.subject}</span>
-                                                <span className="skill-chip">Lớp {skill.grade}</span>
-                                            </div>
-                                            <div className="skill-actions">
-                                                <Button type="primary" icon={<BookOutlined />} onClick={() => handlePracticeSkill(skill)}>
-                                                    Luyện tập
-                                                </Button>
-                                            </div>
-                                        </Card>
-                                    </Badge.Ribbon>
+                                    <Card className="skill-card" hoverable>
+                                        <div className="skill-card-header">
+                                            <Tooltip title={skill.skill_name} placement="topLeft">
+                                                <div className="skill-title">{skill.skill_name}</div>
+                                            </Tooltip>
+                                        </div>
+                                        <div className="skill-meta">
+                                            <span className="skill-chip">{skill.subject}</span>
+                                            <span className="skill-chip">Lớp {skill.grade}</span>
+                                        </div>
+                                        <div className="skill-status-pill" style={{ backgroundColor: getSkillStatusColor(skill.status) }}>
+                                            {getSkillStatusText(skill.status)}
+                                        </div>
+                                        <div className="skill-actions">
+                                            <Button type="primary" icon={<BookOutlined />} onClick={() => handlePracticeSkill(skill)}>
+                                                Luyện tập
+                                            </Button>
+                                        </div>
+                                    </Card>
                                 </List.Item>
                             );
                         }}

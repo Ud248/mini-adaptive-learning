@@ -1,14 +1,3 @@
-"""
-ALQ-Agent Workflow Package
-=========================
+from .agent_workflow import AgentWorkflow  # noqa: F401
 
-Workflow orchestration and execution components.
-"""
-
-from .agent_workflow import AdaptiveLearningAgent, create_alq_agent
-
-__all__ = [
-    'AdaptiveLearningAgent',
-    'create_alq_agent'
-]
 

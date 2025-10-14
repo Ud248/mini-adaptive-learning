@@ -34,7 +34,7 @@
 /* Removed unused .App-header styles */
 
 .quiz-container {
-    max-width: 840px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -429,6 +429,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 18px;
 }
 
 .skill-status {
@@ -460,6 +461,26 @@
 
 .skill-actions {
     text-align: right;
+}
+
+.skill-actions .ant-btn {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.skill-status-pill {
+    display: block;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin: 8px 0 0 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: fit-content;
 }
 
 /* Single-column weak skills layout enhancements */

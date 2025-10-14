@@ -1,0 +1,32 @@
+llm:
+  providers:
+    - name: gpt_oss_ollama
+      type: ollama
+      base_url: http://localhost:11434
+      model: gpt-oss:20b-cloud
+      priority: 1
+      timeout_s: 15
+    - name: gemini
+      type: google_gemini
+      model: gemini-2.0-flash-lite
+      priority: 2
+      timeout_s: 12
+    - name: llama_ollama
+      type: ollama
+      base_url: http://localhost:11434
+      model: llama3.1:8b
+      priority: 3
+      timeout_s: 15
+  retry: 1
+  temperature_default: 0.2
+  max_tokens: 1024
+  circuit_breaker:
+    failure_threshold: 3
+    cooldown_s: 120
+
+rag:
+  topk_sgv: 5
+  topk_sgk: 20
+  cache_ttl_s: 900
+
+

@@ -13,11 +13,7 @@ code {
         monospace;
 }
 
-.quiz-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
+/* quiz-container styles moved to App.css */
 
 .question-card {
     background: white;

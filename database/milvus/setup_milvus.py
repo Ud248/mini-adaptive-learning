@@ -85,6 +85,7 @@ def create_default_collections() -> bool:
                 {"name": "question", "dtype": DataType.VARCHAR, "max_length": 65535},
                 {"name": "answer", "dtype": DataType.VARCHAR, "max_length": 65535},
                 {"name": "lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "normalized_lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "subject", "dtype": DataType.VARCHAR, "max_length": 512},
                 {"name": "source", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "embedding", "dtype": DataType.FLOAT_VECTOR, "dim": 768}
@@ -96,6 +97,7 @@ def create_default_collections() -> bool:
             "fields": [
                 {"name": "id", "dtype": DataType.VARCHAR, "is_primary": True, "max_length": 200},
                 {"name": "lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "normalized_lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "content", "dtype": DataType.VARCHAR, "max_length": 65535},
                 {"name": "source", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "embedding", "dtype": DataType.FLOAT_VECTOR, "dim": 768}

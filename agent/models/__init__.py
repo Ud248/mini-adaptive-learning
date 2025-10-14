@@ -1,14 +1,3 @@
-"""
-ALQ-Agent Models Package
-=======================
+from .types import Question, AnswerOption, ContextChunk, ValidationReport  # noqa: F401
 
-Model components for embedding and LLM integration.
-"""
-
-from .embedding_model import ALQEmbeddingModel, create_alq_embedder
-
-__all__ = [
-    'ALQEmbeddingModel',
-    'create_alq_embedder'
-]
 

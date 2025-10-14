@@ -52,6 +52,43 @@ def fix_ocr_confused_O_and_0(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
+def normalize_lesson_text(text: str) -> str:
+    """
+    Chuẩn hóa text lesson để search tốt hơn
+    """
+    if not text:
+        return ""
+    
+    # Bước 1: Chuyển về lowercase
+    text = text.lower()
+    
+    # Bước 2: Loại bỏ số tiết trong ngoặc
+    text = re.sub(r'\(\s*\d+\s*tiết\s*\)', '', text)
+    text = re.sub(r'\(\s*\d+\s*\)', '', text)
+    text = re.sub(r'\(\s*tiết\s*\)', '', text)
+    text = re.sub(r'\(\s*\d+tiết\s*\)', '', text)  # Không có space
+    text = re.sub(r'\(\s*\d+tiết\)', '', text)  # Không có space cuối
+    
+    # Bước 3: Loại bỏ "Bài X." prefix
+    text = re.sub(r'^bài\s+\d+\.\s*', '', text)
+    
+    # Bước 4: Loại bỏ "Chủ đề X." prefix  
+    text = re.sub(r'^chủ đề\s+\d+\.\s*', '', text)
+    
+    # Bước 5: Loại bỏ dấu câu thừa
+    text = re.sub(r'[^\w\s]', ' ', text)
+    
+    # Bước 6: Chuẩn hóa khoảng trắng
+    text = re.sub(r'\s+', ' ', text)
+    
+    # Bước 7: Loại bỏ từ phụ
+    stop_words = ['tiết', 'bài', 'phần', 'chương', 'mục']
+    words = text.split()
+    words = [word for word in words if word not in stop_words]
+    
+    return ' '.join(words).strip()
+
+
 def clean_lesson_title_auto(lesson_parts: List[str]) -> str:
     raw = " ".join(lesson_parts)
     words = re.findall(r"\b[A-Z]+(?:-[A-Z]+)*\b", raw.upper())
@@ -100,8 +137,12 @@ def build_entities_from_item(item: Dict[str, Any]) -> Dict[str, Any]:
         clean_lesson_title_auto([full_content_for_embedding])
     )
 
+    # Normalize lesson title for better search
+    normalized_lesson = normalize_lesson_text(lesson_title)
+    
     return {
         "lesson": lesson_title,
+        "normalized_lesson": normalized_lesson,
         "content": full_content,
         "source": source,
         "embed_text": clean_content_for_embedding,
@@ -156,6 +197,7 @@ def insert_entities_json(json_path: str = DEFAULT_JSON_PATH) -> None:
         insert_data.append({
             "id": f"vector_{i}",
             "lesson": "" if row.get("lesson") is None else str(row.get("lesson")),
+            "normalized_lesson": "" if row.get("normalized_lesson") is None else str(row.get("normalized_lesson")),
             "content": "" if row.get("content") is None else str(row.get("content")),
             "source": "" if row.get("source") is None else str(row.get("source")),
             "embedding": embedding

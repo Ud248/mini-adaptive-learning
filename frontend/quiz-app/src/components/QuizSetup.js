@@ -50,6 +50,18 @@ const QuizSetup = () => {
                     Thiết lập bài kiểm tra
                 </h2>
 
+                <div style={{
+                    background: '#f6ffed',
+                    border: '1px solid #b7eb8f',
+                    borderRadius: '6px',
+                    padding: '12px 16px',
+                    marginBottom: '24px',
+                    fontSize: '14px',
+                    color: '#52c41a'
+                }}>
+                    <strong>📝 Lưu ý:</strong> Hệ thống sẽ tạo câu hỏi phù hợp với lớp học và môn học của bạn. Chỉ bắt đầu làm bài khi muốn cập nhật đánh giá năng lực học tập.
+                </div>
+
                 <Form
                     form={form}
                     layout="vertical"

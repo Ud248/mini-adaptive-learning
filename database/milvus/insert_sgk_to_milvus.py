@@ -18,6 +18,7 @@ Sử dụng: python database/milvus/insert_sgk_to_milvus.py
 import json
 import os
 import sys
+import re
 from typing import Any, Dict, List, Optional
 from tqdm import tqdm
 
@@ -36,6 +37,43 @@ COLLECTION_NAME = "baitap_collection"
 
 DEFAULT_JSON_1 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-1.json")
 DEFAULT_JSON_2 = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data_insert", "sgk-toan-1-ket-noi-tri-thuc-tap-2.json")
+
+
+def normalize_lesson_text(text: str) -> str:
+    """
+    Chuẩn hóa text lesson để search tốt hơn
+    """
+    if not text:
+        return ""
+    
+    # Bước 1: Chuyển về lowercase
+    text = text.lower()
+    
+    # Bước 2: Loại bỏ số tiết trong ngoặc
+    text = re.sub(r'\(\s*\d+\s*tiết\s*\)', '', text)
+    text = re.sub(r'\(\s*\d+\s*\)', '', text)
+    text = re.sub(r'\(\s*tiết\s*\)', '', text)
+    text = re.sub(r'\(\s*\d+tiết\s*\)', '', text)  # Không có space
+    text = re.sub(r'\(\s*\d+tiết\)', '', text)  # Không có space cuối
+    
+    # Bước 3: Loại bỏ "Bài X." prefix
+    text = re.sub(r'^bài\s+\d+\.\s*', '', text)
+    
+    # Bước 4: Loại bỏ "Chủ đề X." prefix  
+    text = re.sub(r'^chủ đề\s+\d+\.\s*', '', text)
+    
+    # Bước 5: Loại bỏ dấu câu thừa
+    text = re.sub(r'[^\w\s]', ' ', text)
+    
+    # Bước 6: Chuẩn hóa khoảng trắng
+    text = re.sub(r'\s+', ' ', text)
+    
+    # Bước 7: Loại bỏ từ phụ
+    stop_words = ['tiết', 'bài', 'phần', 'chương', 'mục']
+    words = text.split()
+    words = [word for word in words if word not in stop_words]
+    
+    return ' '.join(words).strip()
 
 
 def load_json_file(path: str) -> List[Dict[str, Any]]:
@@ -115,11 +153,15 @@ def main() -> None:
     insert_data = []
     for i, doc in enumerate(tqdm(docs, desc="Preparing data")):
         vec = embeddings[i] if i < len(embeddings) else [0.0] * EMBEDDING_DIMENSION
+        lesson_text = "" if doc.get("lesson") is None else str(doc.get("lesson"))
+        normalized_lesson = normalize_lesson_text(lesson_text)
+        
         insert_data.append({
             "id": f"vector_{i}",
             "question": "" if doc.get("question") is None else str(doc.get("question")),
             "answer": "" if doc.get("answer") is None else str(doc.get("answer")),
-            "lesson": "" if doc.get("lesson") is None else str(doc.get("lesson")),
+            "lesson": lesson_text,
+            "normalized_lesson": normalized_lesson,
             "subject": "" if doc.get("subject") is None else str(doc.get("subject")),
             "source": "" if doc.get("source") is None else str(doc.get("source")),
             "embedding": vec
