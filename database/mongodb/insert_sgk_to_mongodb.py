@@ -61,12 +61,7 @@ def normalize_item(item: Dict[str, Any]) -> Dict[str, Any]:
         if k in doc and doc[k] is None:
             doc[k] = []
 
-    # required fields for ids
-    idx = doc.get("index")
-    if idx is None:
-        raise ValueError("Missing 'index' field in SGK item")
-
-    doc["_id"] = f"ex_{idx}"
+    # _id sẽ được set sau khi normalize tất cả items
     doc["metadata"] = {
         "curriculum": "Kết nối tri thức",
         "grade": 1,
@@ -98,9 +93,10 @@ def main() -> None:
         print("No documents to insert.")
         return
 
-    # Override vector_id to sequential order regardless of original index
+    # Override vector_id và _id theo thứ tự tuần tự
     for i, doc in enumerate(normalized):
         doc["vector_id"] = f"vector_{i}"
+        doc["_id"] = f"ex_{i}"
 
     # Kết nối MongoDB
     db = connect()

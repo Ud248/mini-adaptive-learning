@@ -56,11 +56,43 @@ def _load_rag_config() -> Dict[str, Any]:
 
 
 def _normalize_lesson(name: Optional[str]) -> Optional[str]:
+    """
+    Normalize lesson text theo cùng logic với insert_sgv_to_milvus.py
+    để match với normalized_lesson field trong database
+    """
     if not name:
         return None
-    s = name.strip().lower()
-    # basic normalization: collapse spaces
-    return " ".join(s.split())
+    
+    import re
+    
+    # Bước 1: Chuyển về lowercase
+    text = name.strip().lower()
+    
+    # Bước 2: Loại bỏ số tiết trong ngoặc
+    text = re.sub(r'\(\s*\d+\s*tiết\s*\)', '', text)
+    text = re.sub(r'\(\s*\d+\s*\)', '', text)
+    text = re.sub(r'\(\s*tiết\s*\)', '', text)
+    text = re.sub(r'\(\s*\d+tiết\s*\)', '', text)  # Không có space
+    text = re.sub(r'\(\s*\d+tiết\)', '', text)  # Không có space cuối
+    
+    # Bước 3: Loại bỏ "Bài X." prefix
+    text = re.sub(r'^bài\s+\d+\.\s*', '', text)
+    
+    # Bước 4: Loại bỏ "Chủ đề X." prefix  
+    text = re.sub(r'^chủ đề\s+\d+\.\s*', '', text)
+    
+    # Bước 5: Loại bỏ dấu câu thừa
+    text = re.sub(r'[^\w\s]', ' ', text)
+    
+    # Bước 6: Chuẩn hóa khoảng trắng
+    text = re.sub(r'\s+', ' ', text)
+    
+    # Bước 7: Loại bỏ từ phụ
+    stop_words = ['tiết', 'bài', 'phần', 'chương', 'mục']
+    words = text.split()
+    words = [word for word in words if word not in stop_words]
+    
+    return ' '.join(words).strip()
 
 
 def _md5(s: str) -> str:
@@ -180,9 +212,18 @@ class RAGTool:
     def _build_expr(self, *, normalized_lesson: Optional[str]) -> Optional[str]:
         if not normalized_lesson:
             return None
-        # We only filter by normalized_lesson to keep schema-agnostic.
-        # If grade field exists, backend collection can add it later.
+        # Query normalized_lesson field để match với database
         return f'normalized_lesson == "{normalized_lesson}"'
+    
+    def _build_prefix_expr(self, field: str, value: str) -> Optional[str]:
+        """
+        Build prefix pattern expression for Milvus LIKE queries.
+        Milvus only supports prefix patterns (ab%) not wildcards (%ab%).
+        """
+        if not value or not value.strip():
+            return None
+        # Use prefix pattern for Milvus compatibility
+        return f'{field} like "{value.strip()}%"'
 
     def _embed_query_text(self, *, skill: str, skill_name: Optional[str], grade: Optional[int]) -> Optional[List[float]]:
         if self._embed_fn is None:
@@ -220,7 +261,7 @@ class RAGTool:
                         collection_name=collection,
                         vector_field="embedding",
                         query_vectors=[vec],
-                        param={"metric_type": "COSINE", "params": {"nprobe": 10}},
+                        param={"metric_type": "L2", "params": {"nprobe": 10}},
                         limit=max(k * 3, k),
                         output_fields=["id", "lesson", "normalized_lesson", "content", "source"],
                     ) or []
@@ -278,7 +319,7 @@ class RAGTool:
                         collection_name=collection,
                         vector_field="embedding",
                         query_vectors=[vec],
-                        param={"metric_type": "COSINE", "params": {"nprobe": 10}},
+                        param={"metric_type": "L2", "params": {"nprobe": 10}},
                         limit=max(k * 3, k),
                         output_fields=["id", "lesson", "normalized_lesson", "question", "answer", "subject", "source"],
                     ) or []

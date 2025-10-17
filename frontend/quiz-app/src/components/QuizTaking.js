@@ -437,6 +437,7 @@ const QuizTaking = () => {
 
                 <div className="answer-section">
                     <Radio.Group
+                        key={currentQuestion.id}
                         style={{ width: '100%' }}
                         value={answers[currentQuestion.id]}
                         onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
@@ -452,7 +453,7 @@ const QuizTaking = () => {
                         >
                             {currentQuestion.options.map((option, index) => (
                                 <div
-                                    key={index}
+                                    key={`${currentQuestion.id}-${index}`}
                                     className="answer-option"
                                     onClick={() => handleAnswerChange(currentQuestion.id, index)}
                                     style={{

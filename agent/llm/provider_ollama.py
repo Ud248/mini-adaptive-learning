@@ -14,16 +14,38 @@ class OllamaProvider(LLMProvider):
         self.timeout_s = timeout_s
 
     def generate(self, messages: List[Dict[str, str]], *, temperature: float, max_tokens: int) -> str:
-        # Minimal chat wrapper for Ollama
+        # Use /api/chat endpoint for messages format
         url = f"{self.base_url}/api/chat"
-        payload = {"model": self.model, "messages": messages, "options": {"temperature": temperature, "num_predict": max_tokens}}
+        payload = {
+            "model": self.model, 
+            "messages": messages, 
+            "options": {
+                "temperature": temperature, 
+                "num_predict": max_tokens
+            }
+        }
         resp = requests.post(url, json=payload, timeout=self.timeout_s)
         resp.raise_for_status()
-        # Streaming can be enabled later; parse non-stream response
-        data = resp.json()
-        if isinstance(data, dict) and "message" in data:
-            return data["message"].get("content", "")
-        return json.dumps(data)
+        
+        # Parse streaming response (Ollama returns streaming by default)
+        response_text = ""
+        for line in resp.iter_lines():
+            if line:
+                try:
+                    # Ensure proper UTF-8 decoding
+                    line_str = line.decode('utf-8', errors='replace')
+                    data = json.loads(line_str)
+                    if data.get("message"):
+                        content = data["message"].get("content", "")
+                        if content:
+                            response_text += content
+                    if data.get("done"):
+                        break
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    print(f"Warning: Failed to parse line: {e}")
+                    continue
+        
+        return response_text
 
     def healthcheck(self) -> bool:
         try:

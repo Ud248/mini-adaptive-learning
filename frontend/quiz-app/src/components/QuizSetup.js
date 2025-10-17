@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Select, Button, Card } from 'antd';
-import { PlayCircleOutlined } from '@ant-design/icons';
+import { PlayCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useToast } from '../contexts/ToastContext';
 
 const { Option } = Select;
@@ -112,8 +112,22 @@ const QuizSetup = () => {
                             className="start-quiz-btn"
                             loading={loading}
                             icon={<PlayCircleOutlined />}
+                            block
                         >
                             {loading ? 'Đang tạo bài kiểm tra...' : 'Bắt đầu làm bài'}
+                        </Button>
+                    </Form.Item>
+
+                    <Form.Item style={{ marginBottom: 0 }}>
+                        <Button
+                            icon={<ArrowLeftOutlined />}
+                            onClick={() => navigate('/')}
+                            danger
+                            type="primary"
+                            size="large"
+                            block
+                        >
+                            Quay lại trang chủ
                         </Button>
                     </Form.Item>
                 </Form>

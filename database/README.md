@@ -1,94 +1,134 @@
-# Database Module
+# 🗄️ Database Module
 
-A comprehensive database management module for the Mini Adaptive Learning system, providing tools for setting up, managing, and populating both MongoDB and Milvus databases with educational content and user data.
+> Comprehensive database management cho hệ thống Mini Adaptive Learning - Quản lý MongoDB, Milvus vector DB, và Vietnamese text embeddings
 
-## Overview
+## 📋 Giới thiệu
 
-This module handles the complete database infrastructure for an adaptive learning platform, including:
+Module **database** là lớp dữ liệu của hệ thống, đảm nhận:
 
-- **MongoDB**: Primary database for storing questions, skills, subjects, users, and teacher materials
-- **Milvus**: Vector database for storing embeddings and enabling semantic search capabilities
-- **Data Processing**: Scripts for importing and transforming educational content with progress tracking
-- **Embedding Generation**: Vietnamese text embedding service using sentence-transformers
-- **CRUD Clients**: Unified client libraries for database operations with error handling and logging
+- 📚 **MongoDB**: Primary database cho questions, users, skills, SGK/SGV content
+- 🔍 **Milvus**: Vector database cho semantic search và RAG
+- 🤖 **Vietnamese Embeddings**: Text embedding service với sentence-transformers
+- ⚙️ **CRUD Clients**: Unified clients với error handling và logging
+- 📊 **Data Import Scripts**: Import tools với progress bars và validation
 
-## Installation
+## 🛠️ Tech Stack
 
-### Prerequisites
+```python
+# Core
+pymongo >= 4.6.0              # MongoDB driver
+pymilvus                      # Milvus vector database
+sentence-transformers==5.1.1  # Vietnamese embeddings
+torch                         # Deep learning backend
 
-```bash
-# Install required dependencies
-pip install -r ../requirements.txt
+# Utils
+python-dotenv                 # Environment management
+tqdm                          # Progress bars
+numpy==1.26.4                # Numerical computing
+scikit-learn==1.3.2          # ML utilities
 ```
 
-### Dependencies
+## 📦 Cài đặt
 
-- `pymongo>=4.6.0` - MongoDB driver
-- `pymilvus` - Milvus vector database client
-- `sentence-transformers==5.1.1` - Text embedding models
-- `torch` - Deep learning framework
-- `numpy==1.26.4` - Numerical computing
-- `scikit-learn==1.3.2` - Machine learning utilities
-- `python-dotenv` - Environment variable management
-- `tqdm` - Progress bar library for data processing
+```bash
+# From project root
+pip install -r requirements.txt
+```
 
-## Quick Start
+## 🚀 Quick Start
 
 ### 1. Environment Setup
 
-Create a `.env` file in the project root:
+Tạo file `.env` ở project root:
 
 ```env
-# MongoDB Configuration
+# MongoDB
 MONGO_URL=mongodb://localhost:27017
 DATABASE_NAME=mini_adaptive_learning
 
-# Milvus Configuration
+# Milvus
 MILVUS_HOST=localhost
 MILVUS_PORT=19530
+
+# Data paths
+SGK_JSON_1=database/data_insert/sgk-toan-1-ket-noi-tri-thuc-tap-1.json
+SGK_JSON_2=database/data_insert/sgk-toan-1-ket-noi-tri-thuc-tap-2.json
+SGV_JSON_PATH=database/data_insert/sgv_ketnoitrithuc.json
 ```
 
-### 2. Database Setup
+### 2. Start Databases
 
 ```bash
-# Setup MongoDB collections and indexes
-cd mongodb
+# Via Docker Compose (recommended)
+docker-compose up -d
+
+# Or manual start
+# MongoDB: mongod --dbpath /data/db
+# Milvus: Follow Milvus installation guide
+```
+
+### 3. Setup Collections & Indexes
+
+```bash
+# MongoDB
+cd database/mongodb
 python setup_mongodb.py
 
-# Setup Milvus collections
+# Milvus
 cd ../milvus
 python setup_milvus.py
 ```
 
-### 3. Data Import
+### 4. Import Data
 
 ```bash
-# Import users with progress tracking
-cd mongodb
-python insert_users.py
+# MongoDB data (with progress bars)
+cd database/mongodb
+python insert_users.py                    # Import users
+python insert_placement_questions.py      # Import quiz questions
+python insert_sgk_to_mongodb.py          # Import textbook content
+python insert_sgv_to_mongodb.py          # Import teacher guide
 
-# Import questions and educational content with progress bars
-python insert_placement_questions.py
-python insert_sgk_to_mongodb.py
-python insert_sgv_to_mongodb.py
-
-# Import vector embeddings with progress tracking
+# Milvus vectors (with progress bars)
 cd ../milvus
-python insert_sgv_to_milvus.py
-python insert_sgk_to_milvus.py
+python insert_sgv_to_milvus.py           # Generate & insert SGV embeddings
+python insert_sgk_to_milvus.py           # Generate & insert SGK embeddings
 ```
 
-**Note**: All import scripts now feature progress bars and minimal logging for better user experience.
+**✨ All scripts có progress bars và minimal logging!**
 
-## Module Structure
+## 📁 Cấu trúc Module
 
 ```
 database/
-├── data_insert/           # Raw data files (JSON)
-├── embeddings/           # Text embedding service with progress tracking
-├── milvus/              # Milvus vector database scripts and client
-├── mongodb/             # MongoDB scripts and client
-└── README.md           # This documentation
+├── data_insert/                 # 📂 Raw JSON data files
+│   ├── grade1_math_questions_complete.json
+│   ├── sgk-toan-1-ket-noi-tri-thuc-tap-1.json
+│   ├── sgk-toan-1-ket-noi-tri-thuc-tap-2.json
+│   ├── sgv_ketnoitrithuc.json
+│   └── users_sample.json
+│
+├── embeddings/                  # 🤖 Vietnamese embedding service
+│   ├── local_embedder.py       # Main embedding class
+│   └── __pycache__/
+│
+├── milvus/                      # 🔍 Vector database
+│   ├── milvus_client.py        # CRUD client
+│   ├── setup_milvus.py         # Create collections
+│   ├── insert_sgv_to_milvus.py # Import teacher guide vectors
+│   ├── insert_sgk_to_milvus.py # Import textbook vectors
+│   └── __pycache__/
+│
+├── mongodb/                     # 📚 Primary database
+│   ├── mongodb_client.py       # CRUD client
+│   ├── setup_mongodb.py        # Create collections & indexes
+│   ├── insert_users.py         # Import users
+│   ├── insert_placement_questions.py  # Import quiz questions
+│   ├── insert_sgk_to_mongodb.py       # Import textbook content
+│   ├── insert_sgv_to_mongodb.py       # Import teacher guide
+│   └── __pycache__/
+│
+└── README.md                    # 📖 This file
 ```
 
 ## Core Components
@@ -573,33 +613,247 @@ MILVUS_HOST=new-milvus-host
 MILVUS_PORT=19530
 ```
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
-### Installation Issues
-- Ensure Python 3.8+ is installed
-- Install dependencies in correct order: `pip install tqdm` for progress bars
-- Check for version conflicts in requirements.txt
+### 1. MongoDB Connection Failed
 
-### Database Connection Issues
-- Verify database services are running
-- Check firewall and network connectivity
-- Validate connection strings and credentials
-- Use client libraries for better error handling
+**Error**: `pymongo.errors.ServerSelectionTimeoutError`
 
-### Progress Bar Issues
-- Ensure `tqdm` is installed: `pip install tqdm`
-- Check console encoding for Unicode characters
-- Use PowerShell or compatible terminal for best experience
+```bash
+# Check if MongoDB is running
+docker ps | grep mongo
+# Or
+mongosh --eval "db.runCommand({ ping: 1 })"
 
-### Performance Issues
-- Monitor memory usage during embedding generation
-- Optimize batch sizes for your hardware
-- Use appropriate database indexes
-- Enable progress tracking to monitor long-running operations
+# Restart MongoDB
+docker-compose restart mongodb
 
-### Logging Issues
-- Client libraries use minimal logging by default
-- Set logging level to WARNING to reduce output
-- Progress bars provide better user feedback than verbose logs
+# Check connection string
+python -c "
+from database.mongodb.mongodb_client import connect
+db = connect()
+print('✓ Connected:', db.name)
+"
+```
 
-For additional support, refer to the individual script documentation or check the project's main README file.
+### 2. Milvus Connection Failed
+
+**Error**: `MilvusException: failed to connect to server`
+
+```bash
+# Check Milvus status
+docker ps | grep milvus
+
+# Restart Milvus
+docker-compose restart milvus-standalone
+
+# Test connection
+python -c "
+from pymilvus import connections
+connections.connect('default', host='localhost', port='19530')
+print('✓ Connected to Milvus')
+"
+```
+
+### 3. Empty Collections
+
+**Issue**: Collections exist but have no data
+
+```bash
+# Check MongoDB
+python -c "
+from database.mongodb.mongodb_client import connect
+db = connect()
+print('placement_questions:', db.placement_questions.count_documents({}))
+print('users:', db.users.count_documents({}))
+print('textbook_exercises:', db.textbook_exercises.count_documents({}))
+"
+
+# Check Milvus
+python -c "
+from pymilvus import Collection
+sgv = Collection('sgv_collection')
+print('SGV vectors:', sgv.num_entities)
+baitap = Collection('baitap_collection')
+print('Baitap vectors:', baitap.num_entities)
+"
+
+# Re-import if needed
+cd database/mongodb
+python insert_placement_questions.py
+```
+
+### 4. Embedding Generation Slow/Failed
+
+**Issue**: Embedding takes too long or OOM
+
+```python
+# Reduce batch size in local_embedder.py
+embedder = LocalEmbedding(
+    batch_size=8,  # Default: 16, reduce if OOM
+    verbose=True
+)
+
+# Use CPU if GPU issues
+import torch
+torch.cuda.is_available()  # Should return False to force CPU
+```
+
+**Issue**: `CUDA out of memory`
+
+```bash
+# Clear GPU cache
+python -c "
+import torch
+torch.cuda.empty_cache()
+print('✓ GPU cache cleared')
+"
+
+# Or force CPU mode
+export CUDA_VISIBLE_DEVICES=-1
+```
+
+### 5. Progress Bar Not Showing
+
+**Issue**: No progress bars during import
+
+```bash
+# Install tqdm
+pip install tqdm
+
+# Check terminal encoding (Windows)
+chcp 65001  # Set UTF-8 encoding
+
+# Use PowerShell (better Unicode support)
+# Not CMD
+```
+
+### 6. Duplicate Data Issues
+
+**Issue**: Running import scripts multiple times creates duplicates
+
+```bash
+# Scripts use UPSERT logic - safe to re-run
+# But if you want to clean:
+
+# MongoDB - Drop collection
+python -c "
+from database.mongodb.mongodb_client import connect
+db = connect()
+db.placement_questions.drop()
+print('✓ Dropped placement_questions')
+"
+
+# Milvus - Drop collection
+python -c "
+from pymilvus import utility
+utility.drop_collection('sgv_collection')
+print('✓ Dropped sgv_collection')
+"
+
+# Then re-setup and re-import
+python setup_mongodb.py
+python insert_placement_questions.py
+```
+
+### 7. Import Script Hangs
+
+**Issue**: Script hangs without error
+
+```bash
+# Check file paths in .env
+cat .env | grep JSON
+
+# Verify JSON files exist
+ls -la database/data_insert/*.json
+
+# Check file permissions
+# Windows: Right-click > Properties > Security
+
+# Test JSON validity
+python -c "
+import json
+with open('database/data_insert/grade1_math_questions_complete.json') as f:
+    data = json.load(f)
+    print(f'✓ Valid JSON: {len(data)} items')
+"
+```
+
+### 8. Vector Search Returns Nothing
+
+**Issue**: Milvus search returns empty results
+
+```python
+from pymilvus import Collection
+
+# Load collection first (important!)
+collection = Collection('sgv_collection')
+collection.load()
+
+# Check if collection has data
+print(f"Entities: {collection.num_entities}")
+
+# Verify embedding dimension matches (768)
+print(f"Schema: {collection.schema}")
+```
+
+### 9. Slow Vector Search
+
+**Issue**: Milvus search takes too long
+
+```python
+# Create index if not exists
+from pymilvus import Collection
+
+collection = Collection('sgv_collection')
+
+# Check current index
+print(collection.index().params)
+
+# Create IVF_FLAT index
+index_params = {
+    "metric_type": "L2",
+    "index_type": "IVF_FLAT",
+    "params": {"nlist": 128}
+}
+collection.create_index("embedding", index_params)
+collection.load()
+```
+
+### 10. Docker Issues
+
+**Issue**: Containers won't start
+
+```bash
+# Check Docker is running
+docker info
+
+# Check disk space
+df -h
+
+# View logs
+docker-compose logs milvus-standalone
+docker-compose logs mongodb
+
+# Restart all
+docker-compose down
+docker-compose up -d
+
+# Check ports not in use
+netstat -an | findstr :19530  # Milvus
+netstat -an | findstr :27017  # MongoDB
+```
+
+---
+
+## 📚 Tài liệu tham khảo
+
+- [MongoDB Python Driver Docs](https://pymongo.readthedocs.io/)
+- [Milvus Python SDK Docs](https://milvus.io/docs)
+- [Sentence Transformers Docs](https://www.sbert.net/)
+- [Vietnamese Embedding Model](https://huggingface.co/dangvantuan/vietnamese-document-embedding)
+
+---
+
+**Maintainer**: Mini Adaptive Learning Team  
+**Last Updated**: October 17, 2025

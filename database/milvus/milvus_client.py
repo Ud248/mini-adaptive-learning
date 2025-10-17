@@ -212,18 +212,16 @@ def search(collection_name: str,
         
         results = collection.search(**search_params)
         
-        # Format kết quả
+        # Format kết quả - flatten để trả về list of records thay vì nested list
         formatted_results = []
         for hits in results:
-            hit_list = []
             for hit in hits:
                 hit_data = {
                     "id": hit.id,
                     "distance": hit.distance,
                     "entity": hit.entity
                 }
-                hit_list.append(hit_data)
-            formatted_results.append(hit_list)
+                formatted_results.append(hit_data)
         
         logger.info(f"✅ Search completed in {collection_name}, found {len(formatted_results)} result sets")
         return formatted_results

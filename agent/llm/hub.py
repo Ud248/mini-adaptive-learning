@@ -102,7 +102,11 @@ class LLMHub:
             timeout_s = item.get("timeout_s", 15)
 
             if t == "ollama":
-                p = OllamaProvider(name=name, base_url=item["base_url"], model=item["model"], timeout_s=timeout_s)
+                # Support both direct URL and environment variable
+                base_url_raw = item["base_url"]
+                # Try to resolve as environment variable first
+                base_url = os.getenv(base_url_raw, base_url_raw)
+                p = OllamaProvider(name=name, base_url=base_url, model=item["model"], timeout_s=timeout_s)
             elif t == "google_gemini":
                 api_key_env = item.get("api_key_env", "GEMINI_API_KEY")
                 api_key = os.getenv(api_key_env, "")

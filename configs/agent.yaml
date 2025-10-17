@@ -1,9 +1,9 @@
 llm:
   providers:
-    - name: gpt_oss_ollama
+    - name: gemma2:9b
       type: ollama
-      base_url: http://localhost:11434
-      model: gpt-oss:20b-cloud
+      base_url: OLLAMA_IP
+      model: gemma2:9b
       priority: 1
       timeout_s: 15
     - name: gemini
@@ -11,12 +11,6 @@ llm:
       model: gemini-2.0-flash-lite
       api_key_env: GEMINI_API_KEY
       priority: 2
-      timeout_s: 12
-    - name: llama_ollama
-      type: ollama
-      base_url: http://localhost:11434
-      model: llama3.1:8b
-      priority: 3
       timeout_s: 15
   retry: 1
   temperature_default: 0.2
@@ -30,7 +24,36 @@ rag:
   topk_sgk: 20
   cache_ttl_s: 900
 
+question_generation:
+  batch_size: 4  # 3-5 câu/batch
+  temperature: 0.3  # cho generation
+  max_tokens: 2048  # đủ cho 5 câu
+  retry_on_parse_error: 2
+  enforce_4_answers: true
+  enable_teacher_summary: true
+  teacher_summary_mode: llm_then_rule  # llm_only | rule_only | llm_then_rule
+  teacher_summary_max_tokens: 400
+  teacher_summary_max_words: 180
+
 images:
   base_url: http://125.212.229.11:8888/
 
+validation:
+  min_len: 6
+  max_len: 180
+  banned_words: ["tục tĩu", "bạo lực"]
+  require_abcd_format: true
+  unique_options: true
+  grade_numeric_range:
+    grade1: [0, 100]
+  enable_math_check: true
+  enable_llm_critique: false
+  auto_fix_once: true
+  critique_provider: ""
 
+workflow:
+  regen_limit: 2
+  min_score: 0.0
+  max_teacher_ctx: 5
+  max_textbook_ctx: 20
+  log_level: INFO

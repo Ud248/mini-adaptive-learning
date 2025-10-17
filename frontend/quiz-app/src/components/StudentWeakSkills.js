@@ -13,7 +13,7 @@ import {
     Badge,
     Tooltip,
 } from 'antd';
-import { BookOutlined, TrophyOutlined, ArrowLeftOutlined, HomeOutlined } from '@ant-design/icons';
+import { TrophyOutlined, ArrowLeftOutlined, HomeOutlined } from '@ant-design/icons';
 
 const StudentWeakSkills = () => {
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const StudentWeakSkills = () => {
     const [, setProfileData] = useState(null);
     const [weakSkills, setWeakSkills] = useState([]);
     const [loading, setLoading] = useState(true);
+
 
 
     const loadStudentProfile = useCallback(async () => {
@@ -117,10 +118,7 @@ const StudentWeakSkills = () => {
 
 
 
-    const handlePracticeSkill = (skill) => {
-        // TODO: Implement navigation to practice screen for specific skill
-        message.info(`Tính năng luyện tập kỹ năng "${skill.skill_name}" sẽ được phát triển sớm!`);
-    };
+
 
     if (loading) {
         return (
@@ -160,6 +158,19 @@ const StudentWeakSkills = () => {
 
     return (
         <div className="quiz-container">
+            {/* Back to Home Button */}
+            <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 100 }}>
+                <Button
+                    icon={<HomeOutlined />}
+                    onClick={() => navigate('/')}
+                    danger
+                    type="primary"
+                >
+                    Quay lại trang chủ
+                </Button>
+            </div>
+
+            {/* Practice flow moved to dedicated route /practice/:skillId */}
             {/* Header with Student Info */}
             <Card className="weak-hero" bordered={false}>
                 <Row gutter={[16, 16]} align="middle" justify="center">
@@ -202,8 +213,21 @@ const StudentWeakSkills = () => {
                                         <div className="skill-status-pill" style={{ backgroundColor: getSkillStatusColor(skill.status) }}>
                                             {getSkillStatusText(skill.status)}
                                         </div>
-                                        <div className="skill-actions">
-                                            <Button type="primary" icon={<BookOutlined />} onClick={() => handlePracticeSkill(skill)}>
+
+                                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+                                            <Button
+                                                type="primary"
+                                                onClick={() => {
+                                                    navigate('/practice/setup', {
+                                                        state: {
+                                                            skill_id: skill.skill_id,
+                                                            skill_name: skill.skill_name,
+                                                            grade: skill.grade,
+                                                            subject: skill.subject
+                                                        }
+                                                    });
+                                                }}
+                                            >
                                                 Luyện tập
                                             </Button>
                                         </div>

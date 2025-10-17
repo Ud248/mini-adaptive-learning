@@ -1,9 +1,13 @@
 import os
 import sys
+from pathlib import Path
 
-# Đảm bảo có thể import module 'app' khi chạy từ project root
-CURRENT_DIR = os.path.dirname(__file__)
-if CURRENT_DIR not in sys.path:
-    sys.path.append(CURRENT_DIR)
+# Thêm project root vào sys.path để import được các module
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+# Thêm thư mục backend/saint_analysis để import được package 'app'
+SAINT_ANALYSIS_DIR = Path(__file__).parent
+sys.path.insert(0, str(SAINT_ANALYSIS_DIR))
 
 from app.api.saint_api import app

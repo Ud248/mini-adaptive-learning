@@ -37,6 +37,7 @@ class GeminiProvider(LLMProvider):
             "generationConfig": {
                 "temperature": temperature,
                 "maxOutputTokens": max_tokens,
+                "responseMimeType": "application/json",
             },
         }
         resp = requests.post(url, json=body, timeout=self.timeout_s)

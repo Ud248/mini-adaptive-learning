@@ -13,6 +13,21 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 from jose import jwt, JWTError
 try:
+    from agent.workflow.agent_workflow import AgentWorkflow
+    from agent.llm.hub import LLMHub
+    from agent.tools.validation_tool import ValidationTool
+except ModuleNotFoundError:
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+    from agent.workflow.agent_workflow import AgentWorkflow
+    from agent.llm.hub import LLMHub
+    from agent.tools.validation_tool import ValidationTool
+try:
+    from .schemas import GenerateRequest, ValidateRequest
+except Exception:
+    # Allow running as a script without package context
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+    from backend.quiz_api.schemas import GenerateRequest, ValidateRequest
+try:
     from database.mongodb.mongodb_client import aggregate as mongo_aggregate
 except ModuleNotFoundError:
     # Add project root to sys.path so 'database' package is importable
@@ -137,7 +152,12 @@ def normalize_questions(docs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001", "http://127.0.0.1:3001"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -182,6 +202,21 @@ class QuizResult(BaseModel):
     score: float
     detailed_results: List[Dict[str, Any]]
     saint_analysis_data: Optional[Dict[str, Any]] = None
+
+class PracticeSubmission(BaseModel):
+    student_email: str
+    skill_id: str
+    total_questions: int
+    correct_answers: int
+    wrong_answers: int
+    unanswered_questions: int
+    score: float  # percentage (0-100)
+    avg_response_time: Optional[float] = None
+
+class PracticeResult(BaseModel):
+    success: bool
+    message: str
+    updated_profile: Optional[Dict[str, Any]] = None
 
 # Sử dụng dữ liệu từ file grade1_math_questions_complete.json
 def load_questions_from_json():
@@ -363,6 +398,129 @@ async def get_weak_skills(student_email: str):
     except Exception as e:
         return {"error": f"Lỗi lấy weak skills: {str(e)}"}
 
+@app.post("/practice/submit", response_model=PracticeResult)
+async def submit_practice(submission: PracticeSubmission):
+    """
+    Update student profile sau khi hoàn thành bài luyện tập skill yếu
+    """
+    try:
+        client = get_mongo_client()
+        db = client[MONGO_DB_NAME]
+        col = db["profile_student"]
+        
+        student_email = submission.student_email
+        skill_id = submission.skill_id
+        
+        # Tính toán metrics
+        total = submission.total_questions
+        correct = submission.correct_answers
+        skipped = submission.unanswered_questions
+        answered = total - skipped
+        
+        # Accuracy = score / 100 (convert từ percentage sang [0,1])
+        accuracy = submission.score / 100.0
+        
+        # Xác định status theo logic của simple_updater
+        if skipped > 0:
+            status = "struggling"  # Có câu trống = struggling
+        elif accuracy >= 0.8:
+            status = "mastered"
+        elif accuracy >= 0.5:
+            status = "in_progress"
+        else:
+            status = "struggling"
+        
+        # Tìm profile hiện tại
+        profile = col.find_one({"student_email": student_email})
+        
+        if profile:
+            # Cập nhật skill trong mảng skills
+            skills = profile.get("skills", [])
+            
+            # Tìm skill cần update
+            skill_found = False
+            for skill in skills:
+                if skill.get("skill_id") == skill_id:
+                    # Update skill hiện có
+                    skill["accuracy"] = round(accuracy, 2)
+                    # avg_time giữ nguyên nếu không có trong submission
+                    if submission.avg_response_time is not None:
+                        skill["avg_time"] = round(submission.avg_response_time, 2)
+                    skill["answered"] = answered
+                    skill["skipped"] = skipped
+                    skill["status"] = status
+                    skill_found = True
+                    break
+            
+            # Nếu chưa có skill này, thêm mới
+            if not skill_found:
+                skills.append({
+                    "skill_id": skill_id,
+                    "accuracy": round(accuracy, 2),
+                    "avg_time": round(submission.avg_response_time or 0, 2),
+                    "answered": answered,
+                    "skipped": skipped,
+                    "status": status
+                })
+            
+            # Update low_accuracy_skills
+            low_accuracy_skills = profile.get("low_accuracy_skills", [])
+            
+            # Chỉ xử lý skill vừa luyện tập
+            # Chỉ xóa khỏi low_accuracy_skills khi:
+            # - Accuracy >= 0.8 (mastered)
+            # - VÀ không có câu bỏ trống (skipped == 0)
+            if accuracy >= 0.8 and skipped == 0:
+                # Nếu đạt mastered và làm hết, xóa khỏi low_accuracy_skills
+                if skill_id in low_accuracy_skills:
+                    low_accuracy_skills.remove(skill_id)
+            # Không tự động thêm vào low_accuracy_skills
+            # (vì đã được SAINT hoặc logic khác xác định trước đó)
+            
+            # Cập nhật vào database
+            col.update_one(
+                {"student_email": student_email},
+                {
+                    "$set": {
+                        "skills": skills,
+                        "low_accuracy_skills": low_accuracy_skills,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+        else:
+            # Tạo profile mới nếu chưa tồn tại
+            new_profile = {
+                "student_email": student_email,
+                "skills": [{
+                    "skill_id": skill_id,
+                    "accuracy": round(accuracy, 2),
+                    "avg_time": round(submission.avg_response_time or 0, 2),
+                    "answered": answered,
+                    "skipped": skipped,
+                    "status": status
+                }],
+                "low_accuracy_skills": [],  # Không tự động thêm, để SAINT xác định
+                "slow_response_skills": [],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            col.insert_one(new_profile)
+        
+        # Lấy profile đã update để trả về
+        updated_profile = col.find_one({"student_email": student_email})
+        if updated_profile and "_id" in updated_profile:
+            updated_profile["_id"] = str(updated_profile["_id"])
+        
+        return PracticeResult(
+            success=True,
+            message=f"Đã cập nhật profile cho skill {skill_id}. Status: {status}",
+            updated_profile=updated_profile
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi cập nhật profile: {str(e)}")
+
 @app.post("/auth/login", response_model=TokenResponse)
 async def login(req: LoginRequest):
     identifier = (req.email_or_username or "").strip()
@@ -389,6 +547,80 @@ async def login(req: LoginRequest):
 async def logout():
     # Với JWT stateless, logout do client xóa token; server trả 200
     return {"message": "Đăng xuất thành công"}
+
+# ===================== AGENT ENDPOINTS =====================
+
+_hub: LLMHub | None = None
+_workflow: AgentWorkflow | None = None
+_validator: ValidationTool | None = None
+
+
+def _get_hub() -> LLMHub:
+    global _hub
+    if _hub is None:
+        # Load full config for LLM providers
+        try:
+            import yaml  # type: ignore
+            path = os.path.join(os.getcwd(), "configs", "agent.yaml")
+            cfg = {}
+            if os.path.isfile(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    cfg = yaml.safe_load(f) or {}
+        except Exception:
+            cfg = {}
+        _hub = LLMHub(cfg)
+    return _hub
+
+
+def _get_workflow() -> AgentWorkflow:
+    global _workflow
+    if _workflow is None:
+        _workflow = AgentWorkflow(hub=_get_hub())
+    return _workflow
+
+
+def _get_validator() -> ValidationTool:
+    global _validator
+    if _validator is None:
+        _validator = ValidationTool()
+    return _validator
+
+
+@app.post("/agent/questions:generate")
+async def agent_generate(req: GenerateRequest, current_user: dict = Depends(get_current_user)):
+    try:
+        wf = _get_workflow()
+        profile_student = {"username": req.username, "accuracy": 60}
+        constraints = {
+            "grade": req.grade,
+            "skill": req.skill,
+            "skill_name": req.skill_name or "",
+            "num_questions": req.num_questions,
+        }
+        out = wf.run(profile_student=profile_student, constraints=constraints)
+        return out
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Agent generate failed: {e}")
+
+
+@app.post("/agent/questions:validate")
+async def agent_validate(req: ValidateRequest, current_user: dict = Depends(get_current_user)):
+    try:
+        validator = _get_validator()
+        report = validator.validate(
+            req.questions,
+            skill=req.skill,
+            teacher_context=req.teacher_context or [],
+            textbook_context=req.textbook_context or [],
+            grade=req.grade,
+        )
+        return report
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Agent validate failed: {e}")
 
  
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, Button, message, Spin, List, Statistic, Row, Col } from 'antd';
+import { Card, Button, message, Spin, List, Statistic, Row, Col, Collapse, Tag } from 'antd';
 import {
     TrophyOutlined,
     ReloadOutlined,
@@ -8,8 +8,13 @@ import {
     CheckCircleOutlined,
     CloseCircleOutlined,
     ClockCircleOutlined,
-    BookOutlined
+    BookOutlined,
+    DownOutlined,
+    SmileOutlined,
+    FrownOutlined
 } from '@ant-design/icons';
+
+const { Panel } = Collapse;
 
 const QuizResult = () => {
     const { quizId } = useParams();
@@ -27,9 +32,6 @@ const QuizResult = () => {
             // Kiểm tra xem có dữ liệu từ state không (từ QuizTaking)
             if (location.state && location.state.result) {
                 const resultData = location.state.result;
-
-                // Tính toán thống kê chi tiết
-                const totalQuestions = 40; // Luôn là 40 câu
 
                 // Tạo detailed_results từ dữ liệu thực và tính đúng/sai
                 const detailedResults = [];
@@ -64,10 +66,12 @@ const QuizResult = () => {
                     });
                 }
 
+                // Tính toán thống kê dựa trên số câu thực tế
+                const totalQuestions = resultData.questions ? resultData.questions.length : 0;
                 const wrongAnswers = Math.max(0, answeredQuestions - correctAnswers);
                 const unansweredQuestions = Math.max(0, totalQuestions - answeredQuestions);
 
-                // Tính điểm trên tổng 30 câu
+                // Tính điểm trên tổng số câu thực tế
                 const scoreOnTotal = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
                 const enhancedResult = {
@@ -151,6 +155,64 @@ const QuizResult = () => {
         return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     };
 
+    // Phân tích skills từ detailed_results
+    const analyzeSkills = () => {
+        if (!result || !result.detailed_results) {
+            return { goodSkills: [], weakSkills: [] };
+        }
+
+        // Lấy thông tin skill từ questions gốc
+        const questions = location.state?.result?.questions || [];
+
+        // Group câu hỏi theo skill_name
+        const skillGroups = {};
+
+        result.detailed_results.forEach((item, index) => {
+            const question = questions[index] || {};
+            // Lấy skill_name từ question (ưu tiên lesson > chapter > skill)
+            const skillName = question.lesson || question.chapter || question.skill || `Kỹ năng ${index + 1}`;
+            const skillId = question.skill || question.chapter || `SKILL_${index + 1}`;
+
+            if (!skillGroups[skillName]) {
+                skillGroups[skillName] = {
+                    skill_id: skillId,
+                    skill_name: skillName,
+                    questions: [],
+                    correct: 0,
+                    total: 0
+                };
+            }
+
+            skillGroups[skillName].questions.push(item);
+            skillGroups[skillName].total += 1;
+            if (item.correct) {
+                skillGroups[skillName].correct += 1;
+            }
+        });
+
+        // Tính accuracy cho mỗi skill và phân loại
+        const goodSkills = [];
+        const weakSkills = [];
+
+        Object.values(skillGroups).forEach(skill => {
+            const accuracy = skill.total > 0 ? (skill.correct / skill.total) * 100 : 0;
+            const skillData = {
+                ...skill,
+                accuracy: accuracy.toFixed(1)
+            };
+
+            if (accuracy >= 70) {
+                goodSkills.push(skillData);
+            } else {
+                weakSkills.push(skillData);
+            }
+        });
+
+        return { goodSkills, weakSkills };
+    };
+
+    const { goodSkills, weakSkills } = analyzeSkills();
+
     if (loading) {
         return (
             <div className="loading-spinner">
@@ -231,7 +293,7 @@ const QuizResult = () => {
                         type="primary"
                         size="large"
                         icon={<ReloadOutlined />}
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/quiz-setup')}
                     >
                         Làm bài kiểm tra mới
                     </Button>
@@ -266,38 +328,125 @@ const QuizResult = () => {
 
             </Card>
 
-            {/* Detailed Results */}
-            <Card className="detailed-results" title="Chi tiết từng câu hỏi">
-                <List
-                    dataSource={result.detailed_results}
-                    renderItem={(item, index) => (
-                        <List.Item>
-                            <div className={`result-item ${item.correct ? 'correct' : 'incorrect'}`}>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: 'bold', marginBottom: 8 }}>
-                                        Câu {index + 1}: {item.question}
-                                    </div>
-                                    <div style={{ marginBottom: 4 }}>
-                                        <strong>Đáp án của bạn:</strong> {item.user_answer}
-                                    </div>
-                                    <div style={{ marginBottom: 4 }}>
-                                        <strong>Đáp án đúng:</strong> {item.correct_answer}
-                                    </div>
-                                    <div>
-                                        <strong>Giải thích:</strong> {item.explanation}
-                                    </div>
-                                </div>
-                                <div style={{ marginLeft: 16 }}>
-                                    {item.correct ? (
-                                        <CheckCircleOutlined style={{ fontSize: 24, color: '#52c41a' }} />
-                                    ) : (
-                                        <CloseCircleOutlined style={{ fontSize: 24, color: '#ff4d4f' }} />
-                                    )}
-                                </div>
+            {/* Skill Analysis - Good Skills & Weak Skills */}
+            <Row gutter={16} style={{ marginTop: 24 }}>
+                {/* Good Skills */}
+                <Col xs={24} md={12}>
+                    <Card
+                        title={
+                            <span>
+                                <SmileOutlined style={{ color: '#52c41a', marginRight: 8 }} />
+                                Nhóm kỹ năng tốt
+                            </span>
+                        }
+                        headStyle={{ background: '#f6ffed', borderBottom: '2px solid #52c41a' }}
+                    >
+                        {goodSkills.length > 0 ? (
+                            <List
+                                dataSource={goodSkills}
+                                renderItem={(skill) => (
+                                    <List.Item>
+                                        <div style={{ width: '100%' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ fontWeight: 'bold' }}>{skill.skill_name}</span>
+                                                <span style={{ color: '#52c41a', fontWeight: 'bold', fontSize: '16px' }}>
+                                                    {skill.accuracy}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </List.Item>
+                                )}
+                            />
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '20px', color: '#8c8c8c' }}>
+                                Chưa có kỹ năng tốt
                             </div>
-                        </List.Item>
-                    )}
-                />
+                        )}
+                    </Card>
+                </Col>
+
+                {/* Weak Skills */}
+                <Col xs={24} md={12}>
+                    <Card
+                        title={
+                            <span>
+                                <FrownOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
+                                Nhóm kỹ năng yếu
+                            </span>
+                        }
+                        headStyle={{ background: '#fff2e8', borderBottom: '2px solid #ff4d4f' }}
+                    >
+                        {weakSkills.length > 0 ? (
+                            <List
+                                dataSource={weakSkills}
+                                renderItem={(skill) => (
+                                    <List.Item>
+                                        <div style={{ width: '100%' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ fontWeight: 'bold' }}>{skill.skill_name}</span>
+                                                <span style={{ color: '#ff4d4f', fontWeight: 'bold', fontSize: '16px' }}>
+                                                    {skill.accuracy}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </List.Item>
+                                )}
+                            />
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '20px', color: '#8c8c8c' }}>
+                                Tất cả kỹ năng đều tốt! 🎉
+                            </div>
+                        )}
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Detailed Results - Collapsed by default */}
+            <Card style={{ marginTop: 24 }}>
+                <Collapse
+                    ghost
+                    expandIcon={({ isActive }) => <DownOutlined rotate={isActive ? 180 : 0} />}
+                >
+                    <Collapse.Panel
+                        header={
+                            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                📋 Chi tiết từng câu hỏi ({result.detailed_results.length} câu)
+                            </span>
+                        }
+                        key="1"
+                    >
+                        <List
+                            dataSource={result.detailed_results}
+                            renderItem={(item, index) => (
+                                <List.Item>
+                                    <div className={`result-item ${item.correct ? 'correct' : 'incorrect'}`}>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>
+                                                Câu {index + 1}: {item.question}
+                                            </div>
+                                            <div style={{ marginBottom: 4 }}>
+                                                <strong>Đáp án của bạn:</strong> {item.user_answer}
+                                            </div>
+                                            <div style={{ marginBottom: 4 }}>
+                                                <strong>Đáp án đúng:</strong> {item.correct_answer}
+                                            </div>
+                                            <div>
+                                                <strong>Giải thích:</strong> {item.explanation}
+                                            </div>
+                                        </div>
+                                        <div style={{ marginLeft: 16 }}>
+                                            {item.correct ? (
+                                                <CheckCircleOutlined style={{ fontSize: 24, color: '#52c41a' }} />
+                                            ) : (
+                                                <CloseCircleOutlined style={{ fontSize: 24, color: '#ff4d4f' }} />
+                                            )}
+                                        </div>
+                                    </div>
+                                </List.Item>
+                            )}
+                        />
+                    </Collapse.Panel>
+                </Collapse>
             </Card>
 
             {/* Saint Analysis Data */}
