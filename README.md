@@ -100,10 +100,10 @@ Adaptive Learning giúp mỗi học sinh có lộ trình học tập riêng, t�
 | **Frontend** | React 18.2, Ant Design 5.12, React Router 6.8, Axios |
 | **Backend** | FastAPI 0.110, Uvicorn, Pydantic, Python 3.10+ |
 | **AI/ML** | LangChain, Google Gemini API, Ollama (local LLM), Sentence-Transformers |
-| **Databases** | MongoDB 7.0+ (primary), Milvus 2.3 (vectors), MinIO (object storage) |
+| **Databases** | MongoDB 7.0+ (primary), Milvus 2.3 (vectors)|
 | **Authentication** | JWT (python-jose), bcrypt (passlib) |
 | **DevOps** | Docker, Docker Compose, Poetry (optional) |
-| **Embeddings** | Vietnamese Sentence-Transformers (keepitreal/vietnamese-sbert) |
+| **Embeddings** | Vietnamese Sentence-Transformers (dangvantuan/vietnamese-document-embedding) |
 
 ---
 
@@ -544,7 +544,7 @@ Cảm ơn những người đã đóng góp vào dự án này:
 
 ### Acknowledgments
 
-- **Vietnamese SBERT Model**: [keepitreal/vietnamese-sbert](https://huggingface.co/keepitreal/vietnamese-sbert)
+- **Vietnamese SBERT Model**: [dangvantuan/vietnamese-document-embedding](https://huggingface.co/dangvantuan/vietnamese-document-embedding)
 - **SAINT++ Paper**: "SAINT+: Integrating Temporal Features for EdNet Correctness Prediction" (Kim et al., 2020)
 - **Milvus**: Vector database của Zilliz
 - **FastAPI**: Modern Python web framework
