@@ -3,7 +3,10 @@
     "id": "1",
     "grade": 1,
     "subject": "Toán",
-    "lesson": ["CÁC SỐ 0, 1, 2, 3, 4, 5"],
+    "lesson": [
+      "CÁC SỐ 0, 1, 2, 3, 4, 5"
+    ],
+    "skill_name": "Các số 0, 1, 2, 3, 4, 5",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -37,6 +40,7 @@
     "lesson": [
       "CÁC SỐ 6, 7, 8, 9, 10 (3 tiết)"
     ],
+    "skill_name": "Các số 6, 7, 8, 9, 10",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -70,6 +74,7 @@
     "lesson": [
       "NHIỀU HƠN, ÍT HƠN, BẰNG NHAU"
     ],
+    "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -102,6 +107,7 @@
     "lesson": [
       "SO SÁNH SỐ"
     ],
+    "skill_name": "So sánh số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -140,6 +146,7 @@
     "lesson": [
       "MẤY VÀ MẤY"
     ],
+    "skill_name": "Mấy và mấy",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -175,6 +182,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG (4 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -208,6 +216,7 @@
       "Chủ đề 2. LÀM QUEN VỚI MỘT SỐ HÌNH PHẲNG",
       "HÌNH VUÔNG, HÌNH TRÒN, HÌNH TAM GIÁC, HÌNH CHỮ NHẬT"
     ],
+    "skill_name": "Hình vuông, hình tròn, hình tam giác, hình chữ nhật",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -240,6 +249,7 @@
     "lesson": [
       "THỰC HÀNH LẮP GHÉP, XẾP HÌNH (2 tiết)"
     ],
+    "skill_name": "Thực hành lắp ghép, xếp hình",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -272,6 +282,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG (1 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -301,6 +312,7 @@
       "Chủ đề 3. PHÉP CỘNG, PHÉP TRỪ TRONG PHẠM VI 10",
       "PHÉP CỘNG TRONG PHẠM VI 10 (6 tiết)"
     ],
+    "skill_name": "Phép cộng trong phạm vi 10",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -341,6 +353,7 @@
     "lesson": [
       "PHÉP TRỪ TRONG PHẠM VI 10 (6 tiết)"
     ],
+    "skill_name": "Phép trừ trong phạm vi 10",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -380,6 +393,7 @@
     "lesson": [
       "Bài 12. BẢNG CỘNG, BẢNG TRỪ TRONG PHẠM VI 10 (3 tiết)"
     ],
+    "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -414,6 +428,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -445,6 +460,7 @@
       "Chủ đề 4. LÀM QUEN VỚI MỘT SỐ HÌNH KHỐI",
       "KHỐI LẬP PHƯƠNG, KHỐI HỘP CHỮ NHẬT (2 tiết)"
     ],
+    "skill_name": "Khối lập phương, khối hộp chữ nhật",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -476,6 +492,7 @@
     "lesson": [
       "Bài 15. VỊ TRÍ, ĐỊNH HƯỚNG TRONG KHÔNG GIAN (2 tiết)"
     ],
+    "skill_name": "Vị trí, định hướng trong không gian",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -509,6 +526,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG (1 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -538,6 +556,7 @@
       "Chủ đề 5. ÔN TẬP HỌC KÌ 1",
       "ÔN TẬP CÁC SỐ TRONG PHẠM VI 10 (2tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -568,6 +587,7 @@
     "lesson": [
       "ÔN TẬP PHÉP CỘNG, PHÉP TRỪ TRONG PHẠM VI 10"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -598,6 +618,7 @@
     "lesson": [
       "ÔN TẬP HÌNH HỌC (1 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -626,6 +647,7 @@
     "lesson": [
       "ÔN TẬP CHUNG ( tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -655,6 +677,7 @@
       "Chủ đề 6. CÁC SỐ ĐẾN 100",
       "SỐ CÓ HAI CHỮ SỐ (6 tiết)"
     ],
+    "skill_name": "Số có hai chữ số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -694,6 +717,7 @@
     "lesson": [
       "SO SÁNH SỐ CÓ HAI CHỮ SỐ (3 tiết)"
     ],
+    "skill_name": "So sánh số có hai chữ số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -726,6 +750,7 @@
     "lesson": [
       "BẢNG CÁC SỐ TỪ 1 ĐẾN 100 (1 tiết)"
     ],
+    "skill_name": "Bảng các số từ 1 đến 100",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -755,6 +780,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -785,6 +811,7 @@
       "Chủ đề 7. ĐO DÀI VÀ ĐO ĐO DÀI",
       "DÀI HƠN, NGẮN HƠN (2 tiết)"
     ],
+    "skill_name": "Dài hơn, ngắn hơn",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -818,6 +845,7 @@
     "lesson": [
       "ĐƠN VỊ ĐO ĐO DÀI (2 tiết)"
     ],
+    "skill_name": "Đơn vị đo độ dài",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -851,6 +879,7 @@
     "lesson": [
       "THỰC HÀNH ƯỚC LƯỢNG VÀ ĐO ĐỘ DÀI (2 tiết)"
     ],
+    "skill_name": "Thực hành ước lượng và đo độ dài",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -882,6 +911,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG (2 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -913,6 +943,7 @@
       "TRONG PHẠM VI 100",
       "PHÉP CỘNG SỐ CÓ HAI CHỮ SỐ VỚI SỐ CÓ MỘT CHỮ SỐ"
     ],
+    "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -944,6 +975,7 @@
     "lesson": [
       "PHÉP CỘNG SỐ CÓ HAI CHỮ SỐ VỚI SỐ CÓ HAI CHỮ SỐ"
     ],
+    "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -975,6 +1007,7 @@
     "lesson": [
       "PHÉP TRỪ SỐ CÓ HAI CHỮ SỐ CHO SỐ CÓ MỘT CHỮ SỐ"
     ],
+    "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1007,6 +1040,7 @@
     "lesson": [
       "PHÉP TRỪ SỐ CÓ HAI CHỮ SỐ CHO SỐ CÓ HAI CHỮ SỐ"
     ],
+    "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1039,6 +1073,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG (4 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1071,6 +1106,7 @@
       "Chủ đề 9. THỜI GIAN. GIỜ VÀ LỊCH",
       "XEM GIỜ ĐÚNG TRÊN ĐỒNG HỒ (2 tiết)"
     ],
+    "skill_name": "Xem giờ đúng trên đồng hồ",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1102,6 +1138,7 @@
     "lesson": [
       "CÁC NGÀY TRONG TUẦN (2 tiết)"
     ],
+    "skill_name": "Các ngày trong tuần",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1133,6 +1170,7 @@
     "lesson": [
       "THỰC HÀNH XEM LỊCH VÀ GIỜ (2 tiết)"
     ],
+    "skill_name": "Thực hành xem lịch và giờ",
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1164,6 +1202,7 @@
     "lesson": [
       "LUYỆN TẬP CHUNG"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1194,6 +1233,7 @@
       "Chủ đề 10. ÔN TẬP CUỐI NĂM",
       "ÔN TẬP CÁC SỐ VÀ PHÉP TÍNH TRONG PHẠM VI 10"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1224,6 +1264,7 @@
     "lesson": [
       "ÔN TẬP CÁC SỐ VÀ PHÉP TÍNH TRONG PHẠM VI 100"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1254,6 +1295,7 @@
     "lesson": [
       "ÔN TẬP HÌNH HỌC VÀ ĐO LƯỜNG (2 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",
@@ -1283,6 +1325,7 @@
     "lesson": [
       "ÔN TẬP CHUNG (1 tiết)"
     ],
+    "skill_name": null,
     "parts": [
       {
         "topic": "I MỤC TIÊU",

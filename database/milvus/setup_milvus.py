@@ -35,11 +35,21 @@ from database.milvus.milvus_client import (
     list_collections, 
     get_collection_info
 )
-from pymilvus import DataType
+from pymilvus import DataType, Collection
+
+def drop_collection_if_exists(collection_name: str) -> None:
+    """Xóa collection nếu đã tồn tại"""
+    try:
+        collection = Collection(collection_name)
+        collection.drop()
+        print(f"🗑️  Dropped existing collection: {collection_name}")
+    except Exception as e:
+        print(f"⚠️  Collection does not exist or error: {collection_name}")
 
 def create_collections_from_config(collections_config: Dict[str, Dict[str, Any]]) -> bool:
     """
     Tạo nhiều collections từ config dictionary
+    Xóa collections cũ trước khi tạo mới
     
     Args:
         collections_config: Dictionary chứa config của các collections
@@ -54,6 +64,9 @@ def create_collections_from_config(collections_config: Dict[str, Dict[str, Any]]
         
         for collection_name, config in collections_config.items():
             try:
+                # Drop existing collection if it exists
+                drop_collection_if_exists(collection_name)
+                
                 fields = config.get("fields", [])
                 description = config.get("description", "")
                 enable_dynamic_field = config.get("enable_dynamic_field", False)
@@ -82,11 +95,9 @@ def create_default_collections() -> bool:
         "baitap_collection": {
             "fields": [
                 {"name": "id", "dtype": DataType.VARCHAR, "is_primary": True, "max_length": 100},
-                {"name": "question", "dtype": DataType.VARCHAR, "max_length": 65535},
-                {"name": "answer", "dtype": DataType.VARCHAR, "max_length": 65535},
+                {"name": "question_content", "dtype": DataType.VARCHAR, "max_length": 65535},
                 {"name": "lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
-                {"name": "normalized_lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
-                {"name": "subject", "dtype": DataType.VARCHAR, "max_length": 512},
+                {"name": "skill_name", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "source", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "embedding", "dtype": DataType.FLOAT_VECTOR, "dim": 768}
             ],
@@ -97,7 +108,7 @@ def create_default_collections() -> bool:
             "fields": [
                 {"name": "id", "dtype": DataType.VARCHAR, "is_primary": True, "max_length": 200},
                 {"name": "lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
-                {"name": "normalized_lesson", "dtype": DataType.VARCHAR, "max_length": 2048},
+                {"name": "skill_name", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "content", "dtype": DataType.VARCHAR, "max_length": 65535},
                 {"name": "source", "dtype": DataType.VARCHAR, "max_length": 2048},
                 {"name": "embedding", "dtype": DataType.FLOAT_VECTOR, "dim": 768}

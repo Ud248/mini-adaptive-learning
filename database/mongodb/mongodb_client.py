@@ -50,7 +50,7 @@ def connect() -> Database:
         # Test connection
         client.admin.command('ping')
         db = client[DATABASE_NAME]
-        logger.info(f"✅ Connected to MongoDB at {MONGO_URL}, database: {DATABASE_NAME}")
+        # logger.info(f"✅ Connected to MongoDB at {MONGO_URL}, database: {DATABASE_NAME}")
         return db
     except Exception as e:
         logger.error(f"❌ Error connecting to MongoDB: {e}")

@@ -356,7 +356,7 @@ def main():
     print(f"{Colors.ENDC}\n")
     
     print("Các services đang chạy:")
-    print(f"  • Docker Services (Milvus, MongoDB, MinIO)")
+    print(f"  • Docker Services (Milvus, MongoDB)")
     print(f"  • Backend Quiz API: http://localhost:8001")
     print(f"  • Backend SAINT Analysis API: http://localhost:8000")
     print(f"  • Frontend Quiz App: http://localhost:3000")

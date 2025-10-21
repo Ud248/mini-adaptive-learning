@@ -1,0 +1,117 @@
+PROMPT TẠO CÂU HỎI PLACEMENT - LỚP 1
+
+Bạn là giáo viên tạo bài kiểm tra đầu vào (placement test) cho học sinh lớp 1.
+
+**YÊU CẦU:**
+- Tạo **10 câu hỏi** cho skill: **{"Phép trừ số có hai chữ số cho số có hai chữ số"}**
+- Phân bổ: 4 easy + 3 medium + 3 hard
+- Loại câu hỏi pha trộn: True-False, Multiple choices single, Fill in blank
+- Nội dung đơn giản, phù hợp trẻ em 6-7 tuổi
+- Câu hỏi rõ ràng, không gây nhầm lẫn
+
+**PHÂN BỐ CHI TIẾT:**
+
+**EASY (4 câu) - Cơ bản:**
+- 2 câu True-False (Đúng/Sai)
+- 2 câu Multiple choices Single Answer (chọn 1 đáp án)
+
+**MEDIUM (3 câu) - Trung bình:**
+- 1 câu True-False
+- 1 câu Multiple choices Single Answer
+- 1 câu Fill in the blank (điền số/chữ)
+
+**HARD (3 câu) - Khó:**
+- 1 câu True-False
+- 1 câu Multiple choices Single Answer
+- 1 câu Fill in the blank
+
+**LOẠI CÂU HỎI & SỐ LƯỢNG ĐÁP ÁN:**
+- **True-False:** 2 lựa chọn (Đúng/Sai)
+- **Multiple choices Single:** 4 lựa chọn, chỉ 1 đáp án đúng
+- **Fill in blank:** 4 lựa chọn, chỉ 1 đáp án đúng
+
+**OUTPUT FORMAT (JSON):**
+```json
+[
+  {
+    "skillName": "{"Phép trừ số có hai chữ số cho số có hai chữ số"}",
+    "difficulty": "easy",
+    "type": "True-False",
+    "question_content": "Câu hỏi ở đây?",
+    "answers": [
+      {"text": "Đúng", "is_correct": true},
+      {"text": "Sai", "is_correct": false}
+    ],
+    "image_question": [],
+    "image_answer": [],
+    "explanation": "Giải thích ngắn",
+    "status": "Approved",
+    "created_by": "admin",
+    "updated_by": "admin"
+  },
+  {
+    "skillName": "{"Phép trừ số có hai chữ số cho số có hai chữ số"}",
+    "difficulty": "medium",
+    "type": "Multiple choices single",
+    "question_content": "Câu hỏi ở đây?",
+    "answers": [
+      {"text": "Đáp án 1", "is_correct": false},
+      {"text": "Đáp án đúng", "is_correct": true},
+      {"text": "Đáp án 3", "is_correct": false},
+      {"text": "Đáp án 4", "is_correct": false}
+    ],
+    "image_question": [],
+    "image_answer": [],
+    "explanation": "Giải thích",
+    "status": "Approved",
+    "created_by": "admin",
+    "updated_by": "admin"
+  },
+  {
+    "skillName": "{"Phép trừ số có hai chữ số cho số có hai chữ số"}",
+    "difficulty": "hard",
+    "type": "Fill in blank",
+    "question_content": "Điền số: ...",
+    "answers": [
+      {"text": "Đáp án sai 1", "is_correct": false},
+      {"text": "Đáp án đúng", "is_correct": true},
+      {"text": "Đáp án sai 2", "is_correct": false},
+      {"text": "Đáp án sai 3", "is_correct": false}
+    ],
+    "image_question": [],
+    "image_answer": [],
+    "explanation": "Giải thích",
+    "status": "Approved",
+    "created_by": "admin",
+    "updated_by": "admin"
+  }
+]
+```
+
+**VÍ DỤ:**
+
+Skill: "Các số 0, 1, 2, 3, 4, 5"
+
+**Easy - True-False (2 đáp án):**
+Q: "Số 2 đứng sau số 1. Đúng hay Sai?"
+A: [{"text": "Đúng", "is_correct": true}, {"text": "Sai", "is_correct": false}]
+
+**Medium - Multiple choices (4 đáp án, 1 đúng):**
+Q: "Số nào đứng trước số 3?"
+A: [{"text": "4", "is_correct": false}, {"text": "2", "is_correct": true}, {"text": "3", "is_correct": false}, {"text": "5", "is_correct": false}]
+
+**Hard - Fill in blank (4 đáp án, 1 đúng):**
+Q: "Điền số: 0, 1, ___, 3, 4, 5"
+A: [{"text": "1", "is_correct": false}, {"text": "3", "is_correct": false}, {"text": "2", "is_correct": true}, {"text": "4", "is_correct": false}]
+
+---
+
+**QUAN TRỌNG:**
+- True-False: **2 đáp án** (Đúng/Sai)
+- Multiple choices single: **4 đáp án** (1 đúng, 3 sai)
+- Fill in blank: **4 đáp án** (1 đúng, 3 sai)
+- Luôn dùng **"explanation"** cho tất cả câu hỏi
+
+**Hãy tạo 10 câu hỏi cho skill: {"Phép trừ số có hai chữ số cho số có hai chữ số"}**
+
+Trả lời theo format JSON, không thêm lời nhận xét.

@@ -1,5 +1,19 @@
 [
     {
+        "email": "admin@gmail.com",
+        "username": "admin",
+        "password": "123456",
+        "role": "admin",
+        "full_name": "Admin"
+    },
+    {
+        "email": "teacher1@gmail.com",
+        "username": "teacher1",
+        "password": "123456",
+        "role": "teacher",
+        "full_name": "Trần Mai Anh"
+    },
+    {
         "email": "student1@gmail.com",
         "username": "student1",
         "password": "123456",

@@ -11,11 +11,32 @@ SYSTEM_PROMPT = (
     "- Ngôn ngữ rõ ràng, dễ hiểu với trẻ em\n"
     "- Kèm lời giải ngắn gọn\n\n"
     
+    "🔢 QUAN TRỌNG - ĐÁP ÁN PHẢI CHÍNH XÁC 100%:\n"
+    "- ĐỐI VỚI CÂU HỎI TOÁN: Tính toán lại ít nhất 2 lần trước khi đánh dấu đáp án đúng\n"
+    "- Đáp án đúng phải khớp CHÍNH XÁC với kết quả tính toán\n"
+    "- Lời giải (explanation) phải thể hiện đúng cách tính và kết quả\n"
+    "- Tuyệt đối KHÔNG được đánh nhầm đáp án sai thành đúng hoặc ngược lại\n"
+    "- Ví dụ: '2 + 3' → đáp án đúng là 5, KHÔNG PHẢI 4 hay 6\n\n"
+    
+    "⚠️ TRÁNH CÂU HỎI VÔ LÝ:\n"
+    "- KHÔNG tạo câu hỏi mà đáp án đã có sẵn trong đề bài\n"
+    "  ❌ Câu hỏi chỉ đọc lại thông tin đã cho → Không kiểm tra được hiểu biết\n"
+    "  ✅ Câu hỏi yêu cầu vận dụng, suy luận từ thông tin đã cho\n"
+    "- KHÔNG tạo câu hỏi THIẾU THÔNG TIN để trả lời\n"
+    "  ❌ Hỏi thông tin không thể suy ra từ dữ kiện đã cho → Không trả lời được\n"
+    "  ✅ Đảm bảo đề bài cung cấp ĐỦ thông tin để học sinh có thể giải quyết\n"
+    "- KHÔNG tạo câu hỏi TRUE_FALSE với kiến thức quá hiển nhiên hoặc định nghĩa cơ bản\n"
+    "  ❌ Hỏi đúng/sai về định nghĩa ai cũng biết → Không có giá trị\n"
+    "  ✅ Đưa ra tình huống cụ thể cần xét đúng/sai dựa trên kiến thức\n"
+    "- Câu hỏi phải CÓ THỬ THÁCH TƯ DUY, không chỉ nhớ lại hoặc đọc lại\n"
+    "- Yêu cầu học sinh phải SỬ DỤNG kiến thức, không chỉ NHỚ kiến thức\n"
+    "- Kiểm tra kỹ: Với thông tin đã cho, có THỂ TRẢ LỜI CHÍNH XÁC được không?\n\n"
+    
     "LOẠI CÂU HỎI:\n"
     "Chọn 1 trong 3 loại phù hợp với nội dung:\n"
-    "1. MULTIPLE_CHOICE: Câu hỏi có 4 lựa chọn A, B, C, D\n"
-    "2. TRUE_FALSE: Câu hỏi đúng/sai với 2 lựa chọn (Đúng, Sai)\n"
-    "3. FILL_BLANK: Câu hỏi điền khuyết với 4 lựa chọn để điền\n\n"
+    "1. MULTIPLE_CHOICE: Câu hỏi có 4 lựa chọn A, B, C, D - Phù hợp cho câu hỏi tính toán, so sánh, lựa chọn\n"
+    "2. TRUE_FALSE: Câu hỏi đúng/sai với 2 lựa chọn (Đúng, Sai) - CHỈ dùng khi cần đánh giá tính đúng/sai của một mệnh đề hoặc tình huống\n"
+    "3. FILL_BLANK: Câu hỏi điền khuyết với 4 lựa chọn để điền - Phù hợp cho câu hỏi hoàn thành câu, tìm từ còn thiếu\n\n"
     
     ""
     
@@ -40,6 +61,7 @@ SYSTEM_PROMPT = (
     "LƯU Ý QUAN TRỌNG:\n"
     "- MULTIPLE_CHOICE và FILL_BLANK: có đúng 4 đáp án; TRUE_FALSE: đúng 2 đáp án\n"
     "- Chỉ 1 đáp án đúng, 3 đáp án sai hợp lý\n"
+    "- 🔢 ĐÁP ÁN TOÁN HỌC PHẢI CHÍNH XÁC 100% - Kiểm tra lại phép tính trước khi submit!\n"
     "- Câu hỏi phải có thể trả lời được với kiến thức lớp 1\n"
     "- Trả về JSON thuần túy, không wrap trong markdown"
 )
@@ -64,7 +86,17 @@ USER_PROMPT_TEMPLATE = (
     "- Tạo {batch_size} câu hỏi phù hợp với trình độ\n"
     "- Chọn loại câu hỏi phù hợp với nội dung\n"
     "- MULTIPLE_CHOICE/FILL_BLANK: 4 đáp án; TRUE_FALSE: 2 đáp án\n"
-    "- Trả về JSON array theo đúng schema"
+    "- Trả về JSON array theo đúng schema\n\n"
+    
+    "⚠️ KIỂM TRA KỸ TRƯỚC KHI TRẢ VỀ:\n"
+    "1. 🔢 TÍNH TOÁN: Với câu hỏi toán, đã tính lại ít nhất 2 lần chưa? Đáp án có CHÍNH XÁC không?\n"
+    "2. Đáp án có sẵn trong đề bài không? → Sửa lại câu hỏi!\n"
+    "3. Đề bài có ĐỦ THÔNG TIN để trả lời không? → Bổ sung dữ kiện cần thiết!\n"
+    "4. Câu hỏi có cần tư duy hay chỉ đọc lại đề? → Thêm yếu tố suy luận!\n"
+    "5. TRUE_FALSE có quá hiển nhiên không? → Tạo tình huống cụ thể!\n"
+    "6. Đúng format JSON, đúng số đáp án, không lỗi chính tả\n"
+    "7. Phù hợp kiến thức lớp 1, không quá khó hay quá dễ\n"
+    "8. Lời giải (explanation) có khớp với đáp án đúng không?\n"
 )
 
 JSON_FORMAT_INSTRUCTION = (

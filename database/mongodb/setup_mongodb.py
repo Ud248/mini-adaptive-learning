@@ -39,19 +39,52 @@ def connect_mongodb():
         return None
 
 def create_database_and_collections():
-    """Tạo database và collections sử dụng mongodb_client"""
+    """Tạo database và collections sử dụng mongodb_client
+    Xóa collections cũ trước khi tạo mới"""
     db = connect()
     
     # Collections cần tạo
     collections_config = {
+        "subjects": {
+            "description": "Danh sách môn học",
+            "indexes": [
+                [("subject_name", 1), {"unique": True, "name": "idx_subject_name_unique"}], 
+                [("created_at", -1)] 
+            ]
+        },
+        "grades": {
+            "description": "Danh sách khối lớp",
+            "indexes": [
+                [("grade_name", 1), {"unique": True, "name": "idx_grade_name_unique"}],
+                [("created_at", -1)]
+            ]
+        },
+        "skills": {
+            "description": "Danh sách kỹ năng",
+            "indexes": [
+                [("skill_name", 1), ("grade_id", 1), ("subject_id", 1), {"unique": True, "name": "idx_skill_unique_composite"}],
+                [("grade_id", 1), ("subject_id", 1)],
+                [("created_at", -1)]
+            ]
+        },
+        "users": {
+            "description": "Tài khoản người dùng (admin, teacher, student)",
+            "indexes": [
+                [("email", ASCENDING), {"unique": True}],
+                [("username", ASCENDING), {"unique": True}],
+                [("role", ASCENDING), ("created_at", DESCENDING)],
+                [("created_at", DESCENDING)]
+            ]
+        },
         "placement_questions": {
             "description": "Câu hỏi của bài kiểm tra đầu vào",
             "indexes": [
-                [("question_id", ASCENDING), {"unique": True}],
-                [("grade", ASCENDING), ("subject", ASCENDING), ("skill", ASCENDING)],
-                [("skill", ASCENDING), ("difficulty", ASCENDING)],
-                [("grade", ASCENDING), ("subject", ASCENDING)],
-                [("created_at", DESCENDING)]
+                [("skill_id", ASCENDING), ("difficulty", ASCENDING)],
+                [("skill_id", ASCENDING), ("type", ASCENDING)],
+                [("status", ASCENDING), ("skill_id", ASCENDING)],
+                [("created_by", ASCENDING)],
+                [("created_at", DESCENDING)],
+                [("updated_at", DESCENDING)]
             ]
         },
         "teacher_books": {
@@ -70,31 +103,7 @@ def create_database_and_collections():
                 [("lesson", ASCENDING)],
                 [("subject", ASCENDING)],
                 [("chapter", ASCENDING)],
-                [("metadata.grade", ASCENDING), ("subject", ASCENDING)],
                 [("vector_id", ASCENDING), {"unique": True}]
-            ]
-        },
-        "users": {
-            "description": "Tài khoản người dùng (học sinh, giáo viên, admin)",
-            "indexes": [
-                [("email", ASCENDING), {"unique": True}],
-                [("username", ASCENDING), {"unique": True}],
-                [("role", ASCENDING), ("created_at", DESCENDING)],
-                [("created_at", DESCENDING)]
-            ]
-        },
-        "skills": {
-            "description": "Danh sách kỹ năng",
-            "indexes": [
-                [("skill_id", ASCENDING), {"unique": True}],
-                [("grade", ASCENDING), ("subject", ASCENDING)]
-            ]
-        },
-        "subjects": {
-            "description": "Danh sách môn học",
-            "indexes": [
-                [("subject_id", ASCENDING), {"unique": True}],
-                [("grade", ASCENDING)]
             ]
         },
         "profile_student": {
@@ -108,11 +117,18 @@ def create_database_and_collections():
         }
     }
     
-    print(f"\nCreating collections and indexes...")
+    print(f"\nDropping and recreating collections and indexes...")
     
     for collection_name, config in collections_config.items():
         print(f"\nSetting up collection: {collection_name}")
         print(f"   Description: {config['description']}")
+        
+        # Xóa collection cũ nếu tồn tại
+        try:
+            db[collection_name].drop()
+            print(f"   🗑️  Dropped existing collection")
+        except Exception as e:
+            print(f"   ℹ️  Collection does not exist (first time setup)")
         
         # Tạo indexes sử dụng mongodb_client
         for index_spec in config['indexes']:

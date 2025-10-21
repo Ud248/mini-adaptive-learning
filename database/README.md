@@ -6,11 +6,11 @@
 
 Module **database** là lớp dữ liệu của hệ thống, đảm nhận:
 
-- 📚 **MongoDB**: Primary database cho questions, users, skills, SGK/SGV content
-- 🔍 **Milvus**: Vector database cho semantic search và RAG
-- 🤖 **Vietnamese Embeddings**: Text embedding service với sentence-transformers
+- 📚 **MongoDB**: Primary database cho questions, users, skills, textbook_exercises, teacher_books
+- 🔍 **Milvus**: Vector database cho semantic search và RAG với 2 collections
+- 🤖 **Vietnamese Embeddings**: Text embedding service với sentence-transformers (768-dim)
 - ⚙️ **CRUD Clients**: Unified clients với error handling và logging
-- 📊 **Data Import Scripts**: Import tools với progress bars và validation
+- 📊 **Unified Data Pipeline**: Single script để import từ MongoDB → Milvus với embeddings
 
 ## 🛠️ Tech Stack
 
@@ -70,11 +70,11 @@ docker-compose up -d
 ### 3. Setup Collections & Indexes
 
 ```bash
-# MongoDB
+# MongoDB - Tạo collections và indexes
 cd database/mongodb
 python setup_mongodb.py
 
-# Milvus
+# Milvus - Tạo vector collections
 cd ../milvus
 python setup_milvus.py
 ```
@@ -82,50 +82,52 @@ python setup_milvus.py
 ### 4. Import Data
 
 ```bash
-# MongoDB data (with progress bars)
+# Step 1: Import raw data vào MongoDB
 cd database/mongodb
-python insert_users.py                    # Import users
-python insert_placement_questions.py      # Import quiz questions
-python insert_sgk_to_mongodb.py          # Import textbook content
-python insert_sgv_to_mongodb.py          # Import teacher guide
+python insert_data_mongodb.py          # Import tất cả data từ JSON files
 
-# Milvus vectors (with progress bars)
+# Step 2: Generate embeddings và insert vào Milvus
 cd ../milvus
-python insert_sgv_to_milvus.py           # Generate & insert SGV embeddings
-python insert_sgk_to_milvus.py           # Generate & insert SGK embeddings
+python insert_data_milvus.py           # Load từ MongoDB → Generate embeddings → Insert Milvus
 ```
 
-**✨ All scripts có progress bars và minimal logging!**
+**✨ New Unified Pipeline:**
+- ✅ Single script `insert_data_milvus.py` thay thế 2 scripts cũ
+- ✅ Tự động lấy data từ MongoDB (textbook_exercises, teacher_books)
+- ✅ Resolve skill_name từ skill_id (ObjectId reference)
+- ✅ Chỉ embed 2 part đầu tiên cho SGV (giống insert_sgv_to_milvus.py cũ)
+- ✅ Clear data trước khi insert để tránh duplicates
+- ✅ Progress bars cho tất cả operations
 
 ## 📁 Cấu trúc Module
 
 ```
 database/
 ├── data_insert/                 # 📂 Raw JSON data files
-│   ├── grade1_math_questions_complete.json
+│   ├── grades.json
+│   ├── skills.json
+│   ├── subjects.json
+│   ├── users.json
+│   ├── placement_questions.json
 │   ├── sgk-toan-1-ket-noi-tri-thuc-tap-1.json
 │   ├── sgk-toan-1-ket-noi-tri-thuc-tap-2.json
-│   ├── sgv_ketnoitrithuc.json
-│   └── users_sample.json
+│   └── sgv_ketnoitrithuc.json
 │
 ├── embeddings/                  # 🤖 Vietnamese embedding service
-│   ├── local_embedder.py       # Main embedding class
+│   ├── local_embedder.py       # Main embedding class (768-dim)
 │   └── __pycache__/
 │
 ├── milvus/                      # 🔍 Vector database
 │   ├── milvus_client.py        # CRUD client
-│   ├── setup_milvus.py         # Create collections
-│   ├── insert_sgv_to_milvus.py # Import teacher guide vectors
-│   ├── insert_sgk_to_milvus.py # Import textbook vectors
-│   └── __pycache__/
+│   ├── setup_milvus.py         # Create collections (drop if exists)
+│   ├── insert_data_milvus.py   # 🆕 Unified: MongoDB → Embeddings → Milvus
+│   ├── insert_sgv_to_milvus.py # ⚠️ Legacy (use insert_data_milvus.py)
+│   └── insert_sgk_to_milvus.py # ⚠️ Legacy (use insert_data_milvus.py)
 │
 ├── mongodb/                     # 📚 Primary database
 │   ├── mongodb_client.py       # CRUD client
-│   ├── setup_mongodb.py        # Create collections & indexes
-│   ├── insert_users.py         # Import users
-│   ├── insert_placement_questions.py  # Import quiz questions
-│   ├── insert_sgk_to_mongodb.py       # Import textbook content
-│   ├── insert_sgv_to_mongodb.py       # Import teacher guide
+│   ├── setup_mongodb.py        # Create collections & indexes (drop if exists)
+│   ├── insert_data_mongodb.py  # 🆕 Unified: Import all JSON → MongoDB
 │   └── __pycache__/
 │
 └── README.md                    # 📖 This file
@@ -173,99 +175,52 @@ python setup_mongodb.py
 ```
 
 **Collections Created:**
-- `placement_questions` - Quiz questions with answers
-- `skills` - Learning skills and competencies
-- `subjects` - Academic subjects
-- `users` - User accounts and authentication
-- `textbook_exercises` - Educational materials (SGK)
-- `teacher_books` - Educational materials (SGV)
+- `subjects` - Academic subjects (with unique indexes)
+- `grades` - Grade levels (with unique indexes)
+- `skills` - Learning skills and competencies (with composite unique index)
+- `users` - User accounts with authentication
+- `placement_questions` - Quiz questions for assessment
+- `teacher_books` - SGV materials (Sách Giáo Viên) from JSON
+- `textbook_exercises` - SGK exercises (Sách Giáo Khoa) from JSON
+- `profile_student` - Student profiles from SAINT analysis
 
-#### `insert_users.py`
-Imports user accounts with secure password hashing and progress tracking.
+**🔄 Drop & Recreate:**
+- Tự động drop collections cũ trước khi tạo mới
+- Đảm bảo clean setup mỗi lần chạy
+
+#### `insert_data_mongodb.py` 🆕
+**Unified script** để import tất cả data từ JSON files vào MongoDB.
 
 ```python
 # Usage
-python insert_users.py
+python insert_data_mongodb.py
 
 # Features:
-# - SHA-256 password hashing with salt
-# - User validation and error handling
-# - Automatic upsert (insert or update)
-# - Progress bar for batch operations
-# - Minimal logging output
+# - Import tất cả collections: subjects, grades, skills, users, placement_questions, textbook_exercises, teacher_books
+# - SHA-256 password hashing cho users
+# - Skill name resolution với grade/subject
+# - Progress bars cho tất cả operations
+# - Clean logging output
 ```
+
+**Collections Imported:**
+1. **subjects** - từ `subjects.json`
+2. **grades** - từ `grades.json`
+3. **skills** - từ `skills.json` (với grade_id & subject_id)
+4. **users** - từ `users.json` (với password hashing)
+5. **placement_questions** - từ `placement_questions.json`
+6. **textbook_exercises** - từ SGK JSON files (với skill_id resolution)
+7. **teacher_books** - từ SGV JSON file (với skill_id resolution)
 
 **Output Example:**
 ```
-Upserting users: 100%|██████████| 2/2 [00:00<00:00, 36.72user/s]
-[SUCCESS] Processed 2 users: 2 new, 0 updated
-```
-
-#### `insert_placement_questions.py`
-Imports quiz questions from JSON format into MongoDB with progress tracking.
-
-```python
-# Usage
-python insert_placement_questions.py
-
-# Features:
-# - Question normalization and validation
-# - Skill and subject extraction
-# - Automatic ID generation
-# - Progress bars for all operations
-# - Upsert logic to prevent duplicates
-```
-
-**Progress Tracking:**
-- Transforming questions: `tqdm` progress bar
-- Inserting questions: Individual progress tracking
-- Inserting skills: Progress tracking with upsert
-- Inserting subjects: Progress tracking with upsert
-
-#### `insert_sgk_to_mongodb.py`
-Processes and imports textbook exercises with metadata and progress tracking.
-
-```python
-# Usage
-python insert_sgk_to_mongodb.py
-
-# Features:
-# - Normalizes SGK data from multiple JSON files
-# - Creates vector_id for Milvus integration
-# - Progress bars for normalization and upsert
-# - Automatic index creation (silent)
-# - Upsert logic to prevent duplicates
-
-# Environment variables:
-# SGK_JSON_1: Path to first textbook JSON
-# SGK_JSON_2: Path to second textbook JSON
-```
-
-**Output Example:**
-```
-Normalizing SGK items: 100%|██████████| 432/432 [00:00<00:00, 284672.32item/s]
-Upserting SGK documents: 100%|██████████| 432/432 [00:18<00:00, 22.75doc/s]
-[SUCCESS] Processed 432 docs: 0 new, 432 updated
-```
-
-#### `insert_sgv_to_mongodb.py`
-Imports teacher guide materials (SGV) with structured content and progress tracking.
-
-```python
-# Usage
-python insert_sgv_to_mongodb.py
-
-# Features:
-# - Processes SGV content with progress tracking
-# - Automatic index creation
-# - Batch insertion with progress display
-# - Minimal logging output
-
-# Environment variables:
-# SGV_JSON_PATH: Path to SGV JSON file
-# SGV_GRADE: Grade level (default: 1)
-# SGV_SUBJECT: Subject name (default: "Toán")
-# SGV_YEAR: Publication year (default: 2024)
+Inserting Subjects...
+✓ Inserted 1 subjects
+Inserting Grades...
+✓ Inserted 12 grades
+Inserting Skills...
+✓ Inserted 40 skills
+...
 ```
 
 ### 2. Milvus Vector Database (`milvus/`)
@@ -300,64 +255,96 @@ results = query("my_collection", expr="field == 'value'")
 - Collection management utilities
 
 #### `setup_milvus.py`
-Creates vector database collections with proper schemas and indexes.
+Creates vector database collections với proper schemas và indexes.
 
 ```python
 # Usage
 python setup_milvus.py
 
 # Collections created:
-# - snapshot_student: Student learning snapshots
-# - skill_progress_collection: Skill progression tracking
-# - baitap_collection: Exercise embeddings
-# - sgv_collection: Teacher guide embeddings
+# - baitap_collection: Textbook exercise embeddings (768D)
+# - sgv_collection: Teacher guide embeddings (768D)
 ```
 
-#### `insert_sgv_to_milvus.py`
-Imports teacher guide content with vector embeddings and progress tracking.
+**🔄 Drop & Recreate:**
+- Tự động drop collections cũ nếu tồn tại
+- Đảm bảo clean schema mỗi lần setup
+
+**Schema:**
+
+**baitap_collection:**
+- `id` (VARCHAR, primary): vector_id từ MongoDB
+- `question_content` (VARCHAR): Nội dung câu hỏi
+- `lesson` (VARCHAR): Tên bài học
+- `skill_name` (VARCHAR): Tên kỹ năng (resolved từ skill_id)
+- `source` (VARCHAR): Nguồn (SGK)
+- `embedding` (FLOAT_VECTOR, 768): Vector embedding
+
+**sgv_collection:**
+- `id` (VARCHAR, primary): vector_id từ MongoDB
+- `lesson` (VARCHAR): Tên bài học
+- `skill_name` (VARCHAR): Tên kỹ năng (resolved từ skill_id)
+- `content` (VARCHAR): Toàn bộ nội dung từ parts
+- `source` (VARCHAR): Nguồn (SGV)
+- `embedding` (FLOAT_VECTOR, 768): Vector embedding (chỉ từ 2 part đầu)
+
+#### `insert_data_milvus.py` 🆕
+**Unified script** để load data từ MongoDB, generate embeddings, và insert vào Milvus.
 
 ```python
 # Usage
-python insert_sgv_to_milvus.py
+python insert_data_milvus.py
 
 # Features:
-# - Automatic text preprocessing
-# - Vietnamese embedding generation
-# - Batch vector insertion with progress bars
-# - Minimal logging output
+# - Load từ MongoDB (textbook_exercises, teacher_books, skills)
+# - Resolve skill_name từ skill_id (ObjectId reference)
+# - Generate embeddings: dangvantuan/vietnamese-document-embedding (768D)
+# - SGV: Chỉ embed 2 part đầu tiên (như insert_sgv_to_milvus.py cũ)
+# - Baitap: Embed question_content + lesson + source
+# - Clear collections trước khi insert
+# - Progress bars cho tất cả operations
 ```
 
-**Progress Tracking:**
-- Processing items: `tqdm` progress bar
-- Preparing texts: Progress tracking
-- Preparing data: Progress tracking
-- Inserting vectors: Batch progress display
+**Embedding Strategy:**
 
-#### `insert_sgk_to_milvus.py`
-Processes textbook exercises and creates vector embeddings with progress tracking.
-
+**Baitap (Textbook Exercises):**
 ```python
-# Usage
-python insert_sgk_to_milvus.py
-
-# Features:
-# - Text normalization for Vietnamese content
-# - Multi-field embedding (question + lesson + subject)
-# - Vector dimension: 768D
-# - Progress bars for all operations
-# - Minimal logging output
+text_for_embedding = f"{question_content} | {lesson} | {source}"
 ```
 
-**Progress Tracking:**
-- Normalizing items: `tqdm` progress bar
-- Building texts: Progress tracking
-- Preparing data: Progress tracking
-- Inserting vectors: Batch progress display
+**SGV (Teacher Books):**
+```python
+# Chỉ lấy 2 part đầu tiên
+text_for_embedding = f"{topic_0} | {content_0} | {topic_1} | {content_1}"
+# Lưu toàn bộ content từ tất cả parts vào field "content"
+```
+
+**Output Example:**
+```
+============================================================
+📚 INSERTING BAITAP DATA (from MongoDB)
+============================================================
+🔗 Connecting to Milvus...
+✅ Collection 'baitap_collection' exists
+🗑️  Clearing existing data from 'baitap_collection'...
+📖 Loading data from MongoDB (textbook_exercises collection)...
+✅ Loaded 432 exercises from MongoDB
+🧠 Generating embeddings...
+Building texts: 100%|██████████| 432/432
+Batches: 100%|██████████| 27/27
+💾 Inserting data into Milvus...
+✅ Inserted 432 vectors into 'baitap_collection'
+
+============================================================
+📖 INSERTING SGV DATA (from MongoDB)
+============================================================
+...
+```
 
 ### 3. Embedding Service (`embeddings/`)
 
 #### `local_embedder.py`
-High-performance Vietnamese text embedding service with progress tracking.
+High-performance Vietnamese text embedding service với 768-dim vectors.
 
 ```python
 from database.embeddings.local_embedder import LocalEmbedding
@@ -365,39 +352,44 @@ from database.embeddings.local_embedder import LocalEmbedding
 # Initialize embedder
 embedder = LocalEmbedding(
     model_name='dangvantuan/vietnamese-document-embedding',
-    batch_size=16,
+    batch_size=5,  # Optimized for memory usage
     verbose=True
 )
 
 # Embed single text
 embedding = embedder.embed_single_text("Xin chào, tôi là trí tuệ nhân tạo.")
+# Returns: List[float] with 768 dimensions
 
 # Embed multiple texts with progress bar
 texts = ["Text 1", "Text 2", "Text 3"]
-embeddings = embedder.embed_texts(texts, show_progress=True)
-
-# Parallel processing for large datasets with progress tracking
-large_embeddings = embedder.embed_texts_parallel(texts, max_workers=2, show_progress=True)
+embeddings = embedder.embed_texts(texts)
+# Returns: List[List[float]] - each inner list is 768D
 ```
 
 **Key Features:**
-- **GPU/CPU Detection**: Automatic device selection
-- **Memory Management**: Handles large datasets efficiently
-- **Batch Processing**: Optimized for vector database insertion
-- **Error Recovery**: Retry logic for failed operations
-- **Progress Tracking**: Real-time processing status with `tqdm` progress bars
-- **Minimal Logging**: Clean output with progress bars only
+- ✅ **Model**: dangvantuan/vietnamese-document-embedding (optimized for Vietnamese)
+- ✅ **Dimension**: 768 (compatible with Milvus collections)
+- ✅ **GPU/CPU Detection**: Automatic device selection
+- ✅ **Memory Optimized**: batch_size=5 (reduced from 16)
+- ✅ **Batch Processing**: Efficient processing với progress bars
+- ✅ **Clean Output**: Minimal logging, only progress bars
 
-**Progress Tracking:**
-- `embed_texts()`: Progress bar for batch processing
-- `embed_texts_parallel()`: Progress tracking for parallel operations
-- `embed_chunks_for_database()`: Progress bar for database preparation
-- `embed_texts_quick()`: Fast processing with progress display
+**Configuration:**
+```python
+# Default settings in local_embedder.py
+EMBEDDING_DIMENSION = 768
+DEFAULT_BATCH_SIZE = 5  # Optimized cho lighter memory footprint
+DEFAULT_MODEL = "dangvantuan/vietnamese-document-embedding"
+```
 
-**Parameters:**
-- `model_name` (str): HuggingFace model identifier
-- `batch_size` (int): Processing batch size (default: 16)
-- `verbose` (bool): Enable progress logging
+**Usage in Pipeline:**
+```python
+# In insert_data_milvus.py
+embedder = LocalEmbedding(verbose=True)
+texts = ["text1", "text2", ...]
+embeddings = embedder.embed_texts(texts)
+# Progress: Batches: 100%|██████████| 27/27 [00:15<00:00]
+```
 - `show_progress` (bool): Enable `tqdm` progress bars (default: True)
 
 **Returns:**
@@ -846,14 +838,112 @@ netstat -an | findstr :27017  # MongoDB
 
 ---
 
-## 📚 Tài liệu tham khảo
+## � Data Pipeline Flow (Current Architecture)
+
+### Complete Setup Flow
+
+```mermaid
+graph TD
+    A[JSON Files] --> B[insert_data_mongodb.py]
+    B --> C[MongoDB Collections]
+    C --> D[insert_data_milvus.py]
+    D --> E[LocalEmbedding Service]
+    E --> F[Milvus Vector Collections]
+    
+    C1[textbook_exercises] --> D
+    C2[teacher_books] --> D
+    C3[skills] --> D
+    
+    D --> F1[baitap_collection]
+    D --> F2[sgv_collection]
+```
+
+### Detailed Steps
+
+**1. Setup Phase:**
+```bash
+# Drop & recreate MongoDB collections
+python database/mongodb/setup_mongodb.py
+
+# Drop & recreate Milvus collections  
+python database/milvus/setup_milvus.py
+```
+
+**2. Import Raw Data to MongoDB:**
+```bash
+python database/mongodb/insert_data_mongodb.py
+```
+- Loads từ JSON files trong `data_insert/`
+- Inserts vào MongoDB collections
+- Creates indexes
+- Hashes passwords cho users
+
+**3. Generate Embeddings & Insert to Milvus:**
+```bash
+python database/milvus/insert_data_milvus.py
+```
+- Loads data từ MongoDB (`textbook_exercises`, `teacher_books`)
+- Resolves `skill_name` từ `skill_id` (ObjectId reference to `skills` collection)
+- Generates 768D embeddings cho Vietnamese text
+- Clears existing Milvus data
+- Inserts vectors với metadata
+
+### Key Changes from Legacy
+
+| Legacy | Current (Unified) |
+|--------|-------------------|
+| 2 scripts: `insert_sgk_to_milvus.py` + `insert_sgv_to_milvus.py` | 1 script: `insert_data_milvus.py` |
+| Load từ JSON files | Load từ MongoDB |
+| Manual skill mapping | Automatic skill_id → skill_name resolution |
+| No clear before insert | Auto clear trước insert |
+| Inconsistent text building | Consistent: SGV uses 2 parts đầu tiên |
+
+### Skill Resolution Logic
+
+```python
+# In insert_data_milvus.py
+def get_skill_name_from_id(skill_id: str) -> str:
+    """
+    skill_id in textbook_exercises/teacher_books is ObjectId string
+    referencing _id in skills collection
+    """
+    skills_collection = get_mongodb_collection("skills")
+    object_id = ObjectId(skill_id)
+    skill_doc = skills_collection.find_one({"_id": object_id})
+    return skill_doc.get("skill_name", "")
+```
+
+### Text Embedding Strategy
+
+**Baitap (Textbook Exercises):**
+```python
+# Combine all fields with separator
+text = f"{question_content} | {lesson} | {source}"
+embedding = embedder.embed_single_text(text)  # 768D
+```
+
+**SGV (Teacher Books):**
+```python
+# Only first 2 parts for embedding (same as legacy insert_sgv_to_milvus.py)
+parts = teacher_book.get("parts", [])[:2]
+text = " | ".join([part["topic"], part["content"]] for part in parts)
+embedding = embedder.embed_single_text(text)  # 768D
+
+# But save full content to Milvus
+full_content = "\n".join(all_parts_content)
+```
+
+---
+
+## �📚 Tài liệu tham khảo
 
 - [MongoDB Python Driver Docs](https://pymongo.readthedocs.io/)
 - [Milvus Python SDK Docs](https://milvus.io/docs)
 - [Sentence Transformers Docs](https://www.sbert.net/)
 - [Vietnamese Embedding Model](https://huggingface.co/dangvantuan/vietnamese-document-embedding)
+- [BSON ObjectId](https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html)
 
 ---
 
 **Maintainer**: Mini Adaptive Learning Team  
-**Last Updated**: October 17, 2025
+**Last Updated**: October 21, 2025

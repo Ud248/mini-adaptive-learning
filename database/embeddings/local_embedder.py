@@ -17,8 +17,8 @@ from tqdm import tqdm
 
 # Default configuration
 DEFAULT_MODEL = 'dangvantuan/vietnamese-document-embedding'
-DEFAULT_BATCH_SIZE = 16
-DEFAULT_MAX_WORKERS = 2
+DEFAULT_BATCH_SIZE = 10
+DEFAULT_MAX_WORKERS = 4
 EMBEDDING_DIMENSION = 768
 
 

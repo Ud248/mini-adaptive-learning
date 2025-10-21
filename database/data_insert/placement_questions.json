@@ -1,0 +1,4290 @@
+[
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 3 đứng sau số 2. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 3 đứng ngay sau số 2 trong dãy số tự nhiên",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 0 là số nhỏ nhất trong các số từ 0 đến 5. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 0 là số nhỏ nhất trong dãy số từ 0 đến 5",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào lớn nhất trong các số sau?",
+        "answers": [
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": true
+            },
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "1",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 5 là số lớn nhất trong dãy số từ 0 đến 5",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào đứng giữa số 1 và số 3?",
+        "answers": [
+            {
+                "text": "0",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": false
+            },
+            {
+                "text": "2",
+                "is_correct": true
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 2 đứng giữa số 1 và số 3 trong dãy số",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Số 4 đứng trước số 5 và sau số 3. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 4 đứng sau số 3 và trước số 5 trong dãy số tự nhiên",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Số nào nhỏ hơn số 3 nhưng lớn hơn số 1?",
+        "answers": [
+            {
+                "text": "0",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": false
+            },
+            {
+                "text": "2",
+                "is_correct": true
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 2 lớn hơn số 1 và nhỏ hơn số 3",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp vào chỗ trống: 0, 1, 2, ___, 4, 5",
+        "answers": [
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "3",
+                "is_correct": true
+            },
+            {
+                "text": "1",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 3 đứng giữa số 2 và số 4 trong dãy số liên tiếp",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu xếp từ bé đến lớn thì số 2 đứng ở vị trí thứ 3. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Khi đếm từ 0 đến 5, số 2 là số thứ 3 (0 là thứ nhất, 1 là thứ hai, 2 là thứ ba)",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Có bao nhiêu số đứng giữa số 1 và số 5?",
+        "answers": [
+            {
+                "text": "2 số",
+                "is_correct": false
+            },
+            {
+                "text": "4 số",
+                "is_correct": false
+            },
+            {
+                "text": "3 số",
+                "is_correct": true
+            },
+            {
+                "text": "5 số",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Giữa số 1 và số 5 có 3 số là: 2, 3, 4",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 0, 1, 2, 3, 4, 5",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp vào chỗ trống: 5, 4, 3, ___, 1, 0",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "1",
+                "is_correct": false
+            },
+            {
+                "text": "2",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Dãy số đếm ngược từ 5 về 0, số 2 đứng giữa số 3 và số 1",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 8 đứng sau số 7. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 8 đứng ngay sau số 7 trong dãy số tự nhiên",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 10 là số lớn nhất trong các số từ 6 đến 10. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 10 là số lớn nhất trong dãy số từ 6 đến 10",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào nhỏ nhất trong các số sau?",
+        "answers": [
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "6",
+                "is_correct": true
+            },
+            {
+                "text": "9",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 6 là số nhỏ nhất trong dãy số từ 6 đến 10",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào đứng giữa số 7 và số 9?",
+        "answers": [
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 8 đứng giữa số 7 và số 9 trong dãy số",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Số 9 đứng trước số 10 và sau số 8. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 9 đứng sau số 8 và trước số 10 trong dãy số tự nhiên",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Số nào lớn hơn số 7 nhưng nhỏ hơn số 9?",
+        "answers": [
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 8 lớn hơn số 7 và nhỏ hơn số 9",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp vào chỗ trống: 6, 7, ___, 9, 10",
+        "answers": [
+            {
+                "text": "7",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": true
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 8 đứng giữa số 7 và số 9 trong dãy số liên tiếp",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu xếp từ bé đến lớn thì số 8 đứng ở vị trí thứ 3. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Khi đếm từ 6 đến 10, số 8 là số thứ 3 (6 là thứ nhất, 7 là thứ hai, 8 là thứ ba)",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Có bao nhiêu số đứng giữa số 6 và số 10?",
+        "answers": [
+            {
+                "text": "2 số",
+                "is_correct": false
+            },
+            {
+                "text": "4 số",
+                "is_correct": false
+            },
+            {
+                "text": "3 số",
+                "is_correct": true
+            },
+            {
+                "text": "5 số",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Giữa số 6 và số 10 có 3 số là: 7, 8, 9",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các số 6, 7, 8, 9, 10",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp vào chỗ trống: 10, 9, 8, ___, 6",
+        "answers": [
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "7",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Dãy số đếm ngược từ 10 về 6, số 7 đứng giữa số 8 và số 6",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "5 quả táo nhiều hơn 3 quả táo. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "5 lớn hơn 3, nên 5 quả táo nhiều hơn 3 quả táo",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "4 con mèo bằng 4 con chó. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 bằng 4, nên số lượng bằng nhau",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "So sánh: 7 viên bi và 9 viên bi. Số nào nhiều hơn?",
+        "answers": [
+            {
+                "text": "7 viên bi",
+                "is_correct": false
+            },
+            {
+                "text": "9 viên bi",
+                "is_correct": true
+            },
+            {
+                "text": "Bằng nhau",
+                "is_correct": false
+            },
+            {
+                "text": "Không so sánh được",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "9 lớn hơn 7, nên 9 viên bi nhiều hơn 7 viên bi",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "2 cái bút ít hơn số nào?",
+        "answers": [
+            {
+                "text": "1 cái bút",
+                "is_correct": false
+            },
+            {
+                "text": "2 cái bút",
+                "is_correct": false
+            },
+            {
+                "text": "5 cái bút",
+                "is_correct": true
+            },
+            {
+                "text": "0 cái bút",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "2 nhỏ hơn 5, nên 2 cái bút ít hơn 5 cái bút",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Nếu An có 6 quyển vở và Bình có 4 quyển vở thì An có ít hơn Bình. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "6 lớn hơn 4, nên An có nhiều hơn Bình, không phải ít hơn",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Lan có 8 viên kẹo, Hoa có 10 viên kẹo. Ai có ít kẹo hơn?",
+        "answers": [
+            {
+                "text": "Hoa",
+                "is_correct": false
+            },
+            {
+                "text": "Lan",
+                "is_correct": true
+            },
+            {
+                "text": "Bằng nhau",
+                "is_correct": false
+            },
+            {
+                "text": "Không ai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "8 nhỏ hơn 10, nên Lan có ít kẹo hơn Hoa",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền từ thích hợp: 3 con gà ___ 7 con gà.",
+        "answers": [
+            {
+                "text": "nhiều hơn",
+                "is_correct": false
+            },
+            {
+                "text": "bằng",
+                "is_correct": false
+            },
+            {
+                "text": "ít hơn",
+                "is_correct": true
+            },
+            {
+                "text": "lớn hơn",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 nhỏ hơn 7, nên 3 con gà ít hơn 7 con gà",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu túi A có 5 quả cam, túi B có 5 quả táo, túi C có 8 quả xoài thì túi C có nhiều trái cây nhất. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Túi A có 5 quả, túi B có 5 quả, túi C có 8 quả. 8 lớn nhất nên túi C có nhiều nhất",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Minh có 4 chiếc xe, Nam có 6 chiếc xe, Hùng có 4 chiếc xe. Ai có số xe bằng với Minh?",
+        "answers": [
+            {
+                "text": "Nam",
+                "is_correct": false
+            },
+            {
+                "text": "Không ai",
+                "is_correct": false
+            },
+            {
+                "text": "Hùng",
+                "is_correct": true
+            },
+            {
+                "text": "Cả Nam và Hùng",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Minh có 4 xe, Hùng có 4 xe. 4 bằng 4, nên Hùng có số xe bằng Minh",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Nhiều hơn, ít hơn, bằng nhau",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 9 cái thìa ___ 6 cái muỗng.",
+        "answers": [
+            {
+                "text": "ít hơn",
+                "is_correct": false
+            },
+            {
+                "text": "bằng",
+                "is_correct": false
+            },
+            {
+                "text": "nhiều hơn",
+                "is_correct": true
+            },
+            {
+                "text": "nhỏ hơn",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "9 lớn hơn 6, nên 9 cái thìa nhiều hơn 6 cái muỗng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 7 lớn hơn số 4. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "7 lớn hơn 4 nên câu này đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 3 nhỏ hơn số 8. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 nhỏ hơn 8 nên câu này đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào lớn nhất trong các số sau: 2, 5, 3, 1?",
+        "answers": [
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": true
+            },
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "1",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 5 lớn hơn tất cả các số 2, 3, 1 nên 5 là số lớn nhất",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào nhỏ nhất trong các số sau: 9, 6, 7, 4?",
+        "answers": [
+            {
+                "text": "9",
+                "is_correct": false
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 4 nhỏ hơn tất cả các số 9, 6, 7 nên 4 là số nhỏ nhất",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Trong ba số 5, 8 và 6 thì số 8 là số lớn nhất. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "8 lớn hơn 5 và lớn hơn 6, nên 8 là số lớn nhất trong ba số",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "So sánh: 10 ___ 7. Dấu nào thích hợp?",
+        "answers": [
+            {
+                "text": "<",
+                "is_correct": false
+            },
+            {
+                "text": ">",
+                "is_correct": true
+            },
+            {
+                "text": "=",
+                "is_correct": false
+            },
+            {
+                "text": "≤",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "10 lớn hơn 7 nên dùng dấu >",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền dấu thích hợp: 4 ___ 9",
+        "answers": [
+            {
+                "text": ">",
+                "is_correct": false
+            },
+            {
+                "text": "=",
+                "is_correct": false
+            },
+            {
+                "text": "<",
+                "is_correct": true
+            },
+            {
+                "text": "≥",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 nhỏ hơn 9 nên dùng dấu <",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu sắp xếp các số 3, 7, 5, 9 từ bé đến lớn thì số 5 đứng ở vị trí thứ hai. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sắp xếp từ bé đến lớn: 3, 5, 7, 9. Số 5 đứng ở vị trí thứ hai",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Có bao nhiêu số lớn hơn 3 và nhỏ hơn 8?",
+        "answers": [
+            {
+                "text": "3 số",
+                "is_correct": false
+            },
+            {
+                "text": "5 số",
+                "is_correct": false
+            },
+            {
+                "text": "4 số",
+                "is_correct": true
+            },
+            {
+                "text": "2 số",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Các số lớn hơn 3 và nhỏ hơn 8 là: 4, 5, 6, 7. Có tất cả 4 số",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 2 < ___ < 5",
+        "answers": [
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "3",
+                "is_correct": true
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số lớn hơn 2 và nhỏ hơn 5 là 3 hoặc 4, trong các đáp án có số 3",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "2 và 3 là 5. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "2 và 3 là 5 vì 2 + 3 = 5",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "1 và 1 là 2. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "1 và 1 là 2 vì 1 + 1 = 2",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "3 và 2 là mấy?",
+        "answers": [
+            {
+                "text": "4",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": true
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "3",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 và 2 là 5 vì 3 + 2 = 5",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "1 và 4 là mấy?",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": true
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "1 và 4 là 5 vì 1 + 4 = 5",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "4 và 3 là 7. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 và 3 là 7 vì 4 + 3 = 7",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "5 và 4 là mấy?",
+        "answers": [
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "9",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "5 và 4 là 9 vì 5 + 4 = 9",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 2 và ___ là 6",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": true
+            },
+            {
+                "text": "2",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "2 và 4 là 6 vì 2 + 4 = 6",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu 3 và 5 là 8 thì 5 và 3 cũng là 8. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 + 5 = 8 và 5 + 3 = 8, phép cộng có tính chất giao hoán",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "6 và 4 là mấy?",
+        "answers": [
+            {
+                "text": "9",
+                "is_correct": false
+            },
+            {
+                "text": "11",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": true
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "6 và 4 là 10 vì 6 + 4 = 10",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Mấy và mấy",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: ___ và 5 là 9",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 và 5 là 9 vì 4 + 5 = 9",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "2 + 3 = 5. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "2 + 3 = 5 là phép tính đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "1 + 1 = 3. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "1 + 1 = 2, không phải 3 nên câu này sai",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "4 + 2 = ?",
+        "answers": [
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "6",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 + 2 = 6",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "3 + 3 = ?",
+        "answers": [
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            },
+            {
+                "text": "6",
+                "is_correct": true
+            },
+            {
+                "text": "4",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 + 3 = 6",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "5 + 4 = 9. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "5 + 4 = 9 là phép tính đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "6 + 3 = ?",
+        "answers": [
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "9",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "6 + 3 = 9",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 4 + ___ = 8",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": true
+            },
+            {
+                "text": "2",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 + 4 = 8",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Lan có 3 viên bi, mẹ cho thêm 5 viên bi. Vậy Lan có tất cả 8 viên bi. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Lan có 3 + 5 = 8 viên bi",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Trong vườn có 4 con gà và 6 con vịt. Hỏi tất cả có bao nhiêu con?",
+        "answers": [
+            {
+                "text": "9 con",
+                "is_correct": false
+            },
+            {
+                "text": "11 con",
+                "is_correct": false
+            },
+            {
+                "text": "10 con",
+                "is_correct": true
+            },
+            {
+                "text": "8 con",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Tất cả có 4 + 6 = 10 con",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng trong phạm vi 10",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: ___ + 7 = 10",
+        "answers": [
+            {
+                "text": "4",
+                "is_correct": false
+            },
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "3",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 + 7 = 10",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "3 + 2 = 5. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "3 + 2 = 5 là phép tính đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "5 - 2 = 3. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "5 - 2 = 3 là phép tính đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "4 + 3 = ?",
+        "answers": [
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "7",
+                "is_correct": true
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 + 3 = 7",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "6 - 2 = ?",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": true
+            },
+            {
+                "text": "2",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "6 - 2 = 4",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "8 - 3 = 5. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "8 - 3 = 5 là phép tính đúng",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "5 + 4 = ?",
+        "answers": [
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            },
+            {
+                "text": "9",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "5 + 4 = 9",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 7 - ___ = 4",
+        "answers": [
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": false
+            },
+            {
+                "text": "3",
+                "is_correct": true
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "7 - 3 = 4",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu 6 + 4 = 10 thì 10 - 4 = 6. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Phép cộng và phép trừ là phép tính ngược nhau. 6 + 4 = 10 nên 10 - 4 = 6",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Minh có 9 cái kẹo, cho bạn 5 cái. Hỏi Minh còn lại bao nhiêu cái kẹo?",
+        "answers": [
+            {
+                "text": "3 cái",
+                "is_correct": false
+            },
+            {
+                "text": "5 cái",
+                "is_correct": false
+            },
+            {
+                "text": "4 cái",
+                "is_correct": true
+            },
+            {
+                "text": "2 cái",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Minh còn lại 9 - 5 = 4 cái kẹo",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng cộng, bảng trừ trong phạm vi 10",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: ___ + 6 = 10",
+        "answers": [
+            {
+                "text": "3",
+                "is_correct": false
+            },
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "4",
+                "is_correct": true
+            },
+            {
+                "text": "6",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "4 + 6 = 10",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 15 là số có hai chữ số. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 15 có hai chữ số là 1 và 5",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 7 là số có hai chữ số. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 7 chỉ có một chữ số, không phải số có hai chữ số",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào là số có hai chữ số?",
+        "answers": [
+            {
+                "text": "5",
+                "is_correct": false
+            },
+            {
+                "text": "23",
+                "is_correct": true
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "9",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 23 có hai chữ số là 2 và 3, các số còn lại chỉ có một chữ số",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số có hai chữ số nhỏ nhất là số nào?",
+        "answers": [
+            {
+                "text": "9",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": true
+            },
+            {
+                "text": "11",
+                "is_correct": false
+            },
+            {
+                "text": "1",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 10 là số có hai chữ số nhỏ nhất",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Trong số 34, chữ số 3 ở hàng chục và chữ số 4 ở hàng đơn vị. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 34 có chữ số 3 ở hàng chục và chữ số 4 ở hàng đơn vị",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Số 28 có chữ số hàng chục là số nào?",
+        "answers": [
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "2",
+                "is_correct": true
+            },
+            {
+                "text": "28",
+                "is_correct": false
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Trong số 28, chữ số hàng chục là 2",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: Số có chữ số hàng chục là 4 và chữ số hàng đơn vị là 7 là số ___",
+        "answers": [
+            {
+                "text": "74",
+                "is_correct": false
+            },
+            {
+                "text": "40",
+                "is_correct": false
+            },
+            {
+                "text": "47",
+                "is_correct": true
+            },
+            {
+                "text": "7",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Chữ số hàng chục là 4 và chữ số hàng đơn vị là 7 tạo thành số 47",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Số 56 lớn hơn số 65. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 56 nhỏ hơn số 65 vì 56 < 65",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Số nào lớn nhất trong các số sau: 34, 43, 30, 40?",
+        "answers": [
+            {
+                "text": "34",
+                "is_correct": false
+            },
+            {
+                "text": "30",
+                "is_correct": false
+            },
+            {
+                "text": "43",
+                "is_correct": true
+            },
+            {
+                "text": "40",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 43 lớn nhất trong các số đã cho",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 18, 19, ___, 21, 22",
+        "answers": [
+            {
+                "text": "19",
+                "is_correct": false
+            },
+            {
+                "text": "21",
+                "is_correct": false
+            },
+            {
+                "text": "20",
+                "is_correct": true
+            },
+            {
+                "text": "18",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Dãy số liên tiếp, số đứng giữa 19 và 21 là 20",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 25 lớn hơn số 12. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "25 lớn hơn 12 vì 25 có 2 chục 5 đơn vị, còn 12 có 1 chục 2 đơn vị. 2 chục lớn hơn 1 chục nên 25 > 12.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 34 nhỏ hơn số 30. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "34 lớn hơn 30 chứ không nhỏ hơn. Cả hai số đều có 3 chục, nhưng 34 có thêm 4 đơn vị nên 34 > 30.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào lớn hơn: 15 hay 18?",
+        "answers": [
+            {
+                "text": "15",
+                "is_correct": false
+            },
+            {
+                "text": "18",
+                "is_correct": true
+            },
+            {
+                "text": "Hai số bằng nhau",
+                "is_correct": false
+            },
+            {
+                "text": "Không biết",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "18 lớn hơn 15. Cả hai số đều có 1 chục, nhưng 18 có 8 đơn vị còn 15 có 5 đơn vị. Vì 8 > 5 nên 18 > 15.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào nhỏ nhất trong các số sau: 42, 24, 44, 22?",
+        "answers": [
+            {
+                "text": "42",
+                "is_correct": false
+            },
+            {
+                "text": "24",
+                "is_correct": false
+            },
+            {
+                "text": "44",
+                "is_correct": false
+            },
+            {
+                "text": "22",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "22 là số nhỏ nhất vì chỉ có 2 chục, trong khi các số khác đều có từ 2 chục trở lên với nhiều đơn vị hơn hoặc có 4 chục.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Số 56 nằm giữa số 54 và số 58. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 54 < 56 < 58. Số 56 lớn hơn 54 và nhỏ hơn 58 nên nó nằm giữa hai số này.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Sắp xếp các số theo thứ tự từ nhỏ đến lớn: 67, 76, 66. Thứ tự đúng là?",
+        "answers": [
+            {
+                "text": "67, 76, 66",
+                "is_correct": false
+            },
+            {
+                "text": "66, 67, 76",
+                "is_correct": true
+            },
+            {
+                "text": "76, 67, 66",
+                "is_correct": false
+            },
+            {
+                "text": "66, 76, 67",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Thứ tự từ nhỏ đến lớn là 66, 67, 76. So sánh hàng chục: 66 và 67 đều có 6 chục, 66 < 67 vì 6 đơn vị < 7 đơn vị. 76 có 7 chục nên lớn nhất.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền dấu thích hợp vào chỗ trống: 38 ___ 83",
+        "answers": [
+            {
+                "text": ">",
+                "is_correct": false
+            },
+            {
+                "text": "<",
+                "is_correct": true
+            },
+            {
+                "text": "=",
+                "is_correct": false
+            },
+            {
+                "text": "+",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "38 < 83 vì 38 có 3 chục còn 83 có 8 chục. 3 chục nhỏ hơn 8 chục nên 38 nhỏ hơn 83.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Trong các số 91, 89, 92, 88 thì số 89 là số lớn thứ hai. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng. Sắp xếp từ lớn đến nhỏ: 92, 91, 89, 88. Số 89 đứng thứ ba từ lớn xuống, tức là lớn thứ hai kể từ nhỏ lên, hoặc lớn hơn 88 và 91 nhưng nhỏ hơn 92.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Có bao nhiêu số có hai chữ số lớn hơn 45 và nhỏ hơn 49?",
+        "answers": [
+            {
+                "text": "1 số",
+                "is_correct": false
+            },
+            {
+                "text": "2 số",
+                "is_correct": false
+            },
+            {
+                "text": "3 số",
+                "is_correct": true
+            },
+            {
+                "text": "4 số",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Các số lớn hơn 45 và nhỏ hơn 49 là: 46, 47, 48. Vậy có 3 số thỏa mãn điều kiện.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "So sánh số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp vào chỗ trống: 53 < ___ < 55",
+        "answers": [
+            {
+                "text": "53",
+                "is_correct": false
+            },
+            {
+                "text": "55",
+                "is_correct": false
+            },
+            {
+                "text": "54",
+                "is_correct": true
+            },
+            {
+                "text": "52",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số nằm giữa 53 và 55 là 54 vì 53 < 54 < 55. Số 54 lớn hơn 53 một đơn vị và nhỏ hơn 55 một đơn vị.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 20 đứng sau số 19. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì trong bảng số từ 1 đến 100, số 20 đứng ngay sau số 19.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Số 50 đứng trước số 49. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sai vì số 50 đứng sau số 49, không phải đứng trước.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào đứng ngay sau số 30?",
+        "answers": [
+            {
+                "text": "29",
+                "is_correct": false
+            },
+            {
+                "text": "31",
+                "is_correct": true
+            },
+            {
+                "text": "32",
+                "is_correct": false
+            },
+            {
+                "text": "40",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 31 đứng ngay sau số 30 trong bảng số từ 1 đến 100.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Số nào đứng ngay trước số 10?",
+        "answers": [
+            {
+                "text": "11",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "9",
+                "is_correct": true
+            },
+            {
+                "text": "10",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 9 đứng ngay trước số 10 trong bảng số từ 1 đến 100.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Số 45 nằm giữa số 44 và số 46. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì trong bảng số, số 45 đứng sau 44 và trước 46.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Trong bảng số từ 1 đến 100, số nào ở giữa 67 và 69?",
+        "answers": [
+            {
+                "text": "66",
+                "is_correct": false
+            },
+            {
+                "text": "70",
+                "is_correct": false
+            },
+            {
+                "text": "68",
+                "is_correct": true
+            },
+            {
+                "text": "65",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 68 nằm giữa 67 và 69 vì 67, 68, 69 là ba số liên tiếp.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 38, 39, ___, 41, 42",
+        "answers": [
+            {
+                "text": "38",
+                "is_correct": false
+            },
+            {
+                "text": "40",
+                "is_correct": true
+            },
+            {
+                "text": "41",
+                "is_correct": false
+            },
+            {
+                "text": "43",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 40 là số đứng giữa 39 và 41 trong dãy số liên tiếp.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Từ số 70 đến số 80 có tất cả 11 số. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng. Các số từ 70 đến 80 là: 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80. Đếm được 11 số.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Số nào đứng sau số 89 hai vị trí trong bảng số?",
+        "answers": [
+            {
+                "text": "90",
+                "is_correct": false
+            },
+            {
+                "text": "88",
+                "is_correct": false
+            },
+            {
+                "text": "91",
+                "is_correct": true
+            },
+            {
+                "text": "92",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số đứng sau 89 một vị trí là 90, đứng sau hai vị trí là 91.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Bảng các số từ 1 đến 100",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 95, 96, 97, ___, 99, 100",
+        "answers": [
+            {
+                "text": "97",
+                "is_correct": false
+            },
+            {
+                "text": "99",
+                "is_correct": false
+            },
+            {
+                "text": "100",
+                "is_correct": false
+            },
+            {
+                "text": "98",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Số 98 là số đứng giữa 97 và 99 trong dãy số liên tiếp từ 95 đến 100.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Chúng ta dùng centimet (cm) để đo độ dài. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì centimet (cm) là đơn vị đo độ dài thường dùng để đo chiều dài các vật.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Mét (m) dài hơn centimet (cm). Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 1 mét = 100 centimet, nên mét dài hơn centimet rất nhiều.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Dụng cụ nào dùng để đo độ dài?",
+        "answers": [
+            {
+                "text": "Cân",
+                "is_correct": false
+            },
+            {
+                "text": "Thước kẻ",
+                "is_correct": true
+            },
+            {
+                "text": "Đồng hồ",
+                "is_correct": false
+            },
+            {
+                "text": "Cốc",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Thước kẻ là dụng cụ dùng để đo độ dài của vật. Cân dùng đo khối lượng, đồng hồ đo thời gian, cốc đo thể tích.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Đơn vị nào dùng để đo chiều cao của bạn?",
+        "answers": [
+            {
+                "text": "Kilôgam (kg)",
+                "is_correct": false
+            },
+            {
+                "text": "Lít",
+                "is_correct": false
+            },
+            {
+                "text": "Centimet (cm)",
+                "is_correct": true
+            },
+            {
+                "text": "Giờ",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Chiều cao được đo bằng centimet (cm) hoặc mét (m). Kilôgam đo khối lượng, lít đo thể tích, giờ đo thời gian.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "1 mét bằng 100 centimet. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 1 mét = 100 centimet. Đây là mối quan hệ cơ bản giữa hai đơn vị đo độ dài.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Chiếc bút chì dài 15 cm. Đơn vị cm trong câu trên là viết tắt của từ gì?",
+        "answers": [
+            {
+                "text": "Centimét",
+                "is_correct": false
+            },
+            {
+                "text": "Centimet",
+                "is_correct": true
+            },
+            {
+                "text": "Kilômét",
+                "is_correct": false
+            },
+            {
+                "text": "Mét vuông",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "cm là viết tắt của centimet, đơn vị đo độ dài thường dùng cho các vật nhỏ.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền đơn vị thích hợp: Chiều dài cái bàn học là 80 ___",
+        "answers": [
+            {
+                "text": "kg",
+                "is_correct": false
+            },
+            {
+                "text": "cm",
+                "is_correct": true
+            },
+            {
+                "text": "lít",
+                "is_correct": false
+            },
+            {
+                "text": "giờ",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Chiều dài cái bàn được đo bằng centimet (cm). 80 cm là độ dài hợp lý cho chiều dài cái bàn học.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "50 cm dài hơn 1 m. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sai vì 1 m = 100 cm. Do đó 50 cm chỉ bằng một nửa của 1 m, ngắn hơn 1 m.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Bạn An cao 1 m 20 cm. Bạn An cao bao nhiêu centimet?",
+        "answers": [
+            {
+                "text": "100 cm",
+                "is_correct": false
+            },
+            {
+                "text": "120 cm",
+                "is_correct": true
+            },
+            {
+                "text": "20 cm",
+                "is_correct": false
+            },
+            {
+                "text": "220 cm",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "1 m = 100 cm, nên 1 m 20 cm = 100 cm + 20 cm = 120 cm.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Đơn vị đo độ dài",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 2 m = ___ cm",
+        "answers": [
+            {
+                "text": "20",
+                "is_correct": false
+            },
+            {
+                "text": "200",
+                "is_correct": true
+            },
+            {
+                "text": "2",
+                "is_correct": false
+            },
+            {
+                "text": "100",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "1 m = 100 cm, nên 2 m = 2 × 100 cm = 200 cm.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "12 + 3 = 15. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 12 + 3 = 15. Ta cộng 2 với 3 được 5, giữ nguyên 1 chục, kết quả là 15.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "20 + 5 = 30. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sai vì 20 + 5 = 25, không phải 30. Ta cộng 0 với 5 được 5, giữ nguyên 2 chục, kết quả là 25.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 10 + 4 = ?",
+        "answers": [
+            {
+                "text": "13",
+                "is_correct": false
+            },
+            {
+                "text": "14",
+                "is_correct": true
+            },
+            {
+                "text": "15",
+                "is_correct": false
+            },
+            {
+                "text": "16",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "10 + 4 = 14. Ta có 1 chục (10) cộng thêm 4 đơn vị được 14.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 21 + 2 = ?",
+        "answers": [
+            {
+                "text": "22",
+                "is_correct": false
+            },
+            {
+                "text": "24",
+                "is_correct": false
+            },
+            {
+                "text": "23",
+                "is_correct": true
+            },
+            {
+                "text": "25",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "21 + 2 = 23. Ta cộng 1 với 2 được 3, giữ nguyên 2 chục, kết quả là 23.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "34 + 6 = 40. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 34 + 6 = 40. Ta cộng 4 với 6 được 10, viết 0 và nhớ 1. Cộng 3 + 1 (nhớ) = 4, kết quả là 40.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 45 + 7 = ?",
+        "answers": [
+            {
+                "text": "51",
+                "is_correct": false
+            },
+            {
+                "text": "52",
+                "is_correct": true
+            },
+            {
+                "text": "53",
+                "is_correct": false
+            },
+            {
+                "text": "50",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "45 + 7 = 52. Ta cộng 5 với 7 được 12, viết 2 và nhớ 1. Cộng 4 + 1 (nhớ) = 5, kết quả là 52.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 32 + 5 = ___",
+        "answers": [
+            {
+                "text": "36",
+                "is_correct": false
+            },
+            {
+                "text": "37",
+                "is_correct": true
+            },
+            {
+                "text": "38",
+                "is_correct": false
+            },
+            {
+                "text": "35",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "32 + 5 = 37. Ta cộng 2 với 5 được 7, giữ nguyên 3 chục, kết quả là 37.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "67 + 8 = 75. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 67 + 8 = 75. Ta cộng 7 với 8 được 15, viết 5 và nhớ 1. Cộng 6 + 1 (nhớ) = 7, kết quả là 75.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 58 + 9 = ?",
+        "answers": [
+            {
+                "text": "66",
+                "is_correct": false
+            },
+            {
+                "text": "68",
+                "is_correct": false
+            },
+            {
+                "text": "67",
+                "is_correct": true
+            },
+            {
+                "text": "65",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "58 + 9 = 67. Ta cộng 8 với 9 được 17, viết 7 và nhớ 1. Cộng 5 + 1 (nhớ) = 6, kết quả là 67.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có một chữ số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 76 + ___ = 83",
+        "answers": [
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "7",
+                "is_correct": true
+            },
+            {
+                "text": "9",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "76 + 7 = 83. Ta tìm số cần cộng: 83 - 76 = 7. Hoặc: 6 + 7 = 13 (viết 3, nhớ 1), 7 + 1 = 8, kết quả là 83.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "20 + 30 = 50. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 20 + 30 = 50. Ta cộng 2 chục với 3 chục được 5 chục, tức là 50.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "12 + 15 = 28. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sai vì 12 + 15 = 27, không phải 28. Ta cộng 2 + 5 = 7, và 1 chục + 1 chục = 2 chục, kết quả là 27.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 11 + 12 = ?",
+        "answers": [
+            {
+                "text": "22",
+                "is_correct": false
+            },
+            {
+                "text": "23",
+                "is_correct": true
+            },
+            {
+                "text": "24",
+                "is_correct": false
+            },
+            {
+                "text": "25",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "11 + 12 = 23. Ta cộng 1 + 2 = 3, và 1 chục + 1 chục = 2 chục, kết quả là 23.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 30 + 20 = ?",
+        "answers": [
+            {
+                "text": "40",
+                "is_correct": false
+            },
+            {
+                "text": "60",
+                "is_correct": false
+            },
+            {
+                "text": "50",
+                "is_correct": true
+            },
+            {
+                "text": "70",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "30 + 20 = 50. Ta cộng 3 chục với 2 chục được 5 chục, tức là 50.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "24 + 35 = 59. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 24 + 35 = 59. Ta cộng 4 + 5 = 9, và 2 chục + 3 chục = 5 chục, kết quả là 59.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 43 + 26 = ?",
+        "answers": [
+            {
+                "text": "68",
+                "is_correct": false
+            },
+            {
+                "text": "69",
+                "is_correct": true
+            },
+            {
+                "text": "70",
+                "is_correct": false
+            },
+            {
+                "text": "67",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "43 + 26 = 69. Ta cộng 3 + 6 = 9, và 4 chục + 2 chục = 6 chục, kết quả là 69.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 22 + 14 = ___",
+        "answers": [
+            {
+                "text": "35",
+                "is_correct": false
+            },
+            {
+                "text": "36",
+                "is_correct": true
+            },
+            {
+                "text": "37",
+                "is_correct": false
+            },
+            {
+                "text": "38",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "22 + 14 = 36. Ta cộng 2 + 4 = 6, và 2 chục + 1 chục = 3 chục, kết quả là 36.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "37 + 48 = 85. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 37 + 48 = 85. Ta cộng 7 + 8 = 15, viết 5 và nhớ 1. Cộng 3 + 4 + 1 (nhớ) = 8, kết quả là 85.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 56 + 29 = ?",
+        "answers": [
+            {
+                "text": "84",
+                "is_correct": false
+            },
+            {
+                "text": "86",
+                "is_correct": false
+            },
+            {
+                "text": "85",
+                "is_correct": true
+            },
+            {
+                "text": "87",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "56 + 29 = 85. Ta cộng 6 + 9 = 15, viết 5 và nhớ 1. Cộng 5 + 2 + 1 (nhớ) = 8, kết quả là 85.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép cộng số có hai chữ số với số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 45 + ___ = 73",
+        "answers": [
+            {
+                "text": "27",
+                "is_correct": false
+            },
+            {
+                "text": "28",
+                "is_correct": true
+            },
+            {
+                "text": "29",
+                "is_correct": false
+            },
+            {
+                "text": "26",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "45 + 28 = 73. Ta tìm số cần cộng: 73 - 45 = 28. Hoặc: 5 + 8 = 13 (viết 3, nhớ 1), 4 + 2 + 1 = 7, kết quả là 73.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "15 - 3 = 12. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 15 - 3 = 12. Ta trừ 3 từ 5 đơn vị được 2, giữ nguyên 1 chục, kết quả là 12.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "28 - 4 = 25. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sai vì 28 - 4 = 24, không phải 25. Ta trừ 4 từ 8 đơn vị được 4, giữ nguyên 2 chục, kết quả là 24.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 19 - 5 = ?",
+        "answers": [
+            {
+                "text": "13",
+                "is_correct": false
+            },
+            {
+                "text": "14",
+                "is_correct": true
+            },
+            {
+                "text": "15",
+                "is_correct": false
+            },
+            {
+                "text": "16",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "19 - 5 = 14. Ta trừ 5 từ 9 đơn vị được 4, giữ nguyên 1 chục, kết quả là 14.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 30 - 6 = ?",
+        "answers": [
+            {
+                "text": "25",
+                "is_correct": false
+            },
+            {
+                "text": "23",
+                "is_correct": false
+            },
+            {
+                "text": "24",
+                "is_correct": true
+            },
+            {
+                "text": "26",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "30 - 6 = 24. Ta mượn 1 chục, 30 thành 2 chục 10 đơn vị. Trừ 10 - 6 = 4, giữ 2 chục, kết quả là 24.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "46 - 7 = 39. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 46 - 7 = 39. Vì 6 < 7 nên phải mượn 1 chục. Ta có 16 - 7 = 9, còn 3 chục, kết quả là 39.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 52 - 8 = ?",
+        "answers": [
+            {
+                "text": "43",
+                "is_correct": false
+            },
+            {
+                "text": "45",
+                "is_correct": false
+            },
+            {
+                "text": "44",
+                "is_correct": true
+            },
+            {
+                "text": "46",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "52 - 8 = 44. Vì 2 < 8 nên phải mượn 1 chục. Ta có 12 - 8 = 4, còn 4 chục, kết quả là 44.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 37 - 4 = ___",
+        "answers": [
+            {
+                "text": "32",
+                "is_correct": false
+            },
+            {
+                "text": "33",
+                "is_correct": true
+            },
+            {
+                "text": "34",
+                "is_correct": false
+            },
+            {
+                "text": "31",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "37 - 4 = 33. Ta trừ 4 từ 7 đơn vị được 3, giữ nguyên 3 chục, kết quả là 33.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "61 - 9 = 52. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 61 - 9 = 52. Vì 1 < 9 nên phải mượn 1 chục. Ta có 11 - 9 = 2, còn 5 chục, kết quả là 52.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 75 - 8 = ?",
+        "answers": [
+            {
+                "text": "66",
+                "is_correct": false
+            },
+            {
+                "text": "68",
+                "is_correct": false
+            },
+            {
+                "text": "67",
+                "is_correct": true
+            },
+            {
+                "text": "69",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "75 - 8 = 67. Vì 5 < 8 nên phải mượn 1 chục. Ta có 15 - 8 = 7, còn 6 chục, kết quả là 67.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có một chữ số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 83 - ___ = 76",
+        "answers": [
+            {
+                "text": "6",
+                "is_correct": false
+            },
+            {
+                "text": "8",
+                "is_correct": false
+            },
+            {
+                "text": "7",
+                "is_correct": true
+            },
+            {
+                "text": "9",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "83 - 7 = 76. Ta tìm số cần trừ: 83 - 76 = 7. Hoặc: 3 - 7 không được nên mượn 1 chục, 13 - 7 = 6, còn 7 chục, kết quả là 76.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "50 - 20 = 30. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 50 - 20 = 30. Ta trừ 2 chục từ 5 chục còn 3 chục, tức là 30.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "48 - 23 = 26. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": false
+            },
+            {
+                "text": "Sai",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sai vì 48 - 23 = 25, không phải 26. Ta trừ 3 từ 8 được 5, và 2 chục từ 4 chục còn 2 chục, kết quả là 25.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 35 - 12 = ?",
+        "answers": [
+            {
+                "text": "22",
+                "is_correct": false
+            },
+            {
+                "text": "23",
+                "is_correct": true
+            },
+            {
+                "text": "24",
+                "is_correct": false
+            },
+            {
+                "text": "25",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "35 - 12 = 23. Ta trừ 2 từ 5 được 3, và 1 chục từ 3 chục còn 2 chục, kết quả là 23.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 60 - 30 = ?",
+        "answers": [
+            {
+                "text": "20",
+                "is_correct": false
+            },
+            {
+                "text": "40",
+                "is_correct": false
+            },
+            {
+                "text": "30",
+                "is_correct": true
+            },
+            {
+                "text": "50",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "60 - 30 = 30. Ta trừ 3 chục từ 6 chục còn 3 chục, tức là 30.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "57 - 24 = 33. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 57 - 24 = 33. Ta trừ 4 từ 7 được 3, và 2 chục từ 5 chục còn 3 chục, kết quả là 33.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 68 - 35 = ?",
+        "answers": [
+            {
+                "text": "32",
+                "is_correct": false
+            },
+            {
+                "text": "33",
+                "is_correct": true
+            },
+            {
+                "text": "34",
+                "is_correct": false
+            },
+            {
+                "text": "31",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "68 - 35 = 33. Ta trừ 5 từ 8 được 3, và 3 chục từ 6 chục còn 3 chục, kết quả là 33.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 76 - 42 = ___",
+        "answers": [
+            {
+                "text": "33",
+                "is_correct": false
+            },
+            {
+                "text": "34",
+                "is_correct": true
+            },
+            {
+                "text": "35",
+                "is_correct": false
+            },
+            {
+                "text": "32",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "76 - 42 = 34. Ta trừ 2 từ 6 được 4, và 4 chục từ 7 chục còn 3 chục, kết quả là 34.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "81 - 47 = 34. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Đúng vì 81 - 47 = 34. Vì 1 < 7 nên phải mượn 1 chục. Ta có 11 - 7 = 4, và 7 chục - 4 chục = 3 chục, kết quả là 34.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Tính: 72 - 38 = ?",
+        "answers": [
+            {
+                "text": "33",
+                "is_correct": false
+            },
+            {
+                "text": "35",
+                "is_correct": false
+            },
+            {
+                "text": "34",
+                "is_correct": true
+            },
+            {
+                "text": "36",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "72 - 38 = 34. Vì 2 < 8 nên phải mượn 1 chục. Ta có 12 - 8 = 4, và 6 chục - 3 chục = 3 chục, kết quả là 34.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Phép trừ số có hai chữ số cho số có hai chữ số",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền số thích hợp: 95 - ___ = 58",
+        "answers": [
+            {
+                "text": "36",
+                "is_correct": false
+            },
+            {
+                "text": "37",
+                "is_correct": true
+            },
+            {
+                "text": "38",
+                "is_correct": false
+            },
+            {
+                "text": "35",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "95 - 37 = 58. Ta tìm số cần trừ: 95 - 58 = 37. Hoặc kiểm tra: 5 < 7 nên mượn 1 chục, 15 - 7 = 8, và 8 chục - 3 chục = 5 chục, kết quả là 58.",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Thứ Hai là ngày đầu tuần. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Thứ Hai là ngày đầu tiên trong tuần làm việc và học tập",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "easy",
+        "type": "True-False",
+        "question_content": "Chủ Nhật là ngày cuối tuần. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Chủ Nhật là ngày cuối cùng của tuần",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Hôm nay là Thứ Ba. Ngày mai là ngày nào?",
+        "answers": [
+            {
+                "text": "Thứ Hai",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Tư",
+                "is_correct": true
+            },
+            {
+                "text": "Thứ Năm",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Sáu",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Ngày sau Thứ Ba là Thứ Tư",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "easy",
+        "type": "Multiple choices single",
+        "question_content": "Một tuần có bao nhiêu ngày?",
+        "answers": [
+            {
+                "text": "5 ngày",
+                "is_correct": false
+            },
+            {
+                "text": "7 ngày",
+                "is_correct": true
+            },
+            {
+                "text": "6 ngày",
+                "is_correct": false
+            },
+            {
+                "text": "10 ngày",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Một tuần có 7 ngày từ Thứ Hai đến Chủ Nhật",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "medium",
+        "type": "True-False",
+        "question_content": "Thứ Bảy và Chủ Nhật là hai ngày nghỉ cuối tuần. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Thứ Bảy và Chủ Nhật là hai ngày nghỉ học và nghỉ làm",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "medium",
+        "type": "Multiple choices single",
+        "question_content": "Ngày nào đứng giữa Thứ Tư và Thứ Sáu?",
+        "answers": [
+            {
+                "text": "Thứ Ba",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Năm",
+                "is_correct": true
+            },
+            {
+                "text": "Thứ Bảy",
+                "is_correct": false
+            },
+            {
+                "text": "Chủ Nhật",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Thứ Năm nằm giữa Thứ Tư và Thứ Sáu",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "medium",
+        "type": "Fill in blank",
+        "question_content": "Điền ngày còn thiếu: Thứ Hai, Thứ Ba, ___, Thứ Tư, Thứ Năm",
+        "answers": [
+            {
+                "text": "Thứ Sáu",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Bảy",
+                "is_correct": false
+            },
+            {
+                "text": "Chủ Nhật",
+                "is_correct": false
+            },
+            {
+                "text": "Không có ngày nào thiếu",
+                "is_correct": true
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Dãy đã đầy đủ: Thứ Hai, Thứ Ba, Thứ Tư, Thứ Năm theo thứ tự",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "hard",
+        "type": "True-False",
+        "question_content": "Nếu hôm nay là Thứ Sáu thì hôm qua là Thứ Năm. Đúng hay Sai?",
+        "answers": [
+            {
+                "text": "Đúng",
+                "is_correct": true
+            },
+            {
+                "text": "Sai",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Ngày trước Thứ Sáu là Thứ Năm",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "hard",
+        "type": "Multiple choices single",
+        "question_content": "Hôm qua là Chủ Nhật. Hôm nay là ngày nào?",
+        "answers": [
+            {
+                "text": "Thứ Bảy",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Hai",
+                "is_correct": true
+            },
+            {
+                "text": "Thứ Ba",
+                "is_correct": false
+            },
+            {
+                "text": "Chủ Nhật",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Sau Chủ Nhật là Thứ Hai, bắt đầu tuần mới",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    },
+    {
+        "skill_name": "Các ngày trong tuần",
+        "difficulty": "hard",
+        "type": "Fill in blank",
+        "question_content": "Điền ngày còn thiếu: Thứ Năm, Thứ Sáu, ___, Chủ Nhật",
+        "answers": [
+            {
+                "text": "Thứ Tư",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Hai",
+                "is_correct": false
+            },
+            {
+                "text": "Thứ Bảy",
+                "is_correct": true
+            },
+            {
+                "text": "Thứ Ba",
+                "is_correct": false
+            }
+        ],
+        "image_question": [],
+        "image_answer": [],
+        "explanation": "Thứ Bảy nằm giữa Thứ Sáu và Chủ Nhật",
+        "status": "Approved",
+        "created_by": "admin",
+        "updated_by": "admin"
+    }
+]
