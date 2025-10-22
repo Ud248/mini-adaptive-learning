@@ -26,7 +26,7 @@ class QuestionGenerationTool:
         self.cfg = config or self._load_config()
         
         # Configuration parameters
-        self.batch_size = self.cfg.get("batch_size", 4)
+        self.batch_size = self.cfg.get("batch_size", 5)
         self.temperature = self.cfg.get("temperature", 0.3)
         self.max_tokens = self.cfg.get("max_tokens", 2048)
         self.retry_on_parse_error = self.cfg.get("retry_on_parse_error", 2)
@@ -209,25 +209,48 @@ class QuestionGenerationTool:
         teacher_context_text = teacher_context_summarized
         textbook_context_text = format_context_for_prompt([], textbook_context)
         
+        # Get student metrics
+        accuracy = profile_student.get("accuracy", 50)
+        skipped = profile_student.get("skipped", 10)
+        avg_response_time = profile_student.get("avg_response_time", 30)
+        
+        # Generate difficulty distribution based on accuracy
+        if accuracy < 50:
+            easy, medium, hard = 60, 30, 10
+        elif accuracy < 70:
+            easy, medium, hard = 30, 50, 20
+        else:
+            easy, medium, hard = 20, 30, 50
+        
+        difficulty_dist = f"• EASY: {easy}% ({int(batch_size*easy/100)} câu)\n• MEDIUM: {medium}% ({int(batch_size*medium/100)} câu)\n• HARD: {hard}% ({int(batch_size*hard/100)} câu)"
+        
+        # Generate special notes based on other metrics
+        notes = []
+        if skipped > 30:
+            notes.append(f"⚠️ Học sinh bỏ qua {skipped}% câu → Tạo câu RÕ RÀNG hơn")
+        if avg_response_time > 60:
+            notes.append(f"⚠️ Thời gian {avg_response_time}s/câu → Tạo câu NGẮN GỌN hơn")
+        special_notes = "\n".join(notes) if notes else "✓ Không có ghi chú đặc biệt"
+        
         # Build user prompt
         user_prompt = USER_PROMPT_TEMPLATE.format(
             batch_size=batch_size,
-            grade=constraints.get("grade", 1),
-            skill=constraints.get("skill", ""),
             skill_name=constraints.get("skill_name", ""),
-            student_name=profile_student.get("username", "học sinh"),
-            accuracy=profile_student.get("accuracy", 50),
-            teacher_context=teacher_context_text,
-            textbook_context=textbook_context_text
+            accuracy=accuracy,
+            answered=profile_student.get("answered", 70),
+            skipped=skipped,
+            avg_response_time=avg_response_time,
+            difficulty_distribution=difficulty_dist,
+            special_notes=special_notes,
+            teacher_context=teacher_context_text or "(Không có)",
+            textbook_context=textbook_context_text or "(Không có)"
         )
         
         # Add type suggestion if not mixed
         if suggested_type != "mixed":
-            user_prompt += f"\n\nGỢI Ý: Nên tạo câu hỏi dạng {suggested_type}.\n"
+            user_prompt += f"\n\n💡 GỢI Ý: Ưu tiên {suggested_type}"
         
-        # No image instructions
-        
-        # Add JSON format instruction
+        # Add JSON format instruction (keep for example)
         user_prompt += f"\n\n{JSON_FORMAT_INSTRUCTION}"
         
         return [

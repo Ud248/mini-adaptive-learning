@@ -75,18 +75,19 @@ class TestQuestionGenerationTool:
     
     @pytest.fixture
     def sample_profile_student(self):
-        """Sample student profile"""
+        """Sample student profile with new adaptive learning structure"""
         return {
-            "username": "student1",
-            "accuracy": 60,
-            "skill_id": "S5"
+            "accuracy": 60,              # % correct (0-100)
+            "answered": 75,              # % answered (0-100)
+            "skipped": 15,               # % skipped (0-100)
+            "avg_response_time": 35      # seconds per question
         }
     
     @pytest.fixture
     def sample_constraints(self):
         """Sample constraints"""
         return {
-            "num_questions": 4,  # 2 TRUE_FALSE + 2 MULTIPLE_CHOICE
+            "num_questions": 5,  # Updated to match new batch_size (was 4)
             "grade": 1,
             "skill": "S5",
             "skill_name": "Phép cộng"
@@ -281,9 +282,9 @@ class TestQuestionGenerationTool:
             ('{"questions": [{"question_text": "3 + 2 = 6 đúng hay sai?", "question_type": "true_false", "answers": [{"text": "Đúng", "correct": False}, {"text": "Sai", "correct": True}], "explanation": "3 + 2 = 5, không phải 6"}, {"question_text": "Số nào đứng sau số 2?", "question_type": "multiple_choice", "answers": [{"text": "3", "correct": True}, {"text": "1", "correct": False}, {"text": "4", "correct": False}, {"text": "5", "correct": False}], "explanation": "Sau 2 là 3"}, {"question_text": "4 + 1 = 5 đúng hay sai?", "question_type": "true_false", "answers": [{"text": "Đúng", "correct": True}, {"text": "Sai", "correct": False}], "explanation": "4 + 1 = 5 là đúng"}, {"question_text": "Hình vuông có mấy cạnh?", "question_type": "multiple_choice", "answers": [{"text": "4", "correct": True}, {"text": "3", "correct": False}, {"text": "5", "correct": False}, {"text": "6", "correct": False}], "explanation": "Hình vuông có 4 cạnh"}]}', "test_provider")
         ]
         
-        # Test with 8 questions, batch_size=4 -> should be 2 batches
+        # Test with 10 questions, batch_size=5 -> should be 2 batches
         constraints = {
-            "num_questions": 8,
+            "num_questions": 10,
             "grade": 1,
             "skill": "S5",
             "skill_name": "Test"
@@ -296,7 +297,7 @@ class TestQuestionGenerationTool:
             constraints=constraints
         )
         
-        assert len(result["questions"]) == 8
+        assert len(result["questions"]) == 8  # Still 8 because mock returns 4 per batch
         assert result["metadata"]["num_batches"] == 2  # 8 / 4 = 2 batches
         
         # Check that we have both types of questions
@@ -379,14 +380,14 @@ class TestQuestionGenerationTool:
             tool = QuestionGenerationTool(mock_hub)
             
         # Should use default values if config loading fails
-        assert tool.batch_size == 4  # default
+        assert tool.batch_size == 5  # updated default from 4 to 5
         assert tool.temperature == 0.3  # default
         
         # Test that tool can generate questions with both types
         result = tool.generate(
             teacher_context=[{"text": "Test context"}],
             textbook_context=[{"text": "Test context"}],
-            profile_student={"username": "test", "accuracy": 50, "skill_id": "S5"},
+            profile_student={"accuracy": 50, "answered": 70, "skipped": 20, "avg_response_time": 30},
             constraints={"num_questions": 2, "grade": 1, "skill": "S5", "skill_name": "Test"}
         )
         

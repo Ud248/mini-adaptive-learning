@@ -185,8 +185,10 @@ Write-Host ''
 # Activate venv TRƯỚC KHI chạy command
 {activate_block}
 
-# Run command
+# Run command với output buffering tắt
 Write-Host 'Starting service...' -ForegroundColor Cyan
+Write-Host ''
+$env:PYTHONUNBUFFERED = "1"
 {command}
 """
             
@@ -333,11 +335,12 @@ def main():
     
     # Bước 3: Khởi động Backend Quiz API
     # Sử dụng python từ venv (sẽ được activate trong terminal mới)
-    quiz_api_cmd = 'python -m uvicorn backend.quiz_api.main:app --host 0.0.0.0 --port 8001 --reload'
+    # Thêm -u để tắt buffering và hiển thị log ngay lập tức
+    quiz_api_cmd = 'python -u -m uvicorn backend.quiz_api.main:app --host 0.0.0.0 --port 8001 --reload --log-level info'
     start_service_in_terminal("Backend Quiz API (Port 8001)", quiz_api_cmd, wait_before=2)
     
     # Bước 4: Khởi động Backend SAINT Analysis API
-    saint_api_cmd = 'python -m uvicorn backend.saint_analysis.main:app --host 0.0.0.0 --port 8000 --reload'
+    saint_api_cmd = 'python -u -m uvicorn backend.saint_analysis.main:app --host 0.0.0.0 --port 8000 --reload --log-level info'
     start_service_in_terminal("Backend SAINT Analysis API (Port 8000)", saint_api_cmd, wait_before=2)
     
     # Bước 5: Khởi động Frontend

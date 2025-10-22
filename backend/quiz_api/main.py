@@ -50,7 +50,7 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-me")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
-_mongo_client: MongoClient | None = None
+_mongo_client: Optional[MongoClient] = None
 
 def get_mongo_client() -> MongoClient:
     global _mongo_client
@@ -116,14 +116,65 @@ def get_current_user(authorization: Optional[str] = Header(None)) -> Optional[Di
     return user_data
 
 def normalize_questions(docs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Chuẩn hóa câu hỏi từ MongoDB sang định dạng Quiz Question."""
+    """Chuẩn hóa câu hỏi từ MongoDB và resolve skill_id → skill_name, grade, subject."""
+    from bson import ObjectId
+    
     results: List[Dict[str, Any]] = []
+    
+    # Get MongoDB collections để resolve references
+    client = get_mongo_client()
+    db = client[MONGO_DB_NAME]
+    skills_col = db["skills"]
+    grades_col = db["grades"]
+    subjects_col = db["subjects"]
+    
+    # Cache để tránh query nhiều lần
+    skills_cache = {}
+    grades_cache = {}
+    subjects_cache = {}
+    
     for q in docs:
+        # Resolve skill_id (ObjectId) → skill info
+        skill_id = q.get("skill_id")  # ObjectId reference to skills._id
+        skill_name = ""
+        grade = 1
+        subject = "Toán"
+        
+        if skill_id:
+            # Check cache first
+            if skill_id not in skills_cache:
+                skill_doc = skills_col.find_one({"_id": skill_id})
+                if skill_doc:
+                    skills_cache[skill_id] = skill_doc
+            
+            skill_doc = skills_cache.get(skill_id)
+            if skill_doc:
+                skill_name = skill_doc.get("skill_name", "")
+                
+                # Resolve grade_id → grade
+                grade_id = skill_doc.get("grade_id")  # ObjectId reference to grades._id
+                if grade_id:
+                    if grade_id not in grades_cache:
+                        grade_doc = grades_col.find_one({"_id": grade_id})
+                        if grade_doc:
+                            grades_cache[grade_id] = grade_doc.get("grade_name", 1)
+                    grade = grades_cache.get(grade_id, 1)
+                
+                # Resolve subject_id → subject_name
+                subject_id = skill_doc.get("subject_id")  # ObjectId reference to subjects._id
+                if subject_id:
+                    if subject_id not in subjects_cache:
+                        subject_doc = subjects_col.find_one({"_id": subject_id})
+                        if subject_doc:
+                            subjects_cache[subject_id] = subject_doc.get("subject_name", "Toán")
+                    subject = subjects_cache.get(subject_id, "Toán")
+        
+        # Parse answers
         answers = q.get("answers", []) or []
         options = [a.get("text", "") for a in answers]
         correct = ""
         for a in answers:
-            if a.get("correct"):
+            if a.get("is_correct"):
                 correct = a.get("text", "")
                 break
 
@@ -132,18 +183,18 @@ def normalize_questions(docs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         results.append({
             "id": q.get("question_id") or str(q.get("_id")),
-            "lesson": q.get("skill_name", ""),
-            "grade": q.get("grade", 1),
-            "chapter": q.get("skill", ""),
-            "subject": q.get("subject", ""),
-            "source": "mongodb.questions",
-            "question": q.get("question", ""),
+            "lesson": skill_name,  # Resolved từ skill_id
+            "skill_name": skill_name,  # Thêm field skill_name cho frontend
+            "grade": grade,  # Resolved từ grade_id
+            "chapter": skill_name,  # = lesson (để tương thích với frontend)
+            "subject": subject,  # Resolved từ subject_id
+            "source": "mongodb.placement_questions",
+            "question": q.get("question_content") or q.get("question", ""),
             "image_question": [image_q] if isinstance(image_q, str) and image_q.strip() else (image_q if isinstance(image_q, list) else []),
             "answer": correct,
             "image_answer": [image_a] if isinstance(image_a, str) and image_a.strip() else (image_a if isinstance(image_a, list) else []),
             "options": options,
             "embedding": [],
-            # Lấy giải thích từ 'explaination' (typo phổ biến) hoặc 'explanation'
             "explanation": q.get("explaination") or q.get("explanation") or ""
         })
 
@@ -167,18 +218,15 @@ app.add_middleware(
 class Question(BaseModel):
     id: str
     lesson: str
-    grade: int
-    chapter: str
+    grade: str
     subject: str
-    source: str
+    skill_name: str  # Tên kỹ năng
     question: str
     image_question: List[str]
     answer: str
     image_answer: List[str]
     options: List[str] = []  # Thêm options cho frontend
-    embedding: List[float]
-    # Thêm trường giải thích (lấy từ MongoDB key 'explaination' hoặc 'explanation')
-    explanation: Optional[str] = None
+    explanation: Optional[str] = None  # Giải thích đáp án
 
 class QuizRequest(BaseModel):
     grade: Optional[int] = 1  # Mặc định lớp 1
@@ -304,6 +352,8 @@ async def root():
 async def get_weak_skills(student_email: str):
     """Lấy danh sách kỹ năng yếu của học sinh từ profile_student"""
     try:
+        from bson import ObjectId
+        
         client = get_mongo_client()
         db = client[MONGO_DB_NAME]
         col = db["profile_student"]
@@ -314,20 +364,19 @@ async def get_weak_skills(student_email: str):
         if not profile:
             return {"error": "Không tìm thấy profile của học sinh"}
         
-        # Ưu tiên dùng mảng skills trong profile_student (skill_array) theo simple_updater
         profile_skills = profile.get("skills", []) or profile.get("skill_array", [])
 
         if profile_skills:
-            # Lọc: chỉ lấy skill KHÔNG phải mastered
             weak_skill_items = [s for s in profile_skills if str(s.get("status", "")).lower() != "mastered"]
 
-            # Chuẩn hóa và bổ sung thông tin
             skills_detail = []
             skills_col = db["skills"]
+            grades_col = db["grades"]
+            subjects_col = db["subjects"]
+            
             for s in weak_skill_items:
                 skill_id = s.get("skill_id") or s.get("skill") or ""
                 accuracy = s.get("accuracy")
-                # accuracy trong profile có thể là [0,1] - convert sang percent ở frontend
                 avg_time = s.get("avg_time") or s.get("avg_response_time") or 0
                 status = s.get("status", "unknown")
                 answered = s.get("answered", None)
@@ -336,15 +385,37 @@ async def get_weak_skills(student_email: str):
                 if isinstance(answered, (int, float)) or isinstance(skipped, (int, float)):
                     total_questions = int((answered or 0) + (skipped or 0))
 
-                # Enrich từ bảng skills theo skill_id
-                skill_info = skills_col.find_one({"skill_id": skill_id}) or {}
-                resolved_skill_name = skill_info.get("skill_name") or s.get("skill_name") or f"Skill {skill_id}"
-                resolved_subject = skill_info.get("subject") or s.get("subject") or profile.get("subject", "Toán")
-                resolved_grade = skill_info.get("grade") or s.get("grade") or profile.get("grade", 1)
+                # Convert skill_id string to ObjectId if needed
+                try:
+                    if isinstance(skill_id, str):
+                        skill_id = ObjectId(skill_id)
+                except:
+                    pass
+                
+                # Enrich từ bảng skills theo skill_id (ObjectId = skills._id)
+                skill_info = skills_col.find_one({"_id": skill_id}) or {}
+                resolved_skill_name = skill_info.get("skill_name") or s.get("skill_name") or f"{skill_id}"
+                
+                # Resolve grade_id và subject_id thành tên
+                resolved_grade = 1
+                resolved_subject = "Toán"
+                
+                grade_id = skill_info.get("grade_id")
+                if grade_id:
+                    grade_doc = grades_col.find_one({"_id": grade_id})
+                    if grade_doc:
+                        resolved_grade = grade_doc.get("grade_name", 1)
+                
+                subject_id = skill_info.get("subject_id")
+                if subject_id:
+                    subject_doc = subjects_col.find_one({"_id": subject_id})
+                    if subject_doc:
+                        resolved_subject = subject_doc.get("subject_name", "Toán")
+                
                 resolved_difficulty = skill_info.get("difficulty_level") or s.get("difficulty_level") or "medium"
 
                 skills_detail.append({
-                    "skill_id": skill_id,
+                    "skill_id": str(skill_id),
                     "skill_name": resolved_skill_name,
                     "subject": resolved_subject,
                     "grade": resolved_grade,
@@ -365,22 +436,45 @@ async def get_weak_skills(student_email: str):
                 "weak_skills": skills_detail
             }
         else:
-            # Fallback: logic cũ dựa vào low_accuracy_skills và slow_response_skills
+            # Fallback: logic cũ
             low_accuracy_skills = profile.get("low_accuracy_skills", [])
             slow_response_skills = profile.get("slow_response_skills", [])
 
             skills_col = db["skills"]
+            grades_col = db["grades"]
+            subjects_col = db["subjects"]
             skills_detail = []
             all_weak_skills = list(set(low_accuracy_skills + slow_response_skills))
 
             for skill_id in all_weak_skills:
-                skill_info = skills_col.find_one({"skill_id": skill_id})
+                try:
+                    if isinstance(skill_id, str):
+                        skill_id = ObjectId(skill_id)
+                except:
+                    pass
+                
+                skill_info = skills_col.find_one({"_id": skill_id})
                 if skill_info:
+                    resolved_grade = 1
+                    resolved_subject = "Toán"
+                    
+                    grade_id = skill_info.get("grade_id")
+                    if grade_id:
+                        grade_doc = grades_col.find_one({"_id": grade_id})
+                        if grade_doc:
+                            resolved_grade = grade_doc.get("grade_name", 1)
+                    
+                    subject_id = skill_info.get("subject_id")
+                    if subject_id:
+                        subject_doc = subjects_col.find_one({"_id": subject_id})
+                        if subject_doc:
+                            resolved_subject = subject_doc.get("subject_name", "Toán")
+                    
                     skills_detail.append({
-                        "skill_id": skill_id,
-                        "skill_name": skill_info.get("skill_name", f"Skill {skill_id}"),
-                        "subject": skill_info.get("subject", "Toán"),
-                        "grade": skill_info.get("grade", 1),
+                        "skill_id": str(skill_id),
+                        "skill_name": skill_info.get("skill_name", f"{skill_id}"),
+                        "subject": resolved_subject,
+                        "grade": resolved_grade,
                         "difficulty_level": skill_info.get("difficulty_level", "medium"),
                         "status": "unknown"
                     })
@@ -550,9 +644,9 @@ async def logout():
 
 # ===================== AGENT ENDPOINTS =====================
 
-_hub: LLMHub | None = None
-_workflow: AgentWorkflow | None = None
-_validator: ValidationTool | None = None
+_hub: Optional[LLMHub] = None
+_workflow: Optional[AgentWorkflow] = None
+_validator: Optional[ValidationTool] = None
 
 
 def _get_hub() -> LLMHub:
@@ -588,15 +682,36 @@ def _get_validator() -> ValidationTool:
 
 @app.post("/agent/questions:generate")
 async def agent_generate(req: GenerateRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Generate questions using Agent workflow with adaptive student profile
+    
+    Expected profile_student structure:
+    {
+        "accuracy": 65,           # % đúng (0-100)
+        "answered": 80,           # % đã trả lời (0-100)
+        "skipped": 15,            # % bỏ qua (0-100)
+        "avg_response_time": 45   # seconds per question
+    }
+    """
     try:
         wf = _get_workflow()
-        profile_student = {"username": req.username, "accuracy": 60}
+        
+        # Build profile_student with new structure
+        # Use values from request, with defaults for backward compatibility
+        profile_student = {
+            "accuracy": req.accuracy,              # % đúng (0-100)
+            "answered": req.answered,              # % đã trả lời (0-100)
+            "skipped": req.skipped,                # % bỏ qua (0-100)
+            "avg_response_time": req.avg_response_time  # seconds per question
+        }
+        
         constraints = {
             "grade": req.grade,
             "skill": req.skill,
             "skill_name": req.skill_name or "",
             "num_questions": req.num_questions,
         }
+        
         out = wf.run(profile_student=profile_student, constraints=constraints)
         return out
     except HTTPException:
@@ -626,48 +741,95 @@ async def agent_validate(req: ValidateRequest, current_user: dict = Depends(get_
 
 @app.post("/quiz/generate", response_model=QuizResponse)
 async def generate_quiz(request: QuizRequest):
-    """Tạo bài kiểm tra: lấy tất cả skill (theo grade/subject) và mỗi skill 2 câu."""
+    """Tạo bài kiểm tra: lấy các skill có câu hỏi và mỗi skill 3 câu (1 easy, 1 medium, 1 hard)."""
     try:
-        # Luôn dùng chế độ per-skill: 2 câu mỗi skill, tổng phụ thuộc số skill sẵn có
-        # Sử dụng helper từ mongodb_client thay vì thao tác trực tiếp với pymongo
-
-        match_stage: Dict[str, Any] = {k: v for k, v in {"grade": request.grade, "subject": request.subject}.items() if v is not None}
-
-        # 1) Lấy danh sách skills từ collection 'skills' theo môn + lớp (dùng aggregate)
-        skills_query: Dict[str, Any] = {}
-        if request.subject:
-            skills_query["subject"] = request.subject
+        from bson import ObjectId
+        
+        client = get_mongo_client()
+        db = client[MONGO_DB_NAME]
+        
+        # 1) Resolve grade và subject thành ObjectId
+        grade_id = None
+        subject_id = None
+        
         if request.grade is not None:
-            skills_query["grade"] = request.grade
-        skills_pipeline: List[Dict[str, Any]] = []
-        if skills_query:
-            skills_pipeline.append({"$match": skills_query})
-        skills_pipeline.append({"$project": {"skill_id": 1, "_id": 0}})
-        skills_docs = mongo_aggregate("skills", skills_pipeline)
-        available_skills = [s.get("skill_id") for s in skills_docs if s.get("skill_id")]
+            grades_col = db["grades"]
+            grade_doc = grades_col.find_one({"grade_name": request.grade})
+            if grade_doc:
+                grade_id = grade_doc.get("_id")
+        
+        if request.subject:
+            subjects_col = db["subjects"]
+            subject_doc = subjects_col.find_one({"subject_name": request.subject})
+            if subject_doc:
+                subject_id = subject_doc.get("_id")
+        
+        # 2) Lấy danh sách skill_ids CÓ CÂU HỎI từ placement_questions
+        # Filter theo grade_id + subject_id bằng cách join với skills collection
+        placement_col = db["placement_questions"]
+        skills_col = db["skills"]
+        
+        # Tìm tất cả skill_ids unique trong placement_questions
+        all_skill_ids_in_questions = placement_col.distinct("skill_id")
+        
+        # Filter những skill_ids này theo grade_id và subject_id
+        skills_filter: Dict[str, Any] = {"_id": {"$in": all_skill_ids_in_questions}}
+        if subject_id:
+            skills_filter["subject_id"] = subject_id
+        if grade_id:
+            skills_filter["grade_id"] = grade_id
+        
+        matching_skills = list(skills_col.find(skills_filter, {"_id": 1}))
+        available_skill_ids = [s["_id"] for s in matching_skills]
+        
+        if not available_skill_ids:
+            raise HTTPException(status_code=404, detail="Không tìm thấy skill nào có câu hỏi phù hợp")
 
-        # 2) Với mỗi skill: cố gắng lấy 2 câu (random), thiếu thì lấy theo limit
+        # 3) Với mỗi skill_id có câu hỏi: lấy 3 câu (1 easy, 1 medium, 1 hard)
         all_questions_docs: List[Dict[str, Any]] = []
-        for skill in available_skills:
+        
+        for skill_id in available_skill_ids:
             try:
-                per_skill_match = match_stage.copy()
-                # Map skill_id từ 'skills' sang field 'skill' trong placement_questions
-                per_skill_match["skill"] = skill
-                skill_pipeline = [
-                    {"$match": per_skill_match},
-                    {"$sample": {"size": 2}}
-                ]
-                docs = mongo_aggregate(MONGO_COLLECTION, skill_pipeline)
-                if len(docs) < 2:
-                    docs = mongo_aggregate(MONGO_COLLECTION, [
-                        {"$match": per_skill_match},
-                        {"$limit": 2}
-                    ])
-                all_questions_docs.extend(docs[:2])
-            except Exception:
+                # Base match: skill_id trong placement_questions
+                base_match = {"skill_id": skill_id}
+                
+                # Lấy 1 câu easy
+                easy_match = base_match.copy()
+                easy_match["difficulty"] = "easy"
+                easy_docs = mongo_aggregate(MONGO_COLLECTION, [
+                    {"$match": easy_match},
+                    {"$sample": {"size": 1}}
+                ])
+                
+                # Lấy 1 câu medium
+                medium_match = base_match.copy()
+                medium_match["difficulty"] = "medium"
+                medium_docs = mongo_aggregate(MONGO_COLLECTION, [
+                    {"$match": medium_match},
+                    {"$sample": {"size": 1}}
+                ])
+                
+                # Lấy 1 câu hard
+                hard_match = base_match.copy()
+                hard_match["difficulty"] = "hard"
+                hard_docs = mongo_aggregate(MONGO_COLLECTION, [
+                    {"$match": hard_match},
+                    {"$sample": {"size": 1}}
+                ])
+                
+                # Chỉ thêm skill này nếu có đủ 3 câu hỏi (easy, medium, hard)
+                if easy_docs and medium_docs and hard_docs:
+                    all_questions_docs.extend(easy_docs)
+                    all_questions_docs.extend(medium_docs)
+                    all_questions_docs.extend(hard_docs)
+                else:
+                    print(f"⚠️  Skill {skill_id} không đủ 3 độ khó (easy: {len(easy_docs)}, medium: {len(medium_docs)}, hard: {len(hard_docs)})")
+                
+            except Exception as e:
+                print(f"⚠️  Error getting questions for skill_id {skill_id}: {e}")
                 continue
 
-        # 3) Chuẩn hóa dữ liệu
+        # 4) Chuẩn hóa dữ liệu - resolve skill_id sang skill_name
         selected_questions = normalize_questions(all_questions_docs)
 
         # Fallback: nếu Mongo không có dữ liệu, thử từ JSON như cũ để dev không bị chặn
@@ -693,22 +855,30 @@ async def generate_quiz(request: QuizRequest):
         # Xử lý dữ liệu
         questions = []
         for q in selected_questions:
-            question = Question(
-                id=str(q.get("id", random.randint(100000, 999999))),
-                lesson=q.get("lesson", ""),
-                grade=q.get("grade", 1),
-                chapter=q.get("chapter", ""),
-                subject=q.get("subject", ""),
-                source=q.get("source", ""),
-                question=q.get("question", ""),
-                image_question=add_image_prefix(q.get("image_question", [])),
-                answer=q.get("answer", ""),
-                image_answer=add_image_prefix(q.get("image_answer", [])),
-                options=q.get("options", []),  # Thêm options
-            embedding=q.get("embedding", []),
-            explanation=q.get("explanation")
-            )
-            questions.append(question)
+            try:
+                question = Question(
+                    id=str(q.get("id", random.randint(100000, 999999))),
+                    lesson=q.get("lesson", ""),
+                    grade=q.get("grade", 1),
+                    subject=q.get("subject", ""),
+                    skill_name=q.get("skill_name", ""),
+                    question=q.get("question", ""),
+                    image_question=add_image_prefix(q.get("image_question", [])),
+                    answer=q.get("answer", ""),
+                    image_answer=add_image_prefix(q.get("image_answer", [])),
+                    options=q.get("options", []),
+                    explanation=q.get("explanation")
+                )
+                questions.append(question)
+            except Exception as e:
+                print(f"❌ Error creating Question from data: {e}")
+                print(f"   Question data: {q}")
+                import traceback
+                traceback.print_exc()
+                continue
+        
+        if not questions:
+            raise HTTPException(status_code=404, detail="Không thể tạo câu hỏi nào từ dữ liệu")
         
         quiz_id = f"quiz_{random.randint(100000, 999999)}"
         
@@ -718,7 +888,12 @@ async def generate_quiz(request: QuizRequest):
             total_questions=len(questions)
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"❌ Error in generate_quiz: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Lỗi tạo bài kiểm tra: {str(e)}")
 
 @app.post("/quiz/submit", response_model=QuizResult)
@@ -821,4 +996,11 @@ async def get_user_name(current_user: dict = Depends(get_current_user)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=8001,
+        log_level="info",
+        access_log=True,
+        reload=False
+    )

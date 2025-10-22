@@ -75,15 +75,21 @@ def get_skill_name_from_id(skill_id: str) -> str:
 # BAITAP COLLECTION (Textbook Exercises from MongoDB) FUNCTIONS
 # ============================================================================
 
-def build_baitap_text_for_embedding(exercise: Dict[str, Any]) -> str:
-    """Xây dựng text cho embedding từ textbook exercise"""
+def build_baitap_text_for_embedding(exercise: Dict[str, Any], skill_name: str = "") -> str:
+    """Xây dựng text cho embedding từ textbook exercise, bao gồm cả skill_name"""
     parts: List[str] = []
+    
+    # Thêm skill_name vào đầu để tăng trọng số
+    if skill_name:
+        parts.append(str(skill_name))
+    
     if exercise.get("question_content"):
         parts.append(str(exercise["question_content"]))
     if exercise.get("lesson"):
         parts.append(str(exercise["lesson"]))
     if exercise.get("source"):
         parts.append(str(exercise["source"]))
+    
     return " | ".join(parts)
 
 
@@ -129,7 +135,15 @@ def insert_baitap_data() -> None:
     # Prepare embeddings
     print("🧠 Generating embeddings...")
     embedder = LocalEmbedding(verbose=True)
-    texts = [build_baitap_text_for_embedding(ex) for ex in tqdm(exercises, desc="Building texts")]
+    
+    # Build texts with skill_name included
+    texts = []
+    for ex in tqdm(exercises, desc="Building texts"):
+        skill_id = ex.get("skill_id", "")
+        skill_name = get_skill_name_from_id(skill_id) if skill_id else ""
+        text = build_baitap_text_for_embedding(ex, skill_name)
+        texts.append(text)
+    
     embeddings = embedder.embed_texts(texts)
 
     # Prepare data for insert
@@ -162,9 +176,13 @@ def insert_baitap_data() -> None:
 # SGV COLLECTION (Teacher Books from MongoDB) FUNCTIONS
 # ============================================================================
 
-def build_sgv_text_for_embedding(teacher_book: Dict[str, Any]) -> str:
-    """Xây dựng text cho embedding từ teacher book - chỉ lấy 2 part đầu tiên"""
+def build_sgv_text_for_embedding(teacher_book: Dict[str, Any], skill_name: str = "") -> str:
+    """Xây dựng text cho embedding từ teacher book - bao gồm skill_name và 2 part đầu tiên"""
     parts: List[str] = []
+    
+    # Thêm skill_name vào đầu để tăng trọng số
+    if skill_name:
+        parts.append(str(skill_name))
     
     # Duyệt chỉ 2 part đầu tiên
     book_parts = teacher_book.get("parts", []) or []
@@ -247,7 +265,15 @@ def insert_sgv_data() -> None:
     # Generate embeddings
     print("🧠 Generating embeddings...")
     embedder = LocalEmbedding(verbose=True)
-    texts = [build_sgv_text_for_embedding(book) for book in tqdm(teacher_books, desc="Building texts")]
+    
+    # Build texts with skill_name included
+    texts = []
+    for book in tqdm(teacher_books, desc="Building texts"):
+        skill_id = book.get("skill_id", "")
+        skill_name = get_skill_name_from_id(skill_id) if skill_id else ""
+        text = build_sgv_text_for_embedding(book, skill_name)
+        texts.append(text)
+    
     embeddings = embedder.embed_texts(texts)
 
     if not embeddings or any(len(vec) != EMBEDDING_DIMENSION for vec in embeddings):

@@ -423,7 +423,7 @@ def insert_user(users_data=None, file_path=None, clear_existing=True):
                 "username": username,
                 "role": role,
                 "full_name": full_name,
-                "password": password_hash,
+                "password_hash": password_hash,
                 "created_at": now,
                 "updated_at": now,
                 "status": "active"

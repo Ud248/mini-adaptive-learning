@@ -8,6 +8,11 @@ class GenerateRequest(BaseModel):
     skill_name: Optional[str] = None
     grade: int = 1
     num_questions: int = 6
+    # New adaptive learning fields
+    accuracy: Optional[float] = 60  # % correct answers (0-100)
+    answered: Optional[float] = 70  # % answered (0-100)
+    skipped: Optional[float] = 20   # % skipped (0-100)
+    avg_response_time: Optional[float] = 30  # seconds per question
 
 
 class ValidateRequest(BaseModel):

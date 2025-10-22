@@ -86,6 +86,10 @@ def update_student_profile_batch(logs: list[dict]):
         answered_times = [t for t in stats["times"] if t > 0]
         avg_time = sum(answered_times) / len(answered_times) if answered_times else 0
         
+        # Tính tỷ lệ phần trăm
+        answered_rate = answered_questions / total_questions if total_questions > 0 else 0
+        skipped_rate = skipped_questions / total_questions if total_questions > 0 else 0
+        
         # Xác định trạng thái
         if skipped_questions > 0:
             status = "struggling"  # Có câu trống = struggling
@@ -100,8 +104,8 @@ def update_student_profile_batch(logs: list[dict]):
             "skill_id": skill_id,
             "accuracy": round(accuracy, 2),
             "avg_time": round(avg_time, 2),
-            "answered": answered_questions,
-            "skipped": skipped_questions,
+            "answered": round(answered_rate, 2),
+            "skipped": round(skipped_rate, 2),
             "status": status
         })
         

@@ -55,46 +55,6 @@ def _load_rag_config() -> Dict[str, Any]:
     return cfg
 
 
-def _normalize_lesson(name: Optional[str]) -> Optional[str]:
-    """
-    Normalize lesson text theo cùng logic với insert_sgv_to_milvus.py
-    để match với normalized_lesson field trong database
-    """
-    if not name:
-        return None
-    
-    import re
-    
-    # Bước 1: Chuyển về lowercase
-    text = name.strip().lower()
-    
-    # Bước 2: Loại bỏ số tiết trong ngoặc
-    text = re.sub(r'\(\s*\d+\s*tiết\s*\)', '', text)
-    text = re.sub(r'\(\s*\d+\s*\)', '', text)
-    text = re.sub(r'\(\s*tiết\s*\)', '', text)
-    text = re.sub(r'\(\s*\d+tiết\s*\)', '', text)  # Không có space
-    text = re.sub(r'\(\s*\d+tiết\)', '', text)  # Không có space cuối
-    
-    # Bước 3: Loại bỏ "Bài X." prefix
-    text = re.sub(r'^bài\s+\d+\.\s*', '', text)
-    
-    # Bước 4: Loại bỏ "Chủ đề X." prefix  
-    text = re.sub(r'^chủ đề\s+\d+\.\s*', '', text)
-    
-    # Bước 5: Loại bỏ dấu câu thừa
-    text = re.sub(r'[^\w\s]', ' ', text)
-    
-    # Bước 6: Chuẩn hóa khoảng trắng
-    text = re.sub(r'\s+', ' ', text)
-    
-    # Bước 7: Loại bỏ từ phụ
-    stop_words = ['tiết', 'bài', 'phần', 'chương', 'mục']
-    words = text.split()
-    words = [word for word in words if word not in stop_words]
-    
-    return ' '.join(words).strip()
-
-
 def _md5(s: str) -> str:
     return hashlib.md5(s.encode("utf-8")).hexdigest()
 
@@ -209,52 +169,47 @@ class RAGTool:
     def _cache_set(self, key: str, val: Dict[str, Any]) -> None:
         self._cache[key] = (time.time(), val)
 
-    def _build_expr(self, *, normalized_lesson: Optional[str]) -> Optional[str]:
-        if not normalized_lesson:
-            return None
-        # Query normalized_lesson field để match với database
-        return f'normalized_lesson == "{normalized_lesson}"'
-    
-    def _build_prefix_expr(self, field: str, value: str) -> Optional[str]:
-        """
-        Build prefix pattern expression for Milvus LIKE queries.
-        Milvus only supports prefix patterns (ab%) not wildcards (%ab%).
-        """
-        if not value or not value.strip():
-            return None
-        # Use prefix pattern for Milvus compatibility
-        return f'{field} like "{value.strip()}%"'
-
-    def _embed_query_text(self, *, skill: str, skill_name: Optional[str], grade: Optional[int]) -> Optional[List[float]]:
+    def _embed_skill_name(self, skill_name: str) -> Optional[List[float]]:
+        """Tạo embedding từ skill_name"""
         if self._embed_fn is None:
             return None
-        parts = [skill_name or skill]
-        if grade is not None:
-            parts.append(f"lớp {grade}")
-        text = " ".join([p for p in parts if p])
         try:
-            return self._embed_fn(text)
+            return self._embed_fn(skill_name)
         except Exception:
             return None
 
     def _search_sgv(self, grade: Optional[int], skill: str, skill_name: Optional[str], k: int) -> List[Dict[str, Any]]:
+        """
+        Tìm kiếm SGV theo skill_name
+        - Stage 1: Exact match theo metadata (skill_name)
+        - Stage 2: Vector search fallback nếu không tìm thấy
+        """
         collection = self._collections["sgv"]
-        normalized = _normalize_lesson(skill_name)
-        expr = self._build_expr(normalized_lesson=normalized)
+        
+        if not skill_name:
+            return []
+        
         rows: List[Dict[str, Any]] = []
-
-        # Stage 1: metadata filter
+        
+        # Stage 1: Exact metadata filter
+        expr = f'skill_name == "{skill_name}"'
         try:
-            if self._milvus is not None and expr:
+            if self._milvus is not None:
                 rows = self._milvus.query(
-                    collection, expr=expr, output_fields=["id", "lesson", "normalized_lesson", "content", "source"], limit=k
+                    collection, 
+                    expr=expr, 
+                    output_fields=["id", "lesson", "skill_name", "content", "source"], 
+                    limit=1000  # Lấy tất cả matching documents
                 ) or []
-        except Exception:
+                print(f"✓ SGV metadata search: Found {len(rows)} results")
+        except Exception as e:
+            print(f"⚠️  Error in SGV metadata search: {e}")
             rows = []
-
-        # Stage 2: vector search fallback if needed
+        
+        # Stage 2: Vector search fallback nếu không có kết quả
         if not rows:
-            vec = self._embed_query_text(skill=skill, skill_name=skill_name, grade=grade)
+            print(f"⚠️  No metadata results, falling back to vector search...")
+            vec = self._embed_skill_name(skill_name)
             if vec is not None and self._milvus is not None:
                 try:
                     hits = self._milvus.search(
@@ -262,57 +217,64 @@ class RAGTool:
                         vector_field="embedding",
                         query_vectors=[vec],
                         param={"metric_type": "L2", "params": {"nprobe": 10}},
-                        limit=max(k * 3, k),
-                        output_fields=["id", "lesson", "normalized_lesson", "content", "source"],
+                        limit=max(k * 3, 50),
+                        output_fields=["id", "lesson", "skill_name", "content", "source"],
                     ) or []
-                    rows = self._format_hits(hits)
-                except Exception:
+                    rows = self._format_vector_hits(hits)
+                    print(f"✓ SGV vector search: Found {len(rows)} results")
+                except Exception as e:
+                    print(f"⚠️  Error in SGV vector search: {e}")
                     rows = []
-
-        # Rerank + dedup
+        
+        # Chuyển đổi sang format output
         items = []
         for r in rows:
-            text = r.get("content", "")
-            lesson = r.get("lesson", "")
-            score_sim = r.get("distance")
-            if isinstance(score_sim, (int, float)):
-                sim = _to_similarity(float(score_sim))
-            else:
-                sim = 0.5  # neutral if not from vector search
-            lesson_match = 1.0 if normalized and normalized == _normalize_lesson(lesson) else 0.0
-            grade_match = 0.0  # grade not enforced in schema
-            final = 0.6 * sim + 0.3 * lesson_match + 0.1 * grade_match
             items.append({
                 "id": str(r.get("id", "")),
-                "text": text,
+                "text": r.get("content", ""),
                 "source": r.get("source", ""),
-                "lesson": lesson,
-                "score": float(final),
+                "lesson": r.get("lesson", ""),
+                "skill_name": r.get("skill_name", ""),
+                "score": 1.0,
             })
 
+        # Dedup và giới hạn số lượng
         return self._rerank_and_trim(items, k)
 
     def _search_sgk(self, grade: Optional[int], skill: str, skill_name: Optional[str], k: int) -> List[Dict[str, Any]]:
+        """
+        Tìm kiếm SGK theo skill_name
+        - Stage 1: Exact match theo metadata (skill_name)
+        - Stage 2: Vector search fallback nếu không tìm thấy
+        - Random lấy k câu hỏi
+        """
         collection = self._collections["sgk"]
-        normalized = _normalize_lesson(skill_name)
-        expr = self._build_expr(normalized_lesson=normalized)
+        
+        if not skill_name:
+            return []
+        
         rows: List[Dict[str, Any]] = []
-
-        # Stage 1: metadata filter
+        
+        # Stage 1: Exact metadata filter
+        expr = f'skill_name == "{skill_name}"'
         try:
-            if self._milvus is not None and expr:
+            if self._milvus is not None:
+                # Lấy nhiều hơn k để có thể random
                 rows = self._milvus.query(
                     collection,
                     expr=expr,
-                    output_fields=["id", "lesson", "normalized_lesson", "question", "answer", "subject", "source"],
-                    limit=k,
+                    output_fields=["id", "question_content", "lesson", "skill_name", "source"],
+                    limit=max(k * 2, 100),
                 ) or []
-        except Exception:
+                print(f"✓ SGK metadata search: Found {len(rows)} results")
+        except Exception as e:
+            print(f"⚠️  Error in SGK metadata search: {e}")
             rows = []
 
-        # Stage 2: vector search fallback if needed
+        # Stage 2: Vector search fallback nếu không có kết quả
         if not rows:
-            vec = self._embed_query_text(skill=skill, skill_name=skill_name, grade=grade)
+            print(f"⚠️  No metadata results, falling back to vector search...")
+            vec = self._embed_skill_name(skill_name)
             if vec is not None and self._milvus is not None:
                 try:
                     hits = self._milvus.search(
@@ -320,68 +282,72 @@ class RAGTool:
                         vector_field="embedding",
                         query_vectors=[vec],
                         param={"metric_type": "L2", "params": {"nprobe": 10}},
-                        limit=max(k * 3, k),
-                        output_fields=["id", "lesson", "normalized_lesson", "question", "answer", "subject", "source"],
+                        limit=max(k * 3, 100),
+                        output_fields=["id", "question_content", "lesson", "skill_name", "source"],
                     ) or []
-                    rows = self._format_hits(hits)
-                except Exception:
+                    rows = self._format_vector_hits(hits)
+                    print(f"✓ SGK vector search: Found {len(rows)} results")
+                except Exception as e:
+                    print(f"⚠️  Error in SGK vector search: {e}")
                     rows = []
 
-        # Rerank + dedup
+        # Chuyển đổi sang format output
         items = []
         for r in rows:
-            question = r.get("question", "")
-            answer = r.get("answer", "")
-            text = f"Q: {question}\nA: {answer}".strip()
-            lesson = r.get("lesson", "")
-            score_sim = r.get("distance")
-            if isinstance(score_sim, (int, float)):
-                sim = _to_similarity(float(score_sim))
-            else:
-                sim = 0.5
-            lesson_match = 1.0 if normalized and normalized == _normalize_lesson(lesson) else 0.0
-            grade_match = 0.0
-            final = 0.6 * sim + 0.3 * lesson_match + 0.1 * grade_match
+            question_content = r.get("question_content", "")
+            text = f"Câu hỏi: {question_content}".strip()
+            
             items.append({
                 "id": str(r.get("id", "")),
                 "text": text,
                 "source": r.get("source", ""),
-                "lesson": lesson,
-                "score": float(final),
+                "lesson": r.get("lesson", ""),
+                "skill_name": r.get("skill_name", ""),
+                "score": 1.0,
             })
 
+        # Random shuffle và lấy top-k
+        import random
+        if items:
+            random.shuffle(items)
+        
+        # Dedup và giới hạn số lượng
         return self._rerank_and_trim(items, k)
 
-    def _format_hits(self, hits: Any) -> List[Dict[str, Any]]:
-        # database.milvus.milvus_client.search returns list[list[hit]]
+    def _format_vector_hits(self, hits: Any) -> List[Dict[str, Any]]:
+        """
+        Format kết quả từ vector search
+        Milvus search returns list[list[hit]]
+        """
         formatted: List[Dict[str, Any]] = []
         try:
             for hit_list in hits:
                 for h in hit_list:
-                    # "entity" may be an object with dict-like access. Try to coerce.
+                    # Extract entity data
                     ent = h.get("entity") if isinstance(h, dict) else None
                     row: Dict[str, Any] = {}
+                    
                     if ent is not None:
-                        # Pymilvus entity exposes .get(field)
+                        # Try extracting known fields
                         try:
-                            # Try extracting known fields
                             for f in [
                                 "id",
                                 "lesson",
-                                "normalized_lesson",
+                                "skill_name",
                                 "content",
                                 "source",
-                                "question",
-                                "answer",
-                                "subject",
+                                "question_content",
                             ]:
                                 try:
-                                    row[f] = ent.get(f)  # type: ignore[attr-defined]
+                                    val = ent.get(f)  # type: ignore[attr-defined]
+                                    if val is not None:
+                                        row[f] = val
                                 except Exception:
                                     pass
                         except Exception:
                             pass
-                    # distance/id may be on hit
+                    
+                    # Get id and distance from hit
                     try:
                         if isinstance(h, dict):
                             if "id" in h and not row.get("id"):
@@ -390,9 +356,13 @@ class RAGTool:
                                 row["distance"] = h.get("distance")
                     except Exception:
                         pass
-                    formatted.append(row)
-        except Exception:
+                    
+                    if row:  # Only add if we got some data
+                        formatted.append(row)
+        except Exception as e:
+            print(f"⚠️  Error formatting vector hits: {e}")
             return []
+        
         return formatted
 
     def _rerank_and_trim(self, items: List[Dict[str, Any]], k: int) -> List[Dict[str, Any]]:
